@@ -305,10 +305,17 @@ const MufettisFocus = {
         if (idx !== -1) {
             const updated = { ...data[idx], durum, mufettis: currentUser.name, redNotu: redNotu || "" };
             // saveData helper'ını kullan (bu helper ID'yi bulup güncelliyor)
+            // saveData helper'ını kullan
             saveData(updated); 
+            
+            // Veriyi anlık olarak güncelle ve akışı temizle
             this.renderStream();
+            
             // İdareci paneli açıksa cockpit'i de tazele
-            if (document.getElementById('idarecPanel').classList.contains('active')) IdarecManager.renderCockpit();
+            const idarecPanel = document.getElementById('idarecPanel');
+            if (idarecPanel && !idarecPanel.classList.contains('d-none')) {
+                IdarecManager.renderCockpit();
+            }
         }
     }
 };
@@ -734,21 +741,30 @@ function loadGorevliPanel(katAd) {
         if (bar) bar.style.width = yuzde + '%';
     }, 100);
 
-    // 2. KAT MATRİSİ (RÖNTGEN)
+    // 2. KAT MATRİSİ (RÖNTGEN) - Tıklanabilir yapıldı
     matrixContainer.innerHTML = bolumler.map(bolum => {
         const r = data.find(d => d.kat === katAd && d.bolum === bolum && toShortDate(new Date(d.tarih).getTime()) === bugun);
         const statusClass = r ? (r.durum === 'onaylandi' ? 'status-clean' : r.durum === 'reddedildi' ? 'status-alert' : 'status-pending') : '';
-        return `<div class="room-pixel ${statusClass}" style="width:20px; height:20px;" title="${bolum}"></div>`;
+        const clickAction = r && r.durum === 'reddedildi' ? `onclick="GorevliManager.showRedNotu('${katAd}','${bolum}','${r.redNotu || ''}')"` : '';
+        return `<div class="room-pixel ${statusClass}" style="width:22px; height:22px; cursor:${clickAction?'pointer':'default'};" ${clickAction} title="${bolum}"></div>`;
     }).join('');
 
     // 3. SIRADAKİ GÖREV (FOCUS CARD)
-    const nextRoom = bolumler.find(b => !data.find(d => d.kat === katAd && d.bolum === b && toShortDate(new Date(d.tarih).getTime()) === bugun));
+    const nextRoom = bolumler.find(b => {
+        const r = data.find(d => d.kat === katAd && d.bolum === b && toShortDate(new Date(d.tarih).getTime()) === bugun);
+        return !r || r.durum === 'reddedildi'; // Reddedilenler de sıraya girsin
+    });
+
     if (nextRoom && nextTaskContainer) {
+        const rNext = data.find(d => d.kat === katAd && d.bolum === nextRoom && toShortDate(new Date(d.tarih).getTime()) === bugun);
+        const isRed = rNext && rNext.durum === 'reddedildi';
+
         nextTaskContainer.innerHTML = `
-            <div class="glass-card p-4 border-emerald shadow-success" style="background:linear-gradient(135deg, rgba(16,185,129,0.1), rgba(0,0,0,0.4));">
-                <div class="x-small text-emerald fw-bold mb-1 text-uppercase">SIRADAKİ GÖREVİN</div>
+            <div class="glass-card p-4 border-${isRed?'danger':'emerald'} shadow-${isRed?'danger':'success'}" style="background:linear-gradient(135deg, ${isRed?'rgba(239,68,68,0.1)':'rgba(16,185,129,0.1)'}, rgba(0,0,0,0.4));">
+                <div class="x-small text-${isRed?'danger':'emerald'} fw-bold mb-1 text-uppercase">${isRed ? '⚠️ DÜZELTME GEREKİYOR' : 'SIRADAKİ GÖREVİN'}</div>
                 <h3 class="h2 fw-bold text-white mb-4">${nextRoom}</h3>
-                <button onclick="KriterManager.ac('${katAd}','${nextRoom}')" class="btn btn-emerald w-100 py-3 rounded-pill fw-bold" style="font-size:1.1rem;">GÖREVE BAŞLA →</button>
+                ${isRed ? `<div class="p-2 bg-dark bg-opacity-50 rounded-3 mb-3 x-small text-white italic">"${rNext.redNotu}"</div>` : ''}
+                <button onclick="KriterManager.ac('${katAd}','${nextRoom}')" class="btn btn-${isRed?'danger':'emerald'} w-100 py-3 rounded-pill fw-bold" style="font-size:1.1rem;">${isRed?'TEKRAR TEMİZLE':'GÖREVE BAŞLA →'}</button>
             </div>
         `;
     } else if (nextTaskContainer) {
@@ -764,19 +780,42 @@ function loadGorevliPanel(katAd) {
     // 4. TÜM LİSTE (SADELEŞTİRİLMİŞ)
     listContainer.innerHTML = bolumler.map(bolum => {
         const r = data.find(d => d.kat === katAd && d.bolum === bolum && toShortDate(new Date(d.tarih).getTime()) === bugun);
-        const isDone = !!r;
+        const isDone = r && r.durum === 'onaylandi';
+        const isRed = r && r.durum === 'reddedildi';
+        const isPending = r && r.durum === 'bekliyor';
+
         return `
             <div class="d-flex align-items-center gap-3 p-3 rounded-4 bg-slate-glass ${isDone ? 'opacity-50' : ''}" style="border:1px solid rgba(255,255,255,0.05);">
-                <div style="width:10px; height:10px; border-radius:50%; background:${isDone ? '#10b981' : '#333'};"></div>
+                <div style="width:10px; height:10px; border-radius:50%; background:${isDone ? '#10b981' : isRed ? '#ef4444' : isPending ? '#f59e0b' : '#333'};"></div>
                 <div class="flex-grow-1">
                     <div class="small fw-bold text-white">${bolum}</div>
-                    <div class="x-small text-muted">${isDone ? 'Tamamlandı' : 'Bekliyor'}</div>
+                    <div class="x-small text-muted">${isDone ? 'Tamamlandı' : isRed ? 'Reddedildi (Düzeltme Lazım)' : isPending ? 'Onay Bekliyor' : 'Bekliyor'}</div>
                 </div>
-                ${!isDone ? `<button onclick="KriterManager.ac('${katAd}','${bolum}')" class="btn btn-sm btn-glass-emerald rounded-pill px-3">Başla</button>` : '✅'}
+                ${isRed ? `<button onclick="GorevliManager.showRedNotu('${katAd}','${bolum}','${r.redNotu}')" class="btn btn-sm btn-outline-danger rounded-pill px-3">Notu Gör</button>` : ''}
+                ${!isDone && !isPending ? `<button onclick="KriterManager.ac('${katAd}','${bolum}')" class="btn btn-sm btn-glass-emerald rounded-pill px-3">${isRed?'Düzelt':'Başla'}</button>` : isDone ? '✅' : '⏳'}
             </div>
         `;
     }).join('');
 }
+
+// GÖREVLİ YARDIMCI NESNESİ
+const GorevliManager = {
+    showRedNotu: function(kat, bolum, not) {
+        Swal.fire({
+            title: 'Müfettiş Notu',
+            text: not || "Bir açıklama bırakılmamış.",
+            icon: 'warning',
+            background: '#0a0f14',
+            color: '#fff',
+            confirmButtonText: 'HEMEN DÜZELT',
+            showCancelButton: true,
+            cancelButtonText: 'KAPAT',
+            confirmButtonColor: '#ef4444'
+        }).then(res => {
+            if (res.isConfirmed) KriterManager.ac(kat, bolum);
+        });
+    }
+};
 
 const KriterManager = {
     kat: "", bolum: "",
