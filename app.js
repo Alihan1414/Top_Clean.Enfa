@@ -912,76 +912,92 @@ const ListeManager = {
     },
 
     pdfUret: function() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        
         const floors = Object.keys(katlar);
-        let firstPage = true;
+        const template = document.getElementById('pdfExportTemplate');
+        if (!template) return;
 
-        floors.forEach(floor => {
-            if (!firstPage) doc.addPage();
-            firstPage = false;
-
-            // Arka plan dekoru (Hafif Emerald şerit)
-            doc.setFillColor(16, 185, 129);
-            doc.rect(0, 0, 210, 40, 'F');
-
-            // Başlıklar
-            doc.setFontSize(24);
-            doc.setTextColor(255);
-            doc.setFont("helvetica", "bold");
-            doc.text("TOPCLEAN TEMİZLİK PLANI", 105, 20, { align: "center" });
-            
-            doc.setFontSize(14);
-            doc.text(`${floor.toUpperCase()} - GÖREV ÇİZELGESİ`, 105, 32, { align: "center" });
-
-            // Sorumlu Bilgileri
+        // PDF İçeriğini Oluştur (HTML olarak)
+        let htmlContent = "";
+        
+        floors.forEach((floor, idx) => {
             const leader = this.floorLeaders[floor] || { hoca: 'Belirtilmedi', baskan: 'Belirtilmedi' };
-            doc.setTextColor(0);
-            doc.setFontSize(11);
-            doc.setFont("helvetica", "normal");
-            
-            doc.setDrawColor(16, 185, 129);
-            doc.setLineWidth(0.5);
-            doc.line(20, 48, 190, 48);
-            
-            doc.setFont("helvetica", "bold");
-            doc.text(`GÖREVLİ HOCA:`, 20, 56);
-            doc.setFont("helvetica", "normal");
-            doc.text(leader.hoca || "Belirtilmedi", 55, 56);
-
-            doc.setFont("helvetica", "bold");
-            doc.text(`KAT BAŞKANI:`, 110, 56);
-            doc.setFont("helvetica", "normal");
-            doc.text(leader.baskan || "Belirtilmedi", 145, 56);
-            
-            doc.line(20, 62, 190, 62);
-
-            // Tablo
             const floorData = this.assignments.filter(a => a.kat === floor);
-            const body = floorData.map(a => [a.bolum, a.students.join(", ") || "BOŞ"]);
+            
+            htmlContent += `
+                <div class="pdf-page" style="padding: 40px; min-height: 1100px; page-break-after: always; background: white;">
+                    <!-- Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #10b981; padding-bottom: 20px; margin-bottom: 30px;">
+                        <div>
+                            <h1 style="margin: 0; color: #10b981; font-size: 28px; font-weight: 800; letter-spacing: -1px;">TOPCLEAN</h1>
+                            <p style="margin: 0; color: #666; font-size: 12px; font-weight: 600; text-transform: uppercase;">Bina Hijyen ve Temizlik Planı</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 18px; font-weight: 700; color: #333;">${floor.toUpperCase()}</div>
+                            <div style="font-size: 11px; color: #888;">${new Date().toLocaleDateString('tr-TR')}</div>
+                        </div>
+                    </div>
 
-            doc.autoTable({
-                startY: 70,
-                head: [['TEMİZLİK MEALİ / BÖLGE', 'GÖREVLİ TALEBELER']],
-                body: body,
-                theme: 'grid',
-                headStyles: { fillColor: [16, 185, 129], textColor: 255, fontSize: 12, halign: 'center' },
-                styles: { fontSize: 11, cellPadding: 5, valign: 'middle' },
-                columnStyles: { 0: { cellWidth: 70, fontStyle: 'bold' }, 1: { halign: 'left' } },
-                alternateRowStyles: { fillColor: [245, 255, 250] }
-            });
+                    <!-- Sorumlular -->
+                    <div style="display: flex; gap: 20px; margin-bottom: 30px;">
+                        <div style="flex: 1; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px; border-radius: 12px;">
+                            <div style="font-size: 10px; color: #15803d; font-weight: 800; text-transform: uppercase; margin-bottom: 5px;">Kat Sorumlusu (Hoca)</div>
+                            <div style="font-size: 16px; font-weight: 700; color: #166534;">${leader.hoca || "Belirtilmedi"}</div>
+                        </div>
+                        <div style="flex: 1; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px; border-radius: 12px;">
+                            <div style="font-size: 10px; color: #15803d; font-weight: 800; text-transform: uppercase; margin-bottom: 5px;">Kat Başkanı (Talebe)</div>
+                            <div style="font-size: 16px; font-weight: 700; color: #166534;">${leader.baskan || "Belirtilmedi"}</div>
+                        </div>
+                    </div>
 
-            // Alt Bilgi
-            const lastY = doc.lastAutoTable.finalY + 15;
-            doc.setFontSize(10);
-            doc.setTextColor(150);
-            doc.text("Temizlik imandandır. Lütfen bölgemizi temiz tutalım.", 105, 285, { align: "center" });
-            doc.text(`Baskı Tarihi: ${new Date().toLocaleDateString('tr-TR')}`, 190, 285, { align: "right" });
+                    <!-- Liste Tablosu -->
+                    <table style="width: 100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                        <thead>
+                            <tr style="background: #10b981; color: white;">
+                                <th style="padding: 15px; text-align: left; font-size: 13px; font-weight: 700; width: 40%;">TEMİZLİK BÖLGESİ / MAHAL</th>
+                                <th style="padding: 15px; text-align: left; font-size: 13px; font-weight: 700;">GÖREVLİ TALEBELER</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${floorData.map((a, i) => `
+                                <tr style="background: ${i % 2 === 0 ? '#ffffff' : '#f9fafb'}; border-bottom: 1px solid #edf2f7;">
+                                    <td style="padding: 15px; font-weight: 700; color: #333; font-size: 14px;">${a.bolum}</td>
+                                    <td style="padding: 15px; color: #4a5568; font-size: 14px; font-weight: 500;">${a.students.join(", ") || "-"}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+
+                    <!-- Footer -->
+                    <div style="position: absolute; bottom: 40px; left: 40px; right: 40px; text-align: center; border-top: 1px solid #eee; padding-top: 20px;">
+                        <p style="margin: 0; color: #10b981; font-weight: 700; font-size: 14px; font-style: italic;">"Temizlik imandandır."</p>
+                        <p style="margin: 5px 0 0; color: #999; font-size: 10px;">Lütfen bölgemizi temiz tutalım ve mülkiyeti muhafaza edelim.</p>
+                    </div>
+                </div>
+            `;
         });
 
-        doc.save(`TopClean_Afiş_${new Date().toLocaleDateString()}.pdf`);
-        Swal.fire("Afiş Hazır", "Her kat için ayrı sayfalar halinde profesyonel PDF oluşturuldu!", "success");
+        template.innerHTML = htmlContent;
+
+        // html2pdf Ayarları
+        const opt = {
+            margin: 0,
+            filename: `TopClean_Temizlik_Listesi_${new Date().toLocaleDateString('tr-TR')}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        Swal.fire({
+            title: 'Hazırlanıyor...',
+            text: 'PDF afişiniz profesyonel kalitede oluşturuluyor.',
+            allowOutsideClick: false,
+            didOpen: () => { Swal.showLoading(); }
+        });
+
+        html2pdf().set(opt).from(template).save().then(() => {
+            Swal.fire("Başarılı", "Profesyonel afişiniz indirildi!", "success");
+            template.innerHTML = ""; // Belleği temizle
+        });
     }
 };
 
@@ -1385,9 +1401,19 @@ function spawnBubble(container, isBurst = false) {
         bubble.style.animationDuration = (6 + Math.random() * 10) + 's';
         bubble.style.animationDelay = (Math.random() * 5) + 's';
     }
-    
     container.appendChild(bubble);
     if (isBurst) setTimeout(() => bubble.remove(), 2000);
+}
+
+function toggleTheme() {
+    const body = document.body;
+    body.classList.toggle('light-mode');
+    const isLight = body.classList.contains('light-mode');
+    localStorage.setItem('topclean_theme', isLight ? 'light' : 'dark');
+    
+    if (typeof ListeManager !== 'undefined' && ListeManager.renderLeadersUI) {
+        ListeManager.renderLeadersUI();
+    }
 }
 
 function loginReveal() {
@@ -1396,7 +1422,6 @@ function loginReveal() {
     const container = document.getElementById('loginBubbles');
     if (!landing || !formWrap) return;
     
-    // ÇOKLU BALONCUK PATLAMASI (Rush)
     for (let i = 0; i < 60; i++) {
         setTimeout(() => spawnBubble(container, true), i * 10);
     }
@@ -1418,24 +1443,29 @@ function loginReveal() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    populateUserSelect();
-    const s = localStorage.getItem('topclean_session');
-    if (s) { currentUser = JSON.parse(s); _routeUser(); }
-    else showPanel("loginPanel");
-    syncFromCloud();
-    if (typeof lucide !== 'undefined') lucide.createIcons();
-    initLoginBubbles();
-
-    // Init Theme
+    // Theme Init
     if (localStorage.getItem('topclean_theme') === 'light') {
         document.body.classList.add('light-mode');
-        setTimeout(() => {
-            const icon = document.getElementById('themeIcon');
-            if(icon) { icon.setAttribute('data-lucide', 'moon'); lucide.createIcons(); }
-        }, 300);
+    }
+
+    populateUserSelect();
+    const s = localStorage.getItem('topclean_session');
+    if (s) { 
+        currentUser = JSON.parse(s); 
+        _routeUser(); 
+    } else { 
+        showPanel("loginPanel"); 
     }
     
+    syncFromCloud();
+    initLoginBubbles();
+    
     document.getElementById('loginForm')?.addEventListener('submit', handleLogin);
-    document.getElementById('logoutBtn')?.addEventListener('click', () => { localStorage.removeItem('topclean_session'); currentUser = null; showPanel("loginPanel"); });
+    document.getElementById('logoutBtn')?.addEventListener('click', () => { 
+        localStorage.removeItem('topclean_session'); 
+        currentUser = null; 
+        showPanel("loginPanel"); 
+    });
+    
     if (typeof lucide !== 'undefined') lucide.createIcons();
 });
