@@ -168,6 +168,10 @@
 
                 <!-- 1. ADIM: SAĞLIK LİSTESİ GİRİŞİ -->
                 <div id="listeStep1" class="d-flex flex-column gap-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <h6 class="text-white small fw-bold mb-0 text-uppercase">1. Adım: Talebe Listesi</h6>
+                        <button onclick="_routeUser()" class="btn btn-sm btn-glass-danger py-1 px-3 rounded-pill x-small">Paneli Kapat</button>
+                    </div>
                     <div class="row g-2">
                         <div class="col-6">
                             <label class="x-small text-danger fw-bold mb-1 ms-2">🔴 ASTIM HASTALARI</label>
@@ -194,8 +198,8 @@
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <h6 class="text-white small fw-bold mb-0">DAĞITIM SONUÇLARI</h6>
                         <div class="d-flex gap-2">
-                            <button onclick="ListeManager.showStep(1)" class="btn btn-sm btn-glass-emerald py-1 px-3 rounded-pill">Sağlık Listesi</button>
-                            <button onclick="ListeManager.yeniTalebeEkleModali()" class="btn btn-sm btn-emerald py-1 px-3 rounded-pill">+ Yeni Talebe Ekle</button>
+                            <button onclick="ListeManager.showStep(1)" class="btn btn-sm btn-glass-emerald py-1 px-3 rounded-pill x-small">← GERİ GİT</button>
+                            <button onclick="ListeManager.yeniTalebeEkleModali()" class="btn btn-sm btn-emerald py-1 px-3 rounded-pill x-small">+ Yeni Talebe</button>
                         </div>
                     </div>
                     
@@ -220,7 +224,11 @@
 
             <!-- İDARECİ PANELİ (COCKPIT) -->
             <div id="idarecPanel" class="view-panel d-none flex-column w-100">
-
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald px-3 rounded-pill">← Geri</button>
+                    <h6 class="text-emerald fw-bold mb-0 x-small">İDARECİ KOKPİTİ</h6>
+                    <div style="width:50px"></div>
+                </div>
                 <!-- 1. NABIZ & GENEL DURUM -->
                 <div class="glass-card p-4 mb-4 text-center">
                     <div class="pulse-circle-container">
@@ -398,7 +406,9 @@
 
             <!-- MÜFETTİŞ PANELİ (CANLI DENETİM AKIŞI) -->
             <div id="adminPanel" class="view-panel d-none flex-column w-100">
-                
+                <div class="d-flex justify-content-start mb-3">
+                    <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald px-3 rounded-pill">← Paneli Kapat</button>
+                </div>
                 <!-- BINA ONAY ÖZETİ -->
                 <div class="glass-card banner-card p-4 mb-4 text-center shadow-lg">
                     <h2 class="h4 fw-bold text-white mb-1">Denetim Akışı</h2>
