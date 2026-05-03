@@ -115,13 +115,19 @@
                 <div id="loginBubbles" class="position-absolute inset-0 w-100 h-100" style="pointer-events:none; overflow:hidden;"></div>
 
                 <!-- KARŞILAMA EKRANI -->
-                <div id="loginLanding" class="text-center z-10 position-relative" onclick="loginReveal()" style="cursor:pointer;">
-                    <div class="mb-3">
-                        <img src="icon-512.png" alt="Logo" class="shadow-success rounded-4" style="width:90px; height:90px; object-fit:cover; animation: neonPulse 3s infinite alternate;">
+                <div id="loginLanding" class="text-center z-10 position-relative" onclick="loginReveal()" style="cursor:pointer; transition: all 0.5s ease;">
+                    <div class="mb-5 logo-aero-glow">
+                        <img src="icon-512.png" alt="Logo" class="shadow-success rounded-4" style="width:110px; height:110px; object-fit:cover;">
                     </div>
-                    <h1 class="fw-semibold text-white mb-2" style="font-size: 3rem; letter-spacing: -0.03em;">TopClean</h1>
-                    <p class="mb-4" style="color: #34d399; font-size: 1.1rem;">sizinle ✨</p>
-                    <div style="animation: bounceDot 1.5s infinite; color: #aaa; font-size: 0.85rem;">dokun</div>
+                    <h1 class="fw-bold text-premium-emerald mb-2" style="font-size: 3.5rem; letter-spacing: -0.04em;">TopClean</h1>
+                    <p class="mb-5 opacity-75" style="color: #34d399; font-size: 1.2rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;">sizinle ✨</p>
+                    
+                    <div class="ripple-container">
+                        <div class="ripple-ring"></div>
+                        <div class="ripple-ring"></div>
+                        <div class="ripple-ring"></div>
+                        <div style="animation: bounceDot 1.5s infinite; color: #fff; font-size: 0.9rem; font-weight: 800; z-index: 2; text-transform: uppercase;">dokun</div>
+                    </div>
                 </div>
 
                 <!-- GİRİŞ FORMU -->
