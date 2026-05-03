@@ -937,36 +937,59 @@ function toggleTheme() {
 function initLoginBubbles() {
     const container = document.getElementById('loginBubbles');
     if (!container) return;
-    for (let i = 0; i < 15; i++) {
-        const bubble = document.createElement('div');
-        bubble.className = 'login-bubble';
-        const size = 12 + Math.random() * 20;
-        bubble.style.width = size + 'px';
-        bubble.style.height = size + 'px';
-        bubble.style.left = Math.random() * 100 + '%';
-        bubble.style.bottom = '-50px';
-        bubble.style.animationDuration = (5 + i * 0.8) + 's';
-        bubble.style.animationDelay = (i * 0.3) + 's';
-        container.appendChild(bubble);
+    container.innerHTML = ''; // Temizle
+    for (let i = 0; i < 20; i++) {
+        spawnBubble(container, false);
     }
+}
+
+function spawnBubble(container, isBurst = false) {
+    const bubble = document.createElement('div');
+    bubble.className = 'login-bubble';
+    const size = isBurst ? (5 + Math.random() * 15) : (10 + Math.random() * 25);
+    bubble.style.width = size + 'px';
+    bubble.style.height = size + 'px';
+    bubble.style.left = Math.random() * 100 + '%';
+    bubble.style.bottom = isBurst ? '0' : '-60px';
+    
+    if (isBurst) {
+        bubble.style.animationDuration = (0.5 + Math.random() * 1.5) + 's';
+        bubble.style.background = 'radial-gradient(circle at 30% 30%, #34d399, #10b981)';
+        bubble.style.boxShadow = '0 0 20px #10b981';
+    } else {
+        bubble.style.animationDuration = (6 + Math.random() * 10) + 's';
+        bubble.style.animationDelay = (Math.random() * 5) + 's';
+    }
+    
+    container.appendChild(bubble);
+    if (isBurst) setTimeout(() => bubble.remove(), 2000);
 }
 
 function loginReveal() {
     const landing = document.getElementById('loginLanding');
     const formWrap = document.getElementById('loginForm-wrap');
+    const container = document.getElementById('loginBubbles');
     if (!landing || !formWrap) return;
     
+    // ÇOKLU BALONCUK PATLAMASI (Rush)
+    for (let i = 0; i < 60; i++) {
+        setTimeout(() => spawnBubble(container, true), i * 10);
+    }
+
     landing.style.opacity = '0';
-    landing.style.transform = 'scale(0.9)';
-    landing.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+    landing.style.transform = 'translateY(-20px) scale(0.95)';
+    landing.style.filter = 'blur(10px)';
     
     setTimeout(() => {
         landing.style.display = 'none';
-        formWrap.style.opacity = '1';
-        formWrap.style.transform = 'scale(1)';
-        formWrap.style.filter = 'blur(0px)';
-        formWrap.style.pointerEvents = 'auto';
-    }, 300);
+        formWrap.style.display = 'block';
+        setTimeout(() => {
+            formWrap.style.opacity = '1';
+            formWrap.style.transform = 'scale(1)';
+            formWrap.style.filter = 'blur(0px)';
+            formWrap.style.pointerEvents = 'auto';
+        }, 50);
+    }, 500);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
