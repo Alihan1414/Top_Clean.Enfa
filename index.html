@@ -161,6 +161,9 @@
                     <h1 class="h5 fw-bold text-gradient mb-0">TopClean</h1>
                 </div>
                 <div class="d-flex align-items-center gap-3">
+                    <div id="syncStatusIndicator" class="d-flex align-items-center gap-2 me-3" style="min-width:120px;">
+                        <!-- JS ile dolar -->
+                    </div>
                     <div class="d-flex flex-column text-end d-none d-md-flex">
                         <span id="headerName" class="fw-bold text-white small m-0">-</span>
                         <span class="x-small text-emerald">Aktif Oturum</span>
@@ -303,7 +306,7 @@
                         </div>
                     </div>
                     
-                    <div class="d-flex justify-content-center gap-4 mt-2">
+                    <div class="d-flex justify-content-center gap-4 mt-2 mb-3">
                         <div class="text-center">
                             <div class="h5 fw-bold text-white mb-0" id="cockpit-stat-active">-</div>
                             <div class="x-small text-muted">Aktif Personel</div>
@@ -313,6 +316,7 @@
                             <div class="x-small text-muted">Kritik Bölge</div>
                         </div>
                     </div>
+                    <button onclick="ReportManager.generateMonthly()" class="btn btn-sm btn-glass-emerald w-100 rounded-pill py-2 fw-bold" style="font-size:0.7rem;">📊 AYLIK FAALİYET RAPORU AL</button>
                 </div>
 
                 <!-- 2. BİNA RÖNTGENİ (MATRIX) -->
