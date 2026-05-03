@@ -302,9 +302,12 @@
                             <p class="x-small text-muted mb-0 text-uppercase fw-bold">Görevli Paneli</p>
                             <h2 class="h5 fw-bold text-white mb-0" id="gorevliHocaIsim">-</h2>
                         </div>
-                        <div class="ms-auto text-end">
-                            <div id="gorevliTamamSayi" class="h4 fw-bold text-white mb-0">0/0</div>
-                            <div class="x-small text-emerald fw-bold">BİTEN</div>
+                        <div class="ms-auto text-end d-flex flex-column gap-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <div id="gorevliTamamSayi" class="h4 fw-bold text-white mb-0">0/0</div>
+                                <div class="x-small text-emerald fw-bold">BİTEN</div>
+                            </div>
+                            <button onclick="ArizaManager.bildirimModaliAc()" class="btn btn-sm btn-glass-danger rounded-pill px-3 py-1 fw-bold" style="font-size:0.65rem; letter-spacing:0.5px;">⚠️ ARIZA BİLDİR</button>
                         </div>
                     </div>
                     <div style="height:6px; background:rgba(255,255,255,0.06); border-radius:10px; overflow:hidden;">
@@ -458,12 +461,48 @@
             </div>
         </div>
 
+        <!-- ARIZA YÖNETİM PANELİ (SADECE EMRA KARABALAK) -->
+        <div id="arizaYonetimPanel" class="view-panel d-none flex-column w-100">
+            <div class="glass-card banner-card p-4 mb-4 text-center shadow-lg">
+                <h2 class="h4 fw-bold text-white mb-1">Arıza Yönetimi</h2>
+                <p class="x-small text-muted mb-0">Binadaki teknik sorunları buradan yönetin</p>
+            </div>
+            <div id="arizaYonetimListesi" class="d-flex flex-column gap-3 pb-5">
+                <!-- Arıza kartları buraya gelecek -->
+            </div>
+        </div>
+
         <!-- FLOATING BOTTOM NAV -->
         <nav class="mobile-nav d-md-none">
             <div onclick="_routeUser()" class="nav-item active"><i data-lucide="layout-dashboard"></i><span>Panel</span></div>
             <div onclick="ChatManager.toggle()" class="nav-item"><i data-lucide="message-square"></i><span>Saha</span></div>
             <div onclick="InventoryManager.ac()" class="nav-item"><i data-lucide="package"></i><span>Depo</span></div>
         </nav>
+    </div>
+
+    <!-- ARIZA BİLDİRİM MODALI -->
+    <div class="modal fade" id="arizaModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-card border-0" style="background: rgba(10, 15, 20, 0.95); backdrop-filter: blur(20px);">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title text-white fw-bold">⚠️ Arıza Bildirimi</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="x-small text-emerald fw-bold mb-2">ARIZALI BÖLGE SEÇİN</label>
+                        <select id="arizaBolumSec" class="form-select btn-glass-emerald border-0 text-white rounded-4 py-3">
+                            <!-- Katın odaları buraya gelecek -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="x-small text-emerald fw-bold mb-2">ARIZA DETAYI</label>
+                        <textarea id="arizaDetayText" class="form-control btn-glass-emerald border-0 text-white rounded-4 py-3" rows="3" placeholder="Lamba patladı, musluk akıtıyor vb."></textarea>
+                    </div>
+                    <button onclick="ArizaManager.kaydet()" class="btn btn-danger w-100 py-3 rounded-pill fw-bold shadow-danger mt-2">BİLDİRİMİ GÖNDER</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="app.js?v=premium_final_v1"></script>
