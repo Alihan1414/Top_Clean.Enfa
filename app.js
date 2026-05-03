@@ -111,25 +111,34 @@ function toShortDate(ts) { return new Date(ts).toISOString().split('T')[0]; }
 function getData() { return allReports; }
 
 function saveData(item) {
-    const bugun = todayISO();
-    const idx = allReports.findIndex(r =>
-        r.kat === item.kat &&
-        r.bolum === item.bolum &&
-        toShortDate(new Date(r.tarih).getTime()) === bugun
-    );
+    const data = allReports;
+    // 1. Önce ID ile ara (en güvenli yöntem)
+    let idx = -1;
+    if (item.id) {
+        idx = data.findIndex(r => r.id === item.id);
+    }
+    
+    // 2. ID ile bulunamadıysa (yeni kayıt olabilir) kat, bolum ve tarih ile ara
+    if (idx === -1) {
+        const bugun = todayISO();
+        idx = data.findIndex(r =>
+            r.kat === item.kat &&
+            r.bolum === item.bolum &&
+            toShortDate(new Date(r.tarih).getTime()) === bugun
+        );
+    }
 
     if (idx !== -1) {
-        // Mevcut kaydı güncelle — orijinal ID'yi koru
-        const originalId = allReports[idx].id;
-        allReports[idx] = { ...allReports[idx], ...item, id: originalId };
-        localStorage.setItem('topclean_reports', JSON.stringify(allReports));
-        // Firebase'de aynı path'e üstine yaz (yeni kayıt oluşturma)
-        if (db) db.ref('reports/' + originalId).set(allReports[idx]);
+        // Mevcut kaydı güncelle
+        const originalId = data[idx].id;
+        data[idx] = { ...data[idx], ...item, id: originalId };
+        localStorage.setItem('topclean_reports', JSON.stringify(data));
+        if (db) db.ref('reports/' + originalId).set(data[idx]);
     } else {
-        // Yeni kayıt
-        item.id = new Date().getTime().toString();
-        allReports.push(item);
-        localStorage.setItem('topclean_reports', JSON.stringify(allReports));
+        // Tamamen yeni kayıt
+        if (!item.id) item.id = new Date().getTime().toString();
+        data.push(item);
+        localStorage.setItem('topclean_reports', JSON.stringify(data));
         if (db) db.ref('reports/' + item.id).set(item);
     }
 }
@@ -303,15 +312,19 @@ const MufettisFocus = {
         const data = getData();
         const idx = data.findIndex(item => item.id === id);
         if (idx !== -1) {
-            const updated = { ...data[idx], durum, mufettis: currentUser.name, redNotu: redNotu || "" };
-            // saveData helper'ını kullan (bu helper ID'yi bulup güncelliyor)
-            // saveData helper'ını kullan
+            const updated = { 
+                ...data[idx], 
+                durum: durum, 
+                mufettis: (currentUser ? currentUser.name : "Müfettiş"), 
+                redNotu: redNotu || "" 
+            };
+            
+            // Veriyi kaydet (Yeni ID-tabanlı saveData ile)
             saveData(updated); 
             
-            // Veriyi anlık olarak güncelle ve akışı temizle
+            // UI'ı anlık olarak tazele
             this.renderStream();
             
-            // İdareci paneli açıksa cockpit'i de tazele
             const idarecPanel = document.getElementById('idarecPanel');
             if (idarecPanel && !idarecPanel.classList.contains('d-none')) {
                 IdarecManager.renderCockpit();
