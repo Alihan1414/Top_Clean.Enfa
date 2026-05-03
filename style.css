@@ -598,3 +598,16 @@ body.light-mode .badge-premium { background: rgba(16, 185, 129, 0.1) !important;
 
 .bg-emerald { background-color: #10b981 !important; }
 .shadow-success { box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2) !important; }
+
+/* MODAL FIXES */
+.modal { z-index: 10005 !important; }
+.modal-backdrop { z-index: 10004 !important; }
+.modal-content.glass-card {
+    background: rgba(15, 23, 42, 0.98) !important;
+    backdrop-filter: blur(30px);
+    border: 1px solid rgba(255,255,255,0.1) !important;
+}
+body.light-mode .modal-content.glass-card {
+    background: rgba(255, 255, 255, 0.98) !important;
+    border: 1px solid rgba(0,0,0,0.1) !important;
+}
