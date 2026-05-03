@@ -337,13 +337,20 @@ body.light-mode .aurora-container {
 body.light-mode .text-white { color: #0f172a !important; }
 body.light-mode .bg-dark { background-color: #e2e8f0 !important; color: #0f172a !important; }
 body.light-mode .bg-slate-glass {
-    background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(240,245,250,0.9)) !important;
+    background: #ffffff !important;
     border: 1px solid rgba(0,0,0,0.1) !important;
     box-shadow: 0 10px 20px rgba(0,0,0,0.05);
 }
-body.light-mode .glass-card { box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
-body.light-mode .btn-glass-emerald { background: #fff; color: #0f172a; }
-body.light-mode .form-control { background-color: #fff !important; color: #000 !important; border-color: #cbd5e1 !important; }
+body.light-mode .glass-card { box-shadow: 0 20px 40px rgba(0,0,0,0.05); color: #0f172a !important; }
+body.light-mode .btn-glass-emerald { background: #fff !important; color: #10b981 !important; border: 1px solid #bbf7d0 !important; }
+body.light-mode .btn-glass-danger { background: #fff !important; color: #ef4444 !important; border: 1px solid #fecaca !important; }
+body.light-mode .form-control, body.light-mode .form-select { 
+    background-color: #fff !important; 
+    color: #0f172a !important; 
+    border: 1px solid #cbd5e1 !important; 
+}
+body.light-mode .form-select option { background: #fff; color: #0f172a; }
+body.light-mode .badge-premium { background: rgba(16, 185, 129, 0.1) !important; color: #059669 !important; }
 
 /* --- SMOOTH PANELS --- */
 .view-panel { animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
