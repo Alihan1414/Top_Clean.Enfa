@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TopClean - Cleaning App Yönetimi</title>
+    
+   <style>
+/* --- RICH VISUALS & BANNERS --- */
+.banner-card {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--bg-dark);
+}
+
+.banner-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1));
+    opacity: 1;
+    z-index: 0;
+    transition: transform 3s ease-out;
+}
+
+.banner-card:hover::before {
+    transform: scale(1.05);
+}
+
+.banner-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.banner-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, var(--bg-dark) 0%, transparent 100%);
+    z-index: 0;
+}
+
+.avatar-glow {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--emerald-primary);
+    background-color: var(--bg-surface);
+    animation: neonPulse 3s infinite alternate;
+}
+
+/* --- TYPOGRAPHY & FX --- */
+</style>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Lucide Icons & Scripts -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+    <link rel="stylesheet" href="style.css?v=premium_final_v1">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icon-512.png">
+</head>
+<body>
+    <div class="aurora-container"></div>
+
+    <!-- TEMA DEĞİŞTİRME BUTONU -->
+    <button onclick="toggleTheme()" class="btn btn-glass-emerald rounded-circle position-fixed d-flex align-items-center justify-content-center shadow-lg" style="top: 20px; right: 20px; width: 45px; height: 45px; z-index: 9999;">
+        <i data-lucide="sun" id="themeIcon" size="20"></i>
+    </button>
+
+    <div class="app-container">
+        <header id="app-header" class="d-none">
+            <div class="header-content container d-flex justify-content-between align-items-center py-3">
+                <div class="d-flex align-items-center gap-2">
+                    <!-- GERİ TUŞU -->
+                    <button id="backBtn" onclick="handleBack()" class="btn d-flex align-items-center gap-1 rounded-3 px-3 py-2 me-1" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); font-size:0.8rem; color:#ccc;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                        <span class="d-none d-sm-inline">Geri</span>
+                    </button>
+                    <img src="assets/logo_enderun_white.png" style="width:30px; height:30px; border-radius:8px;" alt="L">
+                    <h1 class="h5 fw-bold text-gradient mb-0">TopClean</h1>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex flex-column text-end d-none d-md-flex">
+                        <span id="headerName" class="fw-bold text-white small m-0">-</span>
+                        <span class="x-small text-emerald">Aktif Oturum</span>
+                    </div>
+                    <img src="assets/logo_enderun.png" class="avatar-glow" alt="User" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                    <button id="logoutBtn" class="btn btn-sm btn-outline-light rounded-pill px-3 ms-2">Çıkış</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="mainContainer" class="container py-4">
+            
+            <!-- 1. LOGIN PANEL -->
+            <div id="loginPanel" class="view-panel active d-flex align-items-center justify-content-center w-100" style="min-height: 100vh; position: relative; overflow: hidden;">
+
+                <!-- YÜKSELEN BALONLAR -->
+                <div id="loginBubbles" class="position-absolute inset-0 w-100 h-100" style="pointer-events:none; overflow:hidden;"></div>
+
+                <!-- KARŞILAMA EKRANI -->
+                <div id="loginLanding" class="text-center z-10 position-relative" onclick="loginReveal()" style="cursor:pointer;">
+                    <div class="mb-3">
+                        <img src="icon-512.png" alt="Logo" class="shadow-success rounded-4" style="width:90px; height:90px; object-fit:cover; animation: neonPulse 3s infinite alternate;">
+                    </div>
+                    <h1 class="fw-semibold text-white mb-2" style="font-size: 3rem; letter-spacing: -0.03em;">TopClean</h1>
+                    <p class="mb-4" style="color: #34d399; font-size: 1.1rem;">sizinle ✨</p>
+                    <div style="animation: bounceDot 1.5s infinite; color: #aaa; font-size: 0.85rem;">dokun</div>
+                </div>
+
+                <!-- GİRİŞ FORMU -->
+                <div id="loginForm-wrap" class="position-absolute z-10" style="opacity:0; transform:scale(0.7); filter:blur(15px); transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.175,0.885,0.32,1.275), filter 0.5s ease; pointer-events:none; width: 100%; max-width: 400px; padding: 0 20px;">
+                    <div class="glass-card p-5 text-center shadow-lg">
+                        <h2 class="fw-bold mb-1" style="color: #34d399; font-size: 1.5rem;">Giriş Yap</h2>
+                        <p class="text-muted small mb-4">Enfa TopOne Temizlik Uygulaması</p>
+                        <form id="loginForm">
+                            <div class="mb-3 text-start">
+                                <label class="x-small text-muted mb-2 px-1 text-uppercase fw-bold">Kullanıcı Hesabı</label>
+                                <select id="userSelect" class="form-select bg-dark text-white border-secondary rounded-4 py-3" required>
+                                    <option value="" disabled selected>Kullanıcı Seçin</option>
+                                </select>
+                            </div>
+                            <div class="mb-4 text-start">
+                                <label class="x-small text-muted mb-2 px-1 text-uppercase fw-bold">Şifre</label>
+                                <input type="password" id="userPass" class="form-control bg-dark text-white border-secondary rounded-4 py-3" placeholder="••••" required>
+                            </div>
+                            <button type="submit" class="btn-login-shine w-100 py-3 fw-bold rounded-4" style="font-size:1rem;">SİSTEME GİRİŞ YAP</button>
+                        </form>
+                        <div class="mt-3">
+                            <small onclick="document.getElementById('loginLanding').style.display='flex'; document.getElementById('loginForm-wrap').style.opacity='0'; document.getElementById('loginForm-wrap').style.transform='scale(0.7)'; document.getElementById('loginForm-wrap').style.pointerEvents='none';" class="text-muted" style="cursor:pointer;">← Geri dön</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LİSTE SORUMLUSU PANELİ -->
+            <div id="listePanel" class="view-panel d-none flex-column w-100">
+                <div class="glass-card banner-card p-4 mb-4 text-center shadow-lg border-emerald">
+                    <h2 class="h3 fw-bold text-white mb-1" style="text-shadow: 0 4px 10px rgba(0,0,0,0.8);">Operasyon Merkezi</h2>
+                    <p class="text-emerald small mb-0 fw-bold letter-spacing-wide">GÖREV DAĞITIMI VE PLANLAMA</p>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        <div class="glass-card p-3 text-center">
+                            <div class="x-small text-muted mb-1 text-uppercase fw-bold">TALEBE SAYISI</div>
+                            <div id="statsTalebeCount" class="h4 fw-bold text-white mb-0">0</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="glass-card p-3 text-center">
+                            <div class="x-small text-muted mb-1 text-uppercase fw-bold">TOPLAM BÖLÜM</div>
+                            <div class="h4 fw-bold text-emerald mb-0">120</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-3 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="text-white small fw-bold mb-0 text-uppercase">TALEBE YÖNETİMİ</h6>
+                        <button onclick="ListeManager.yeniTalebe()" class="btn btn-sm btn-emerald py-1 px-3 rounded-pill">+ Yeni Talebe</button>
+                    </div>
+                    <div id="talebeListesi" class="d-flex flex-column gap-2" style="max-height:200px; overflow-y:auto;"></div>
+                </div>
+
+                <div class="glass-card p-3 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="text-white small fw-bold mb-0 text-uppercase">AKILLI DAĞITIM MOTORU</h6>
+                        <button onclick="ListeManager.akilliDagit()" class="btn btn-sm btn-emerald py-1 px-3 rounded-pill">OTOMATİK DAĞIT</button>
+                    </div>
+                    <div id="dagitimListesi" class="d-flex flex-column gap-2" style="max-height:350px; overflow-y:auto;">
+                        <div class="text-center py-5 text-muted small">Dağıtım yapmak için butona basın</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- İDARECİ PANELİ -->
+            <div id="idarecPanel" class="view-panel d-none flex-column w-100">
+
+                <!-- BANNER HEADER -->
+                <div class="glass-card banner-card p-4 mb-3 text-center shadow-lg">
+                    <h2 class="h4 fw-bold text-white mb-3" style="text-shadow:0 4px 10px rgba(0,0,0,0.8);">Yönetim Konsolu</h2>
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                        <button onclick="IdarecManager.switchSubTab('denetim')" id="tab-denetim" class="tab-btn btn btn-sm btn-emerald rounded-pill px-3 py-2">🗺️ Denetim</button>
+                        <button onclick="IdarecManager.switchSubTab('onay')" id="tab-onay" class="tab-btn btn btn-sm btn-glass-emerald rounded-pill px-3 py-2">✅ Onay</button>
+                        <button onclick="IdarecManager.switchSubTab('grafik')" id="tab-grafik" class="tab-btn btn btn-sm btn-glass-emerald rounded-pill px-3 py-2">📊 Grafik</button>
+                        <button onclick="IdarecManager.switchSubTab('liderlik')" id="tab-liderlik" class="tab-btn btn btn-sm btn-glass-emerald rounded-pill px-3 py-2">🏆 Liderlik</button>
+                        <button onclick="IdarecManager.switchSubTab('ariza')" id="tab-ariza" class="tab-btn btn btn-sm btn-glass-emerald rounded-pill px-3 py-2">📝 Arıza</button>
+                        <button onclick="IdarecManager.switchSubTab('skor')" id="tab-skor" class="tab-btn btn btn-sm btn-glass-emerald rounded-pill px-3 py-2">🌡️ Skor</button>
+                    </div>
+                </div>
+
+                <!-- 1. DENETİM -->
+                <div id="subTabDenetim" class="idarec-sub-tab">
+                    <div class="glass-card p-3 mb-3">
+                        <h6 class="x-small text-emerald fw-bold mb-3 text-uppercase">BİNA TEMİZLİK ISI HARİTASI</h6>
+                        <div id="buildingHeatmap" class="row g-1 text-center"></div>
+                    </div>
+                    <div class="d-flex gap-2 mb-3 overflow-auto pb-2">
+                        <button onclick="IdarecManager.renderFloor('Bodrum Kat')" class="btn btn-glass-round">B</button>
+                        <button onclick="IdarecManager.renderFloor('Zemin Kat')" class="btn btn-glass-round">Z</button>
+                        <button onclick="IdarecManager.renderFloor('Akademik Kat')" class="btn btn-glass-round">A</button>
+                        <button onclick="IdarecManager.renderFloor('Ara Kat')" class="btn btn-glass-round">Ar</button>
+                        <button onclick="IdarecManager.renderFloor('Üst Kat')" class="btn btn-glass-round">Ü</button>
+                    </div>
+                    <div id="floorMatrix" class="row g-2 mb-4"></div>
+                </div>
+
+                <!-- 2. ONAY -->
+                <div id="subTabOnay" class="idarec-sub-tab d-none">
+                    <div class="glass-card p-3 mb-3">
+                        <h6 class="x-small text-emerald fw-bold mb-3 text-uppercase">Bekleyen Raporlar</h6>
+                        <div id="onayListesi" class="d-flex flex-column gap-3"></div>
+                    </div>
+                </div>
+
+                <!-- 3. GRAFİK -->
+                <div id="subTabGrafik" class="idarec-sub-tab d-none">
+                    <div class="glass-card p-3 mb-3">
+                        <h6 class="x-small text-emerald fw-bold mb-2 text-uppercase">Günlük Rapor Aktivitesi (Son 7 Gün)</h6>
+                        <canvas id="grafikCanvas" height="180"></canvas>
+                    </div>
+                </div>
+
+                <!-- 4. LİDERLİK -->
+                <div id="subTabLiderlik" class="idarec-sub-tab d-none">
+                    <div class="glass-card p-3 mb-3">
+                        <h6 class="x-small text-emerald fw-bold mb-3 text-uppercase">Personel Başarı Sıralaması</h6>
+                        <div id="liderlikListesi" class="d-flex flex-column gap-2"></div>
+                    </div>
+                </div>
+
+                <!-- 5. ARIZA -->
+                <div id="subTabAriza" class="idarec-sub-tab d-none">
+                    <div class="glass-card p-3 mb-3">
+                        <h6 class="x-small text-emerald fw-bold mb-3 text-uppercase">Görevli Notları / Arızalar</h6>
+                        <div id="arizaListesi" class="d-flex flex-column gap-2"></div>
+                    </div>
+                </div>
+
+                <!-- 6. SKOR -->
+                <div id="subTabSkor" class="idarec-sub-tab d-none">
+                    <div id="skorContainer" class="d-flex flex-column gap-3"></div>
+                </div>
+
+                <!-- PERSONEL (eski) -->
+                <div id="subTabPersonel" class="idarec-sub-tab d-none">
+                    <div id="userListContainer" class="d-flex flex-column gap-2"></div>
+                </div>
+            </div>
+
+            <!-- GÖREVLİ PANELİ -->
+            <div id="gorevliPanel" class="view-panel d-none flex-column w-100">
+
+                <!-- HERO KARTI -->
+                <div class="glass-card banner-card p-4 mb-4 shadow-lg">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <img src="assets/logo_enderun.png" class="avatar-glow" style="width:55px; height:55px; border-width:3px; border-radius:50%; object-fit:cover;">
+                        <div>
+                            <p class="x-small text-muted mb-0 text-uppercase fw-bold">Hoş Geldin</p>
+                            <h2 class="h5 fw-bold text-white mb-0"><span id="gorevliHocaIsim" class="text-emerald">-</span></h2>
+                        </div>
+                        <div class="ms-auto text-end">
+                            <div id="gorevliTamamSayi" class="h4 fw-bold text-white mb-0">0/0</div>
+                            <div class="x-small text-muted">Görev</div>
+                        </div>
+                    </div>
+                    <div class="mb-1 d-flex justify-content-between">
+                        <span class="x-small text-muted">Bugünkü ilerleme</span>
+                        <span id="gorevliYuzde" class="x-small text-emerald fw-bold">%0</span>
+                    </div>
+                    <div style="height:8px; background:rgba(255,255,255,0.06); border-radius:10px; overflow:hidden;">
+                        <div id="gorevliProgressBar" style="height:100%; width:0%; background:linear-gradient(90deg,#10b981,#34d399); border-radius:10px; transition:width 0.8s cubic-bezier(0.16,1,0.3,1);"></div>
+                    </div>
+                </div>
+
+                <!-- GÖREV KARTLARI -->
+                <div id="gorevliBolumListesi" class="w-100 d-flex flex-column gap-3"></div>
+            </div>
+
+            <!-- KRİTER PANELİ (Görevli Checklist) -->
+            <div id="kriterPanel" class="view-panel d-none flex-column w-100">
+                <div class="glass-card p-4 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <div id="kriterKatAd" class="x-small text-emerald fw-bold text-uppercase">KAT İSMİ</div>
+                            <h4 id="kriterBolumAd" class="h5 fw-bold text-white mb-0">BÖLÜM ADI</h4>
+                        </div>
+                        <span id="kriterSayac" class="badge badge-premium rounded-pill px-3 py-2 fs-6">0/0</span>
+                    </div>
+                    
+                    <div id="kriterListesi" class="d-flex flex-column gap-2 mb-4">
+                        <!-- Checkboxlar buraya gelecek -->
+                    </div>
+
+                    <div class="d-flex gap-2 mb-3">
+                        <button onclick="document.getElementById('gorevliFoto').click()" class="btn btn-glass-emerald flex-grow-1 py-3 rounded-4">
+                            <i data-lucide="camera" class="me-2"></i> Fotoğraf
+                        </button>
+                        <button onclick="VoiceManager.start()" class="btn btn-glass-emerald flex-grow-1 py-3 rounded-4">
+                            <i data-lucide="mic" class="me-2"></i> Sesli Not
+                        </button>
+                    </div>
+                    <input type="file" id="gorevliFoto" capture="environment" accept="image/*" class="d-none">
+                    
+                    <textarea id="gorevliNot" class="form-control bg-slate-glass text-white border-secondary mb-4 rounded-4 p-3 shadow-none" rows="3" placeholder="Vardiya notu veya sorun bildirin..."></textarea>
+                    
+                    <button onclick="KriterManager.veriyiKaydet()" class="btn btn-emerald w-100 py-3 fw-bold rounded-pill mb-3 shadow-success">RAPORU GÖNDER</button>
+                    <button onclick="_routeUser()" class="btn btn-outline-light w-100 py-2 fw-bold rounded-pill">İPTAL ET VE GERİ DÖN</button>
+                </div>
+            </div>
+
+            <!-- MÜFETTİŞ PANELİ -->
+            <div id="adminPanel" class="view-panel d-none flex-column w-100">
+                
+                <!-- BINA ONAY ÖZETİ -->
+                <div class="glass-card banner-card p-4 mb-4 text-center shadow-lg">
+                    <h2 class="h4 fw-bold text-white mb-1">Denetim Merkezi</h2>
+                    <p class="x-small text-muted mb-2">Onay bekleyen katlara tıklayın</p>
+                    <div id="mufettisBekleyenBadge" class="badge bg-warning text-dark rounded-pill px-3 py-2" style="font-size:0.85rem;">Yükleniyor...</div>
+                </div>
+
+                <div id="mufettisKatSecim">
+                    <div id="mufettisKatButonlari" class="w-100 d-flex flex-column gap-3"></div>
+                </div>
+                <div id="mufettisOdakModu" class="d-none">
+                    <button onclick="MufettisFocus.geriDon()" class="btn d-flex align-items-center gap-2 mb-3 px-3 py-2 rounded-3" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); color:#ccc; font-size:0.85rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+                        Kat Seçimine Dön
+                    </button>
+
+                    <!-- ODA ADI + İLERLEME -->
+                    <div class="glass-card p-4 mb-3 text-center">
+                        <div class="x-small text-emerald fw-bold mb-1 text-uppercase" id="focusKatLabel">Denetim</div>
+                        <h3 id="focusOdaAd" class="h4 fw-bold text-white mb-3">-</h3>
+                        <div style="height:6px; background:rgba(255,255,255,0.06); border-radius:10px; overflow:hidden;">
+                            <div id="focusIlerlemeBar" class="progress-bar bg-emerald" style="height:100%; width:0%; transition:width 0.6s;"></div>
+                        </div>
+                    </div>
+
+                    <!-- 3 DETAY BUTONU (KARAR VERMEDEN ÖNCE BAK) -->
+                    <p class="x-small text-muted text-center mb-2" style="letter-spacing:0.05em;">KARAR VERMEDEN ÖNCE İNCELE</p>
+                    <div id="mufettisDetaylar" class="mb-4"></div>
+
+                    <!-- KARAR BUTONLARI -->
+                    <div class="d-flex gap-3">
+                        <button onclick="MufettisFocus.karar('onaylandi')" class="btn btn-success flex-grow-1 py-4 rounded-4 shadow-success fw-bold">✅ ONAYLA</button>
+                        <button onclick="MufettisFocus.karar('reddedildi')" class="btn btn-danger flex-grow-1 py-4 rounded-4 fw-bold">❌ REDDET</button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- FLOATING CHAT BUTTON (SAHA SOHBETİ) -->
+        <button onclick="ChatManager.toggle()" title="Saha Sohbeti"
+            style="position:fixed; bottom:110px; left:16px; z-index:2500;
+                   background: linear-gradient(135deg, #10b981, #059669);
+                   border: none; border-radius: 50px;
+                   width: 72px; height: 52px;
+                   display: flex; align-items: center; justify-content: center;
+                   box-shadow: 0 0 30px rgba(16,185,129,0.7), 0 0 60px rgba(16,185,129,0.3), inset 0 1px 1px rgba(255,255,255,0.3);
+                   animation: neonPulse 2.5s infinite alternate;
+                   cursor: pointer; transition: transform 0.2s ease;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <span style="position:absolute; top:5px; right:5px; width:9px; height:9px; background:#ef4444; border-radius:50%; border:2px solid #050505;"></span>
+        </button>
+
+        <!-- CHAT OVERLAY (SAHA SOHBETİ PANELİ) -->
+        <div id="chatOverlay" class="d-flex flex-column position-fixed h-100 shadow-lg" style="top:0; left:-100%; width: 100%; max-width: 380px; z-index: 3000; transition: left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-right: 1px solid rgba(16, 185, 129, 0.15); backdrop-filter: blur(50px) saturate(200%); background: linear-gradient(180deg, rgba(5,5,10,0.95) 0%, rgba(10,15,20,0.98) 100%);">
+            
+            <!-- BAŞLIK -->
+            <div class="p-4 d-flex justify-content-between align-items-center" style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                <div class="d-flex align-items-center gap-3">
+                    <img src="assets/logo_enderun_white.png" style="width:36px; height:36px; border-radius:8px;" alt="Logo">
+                    <div>
+                        <h4 class="h6 fw-bold text-white mb-0">Saha Sohbeti</h4>
+                        <span style="font-size:0.65rem; color:#10b981;">CANLI • TÜM PERSONEL</span>
+                    </div>
+                </div>
+                <button onclick="ChatManager.toggle()" class="btn d-flex align-items-center justify-content-center rounded-circle border-0" style="width:36px; height:36px; background:rgba(255,255,255,0.06);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            
+            <!-- KRİTİK NOT -->
+            <div class="px-4 py-3" style="background: rgba(220,38,38,0.08); border-bottom: 1px solid rgba(220,38,38,0.2);">
+                <div class="d-flex align-items-start gap-2">
+                    <span style="font-size:1rem;">📌</span>
+                    <div>
+                        <div class="badge bg-danger rounded-pill mb-1" style="font-size:0.6rem;">Kritik Not</div>
+                        <div id="pinnedNotes" class="text-danger fw-bold" style="font-size:0.75rem;">Bugün 2. Katın suyu 14:00'e kadar kesik olacak.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MESAJLAR + BOŞ DURUM -->
+            <div id="chatMessages" class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3" style="position:relative;">
+                <!-- Boş durum görseli -->
+                <div id="chatEmptyState" class="d-flex flex-column align-items-center justify-content-center h-100 text-center" style="opacity:0.5;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px; opacity:0.6;">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        <line x1="9" y1="10" x2="15" y2="10"/>
+                        <line x1="9" y1="14" x2="13" y2="14"/>
+                    </svg>
+                    <p class="text-white fw-bold small mb-1">Henüz mesaj yok</p>
+                    <p style="font-size:0.72rem; color:#666;">Tesis personeliyle anlık<br>haberleşmek için yaz...</p>
+                </div>
+            </div>
+            
+            <div class="p-3 border-top border-secondary border-opacity-25 bg-dark bg-opacity-50">
+                <div class="d-flex gap-2">
+                    <input type="text" id="chatInput" class="form-control bg-slate-glass text-white border-secondary rounded-pill px-3 shadow-none" placeholder="Mesajınız...">
+                    <button onclick="ChatManager.send()" class="btn btn-emerald rounded-circle d-flex align-items-center justify-content-center" style="width:50px; height:50px; flex-shrink:0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- FLOATING BOTTOM NAV -->
+        <nav class="mobile-nav d-md-none">
+            <div onclick="_routeUser()" class="nav-item active"><i data-lucide="layout-dashboard"></i><span>Panel</span></div>
+            <div onclick="ChatManager.toggle()" class="nav-item"><i data-lucide="message-square"></i><span>Saha</span></div>
+            <div onclick="InventoryManager.ac()" class="nav-item"><i data-lucide="package"></i><span>Depo</span></div>
+        </nav>
+    </div>
+
+    <script src="app.js?v=premium_final_v1"></script>
+</body>
+</html>
