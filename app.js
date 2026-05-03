@@ -219,38 +219,46 @@ const ChatManager = {
     },
     load: function() {
         if (!db) return;
-        db.ref('messages').limitToLast(20).on('value', snap => {
+        db.ref('messages').limitToLast(30).on('value', snap => {
             const container = document.getElementById('chatMessages');
             const emptyState = document.getElementById('chatEmptyState');
             if (!container) return;
-            const data = snap.val() ? Object.values(snap.val()) : [];
             
-            // Mesajları temizle ama empty state'i koru
-            const msgs = container.querySelectorAll('.chat-bubble');
-            msgs.forEach(m => m.remove());
-            
-            if (data.length === 0) {
+            // Mevcut mesajları temizle
+            const existingBubbles = container.querySelectorAll('.chat-bubble');
+            existingBubbles.forEach(b => b.remove());
+
+            const val = snap.val();
+            if (!val) {
                 if (emptyState) emptyState.style.display = 'flex';
-            } else {
-                if (emptyState) emptyState.style.display = 'none';
-                data.forEach(m => {
-                    const isMine = m.sender === currentUser?.name;
-                    const bubble = document.createElement('div');
-                    bubble.className = 'chat-bubble d-flex flex-column ' + (isMine ? 'align-items-end' : 'align-items-start');
-                    bubble.innerHTML = `
-                        <div class="x-small text-muted mb-1">${m.sender}</div>
-                        <div class="p-2 px-3 rounded-3 bg-slate-glass border border-emerald border-opacity-25 text-white small" style="max-width:80%;">${m.text}</div>
-                    `;
-                    container.appendChild(bubble);
-                });
+                return;
             }
+            if (emptyState) emptyState.style.display = 'none';
+
+            Object.values(val).forEach(m => {
+                const isMine = m.sender === currentUser?.name;
+                const time = m.timestamp ? new Date(m.timestamp).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : "";
+                
+                const bubble = document.createElement('div');
+                bubble.className = `chat-bubble ${isMine ? 'mine' : 'other'}`;
+                bubble.innerHTML = `
+                    ${!isMine ? `<div class="chat-sender">${m.sender}</div>` : ''}
+                    <div class="chat-text">${m.text}</div>
+                    <div class="chat-time">${time}</div>
+                `;
+                container.appendChild(bubble);
+            });
             container.scrollTop = container.scrollHeight;
         });
     },
     send: function() {
         const input = document.getElementById('chatInput');
         if (!input || !input.value.trim() || !currentUser) return;
-        db.ref('messages').push({ sender: currentUser.name, text: input.value, timestamp: new Date().toISOString() });
+        db.ref('messages').push({ 
+            sender: currentUser.name, 
+            text: input.value, 
+            timestamp: new Date().toISOString() 
+        });
         input.value = "";
     }
 };
@@ -684,64 +692,253 @@ const IdarecManager = {
     }
 };
 
-// --- LİSTE SORUMLUSU (OPERASYON) SİSTEMİ ---
+// --- LİSTE SORUMLUSU (OPERASYON MERKEZİ v2) ---
 const ListeManager = {
+    currentStep: 1,
+    assignments: [],
+
     load: function() {
-        console.log("📊 [Liste Panel] Loading...");
-        this.renderTalebeList();
+        console.log("📊 [Liste Panel] Loading v2...");
+        this.restoreInputs();
+        this.updateHocaSelect();
+        this.showStep(1);
     },
-    renderTalebeList: function() {
-        const container = document.getElementById('talebeListesi');
+
+    showStep: function(step) {
+        this.currentStep = step;
+        document.getElementById('listeStep1').classList.toggle('d-none', step !== 1);
+        document.getElementById('listeStep2').classList.toggle('d-none', step !== 2);
+    },
+
+    restoreInputs: function() {
+        const saved = JSON.parse(localStorage.getItem('topclean_raw_lists') || '{}');
+        if (saved.astim) document.getElementById('listAstim').value = saved.astim;
+        if (saved.alerjik) document.getElementById('listAlerjik').value = saved.alerjik;
+        if (saved.saglikli) document.getElementById('listSaglikli').value = saved.saglikli;
+        if (saved.diger) document.getElementById('listDiger').value = saved.diger;
+        
+        this.assignments = JSON.parse(localStorage.getItem('topclean_assignments') || '[]');
+        if (this.assignments.length > 0) {
+            this.renderFinalList();
+            this.showStep(2);
+        }
+    },
+
+    saveInputs: function() {
+        const lists = {
+            astim: document.getElementById('listAstim').value,
+            alerjik: document.getElementById('listAlerjik').value,
+            saglikli: document.getElementById('listSaglikli').value,
+            diger: document.getElementById('listDiger').value
+        };
+        localStorage.setItem('topclean_raw_lists', JSON.stringify(lists));
+    },
+
+    updateHocaSelect: function() {
+        const select = document.getElementById('pdfGorevliHoca');
+        if (!select) return;
+        const hocalar = usersData.filter(u => u.rol === 'gorevli');
+        select.innerHTML = '<option value="">Görevli Hoca Seçin...</option>' + 
+            hocalar.map(h => `<option value="${h.name}">${h.name}</option>`).join('');
+    },
+
+    parseList: function(text) {
+        return text.split(/[,\n]/).map(s => s.trim()).filter(s => s.length > 0);
+    },
+
+    akilliDagit: function() {
+        this.saveInputs();
+        const astimList = this.parseList(document.getElementById('listAstim').value);
+        const alerjikList = this.parseList(document.getElementById('listAlerjik').value);
+        const saglikliList = this.parseList(document.getElementById('listSaglikli').value);
+        const digerList = this.parseList(document.getElementById('listDiger').value);
+
+        const totalTalebeCount = astimList.length + alerjikList.length + saglikliList.length + digerList.length;
+        if (totalTalebeCount === 0) return Swal.fire("Hata", "Lütfen en az bir talebe ismi girin.", "error");
+
+        // Bütün odaları topla
+        let allRooms = [];
+        Object.keys(katlar).forEach(k => {
+            Object.keys(katlar[k]).forEach(b => {
+                allRooms.push({ kat: k, bolum: b, priority: this.getRoomPriority(b) });
+            });
+        });
+
+        // Alanları zorluk derecesine göre sırala (Örn: WC en zor, Kütüphane en kolay)
+        // Kolay alanlar (1) -> Zor alanlar (5)
+        allRooms.sort((a, b) => a.priority - b.priority);
+
+        // Talebeleri hassasiyete göre sırala
+        // Hassas (Astım/Alerjik) -> Sağlıklı
+        const sensitive = [...astimList, ...alerjikList];
+        const normal = [...digerList, ...saglikliList];
+        
+        let pool = [...sensitive, ...normal];
+        this.assignments = [];
+
+        allRooms.forEach(room => {
+            const isWc = room.bolum.toLowerCase().includes("wc");
+            const capacity = isWc ? 2 : 1;
+            let assigned = [];
+
+            for (let i = 0; i < capacity; i++) {
+                if (pool.length > 0) {
+                    // Eğer oda kolaysa (Kütüphane vs) ve havuzda hassas talebe varsa onu al
+                    if (room.priority <= 2 && sensitive.length > 0) {
+                        const sIdx = pool.indexOf(sensitive[0]);
+                        if (sIdx !== -1) {
+                            assigned.push(pool.splice(sIdx, 1)[0]);
+                            sensitive.shift();
+                        } else {
+                            assigned.push(pool.shift());
+                        }
+                    } else {
+                        // Zor oda ise ve havuzda sağlıklı varsa sona saklanan sağlıklıyı al (havuzun sonu sağlıklı)
+                        assigned.push(pool.pop());
+                    }
+                }
+            }
+            this.assignments.push({ ...room, students: assigned });
+        });
+
+        localStorage.setItem('topclean_assignments', JSON.stringify(this.assignments));
+        this.renderFinalList();
+        this.showStep(2);
+        Swal.fire("Başarılı", "Akıllı hafıza devreye girdi ve dağıtım yapıldı.", "success");
+    },
+
+    getRoomPriority: function(name) {
+        const n = name.toLowerCase();
+        if (n.includes("wc") || n.includes("tuvalet")) return 5;
+        if (n.includes("merdiven") || n.includes("koridor")) return 4;
+        if (n.includes("yatakhane") || n.includes("teras")) return 3;
+        if (n.includes("etüt") || n.includes("lab") || n.includes("kantin")) return 2;
+        return 1; // Mescit, Kütüphane, Hoca Odası
+    },
+
+    renderFinalList: function() {
+        const container = document.getElementById('finalDagitimListesi');
         if (!container) return;
-        container.innerHTML = talebeData.map((t, idx) => `
-            <div class="glass-card p-2 px-3 d-flex justify-content-between align-items-center mb-2">
-                <div class="small fw-bold text-white">${t.name}</div>
-                <div class="badge ${t.saglik === 'Alerjik Astım' ? 'bg-danger' : 'bg-emerald-glow'} x-small">${t.saglik}</div>
-                <button onclick="ListeManager.talebeSil(${idx})" class="btn btn-sm text-danger border-0 p-0">X</button>
+        container.innerHTML = this.assignments.map(a => `
+            <div class="glass-card bg-slate-glass p-3 d-flex justify-content-between align-items-center">
+                <div style="font-size:0.75rem">
+                    <span class="text-muted fw-bold">${a.kat}</span><br>
+                    <b class="text-white">${a.bolum}</b>
+                </div>
+                <div class="text-end">
+                    ${a.students.length > 0 ? 
+                        `<span class="badge badge-premium small">${a.students.join(", ")}</span>` : 
+                        `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 small">BOŞ</span>`}
+                </div>
             </div>
         `).join('');
     },
-    yeniTalebe: function() {
+
+    yeniTalebeEkleModali: function() {
         Swal.fire({
-            title: 'Yeni Talebe',
-            html: `<input type="text" id="tName" class="swal2-input" placeholder="İsim Soyisim">
-                   <select id="tSaglik" class="swal2-select w-100"><option value="Sağlıklı">Sağlıklı</option><option value="Alerjik Astım">Alerjik Astım</option></select>`,
-            confirmButtonText: 'EKLE'
+            title: 'Yeni Talebe Ekle',
+            html: `
+                <input type="text" id="newTName" class="swal2-input" placeholder="İsim Soyisim">
+                <select id="newTSaglik" class="swal2-select w-100">
+                    <option value="saglikli">Sağlıklı</option>
+                    <option value="astim">Astım Hastası</option>
+                    <option value="alerjik">Alerjik</option>
+                </select>
+            `,
+            confirmButtonText: 'UYGUN YERE YERLEŞTİR',
+            showCancelButton: true
         }).then(r => {
             if (r.isConfirmed) {
-                talebeData.push({ name: document.getElementById('tName').value, saglik: document.getElementById('tSaglik').value });
-                localStorage.setItem('topclean_talebe', JSON.stringify(talebeData));
-                this.renderTalebeList();
+                const name = document.getElementById('newTName').value;
+                const type = document.getElementById('newTSaglik').value;
+                if (!name) return;
+                this.addStudentToEmptySpot(name, type);
             }
         });
     },
-    talebeSil: function(idx) {
-        talebeData.splice(idx, 1);
-        localStorage.setItem('topclean_talebe', JSON.stringify(talebeData));
-        this.renderTalebeList();
-    },
-    akilliDagit: function() {
-        const container = document.getElementById('dagitimListesi');
-        if (!container) return;
-        
-        let allRooms = [];
-        Object.keys(katlar).forEach(k => Object.keys(katlar[k]).forEach(b => allRooms.push({ kat: k, bolum: b })));
 
-        let available = [...talebeData];
-        container.innerHTML = allRooms.map(room => {
-            const isWc = room.bolum.toLowerCase().includes("wc");
-            const count = isWc ? 2 : 1;
-            let assigned = [];
-            for (let i = 0; i < count; i++) { if (available.length > 0) assigned.push(available.shift().name); }
-            
-            const isShort = assigned.length < count;
-            return `
-                <div class="glass-card bg-slate-glass p-3 mb-2 d-flex justify-content-between align-items-center">
-                    <div style="font-size:0.75rem"><span class="text-muted fw-bold">${room.kat}</span><br><b class="text-white">${room.bolum}</b></div>
-                    <div class="text-end">${isShort ? `<span class="badge bg-danger bg-opacity-25 border border-danger text-danger x-small">YETERSİZ (${assigned.length}/${count})</span>` : `<span class="badge badge-premium x-small">${assigned.join(", ")}</span>`}</div>
-                </div>`;
-        }).join('');
-        Swal.fire("Tamamlandı", "Akıllı dağıtım yapıldı.", "success");
+    addStudentToEmptySpot: function(name, type) {
+        // En uygun boş yeri bul (boş kapasiteye göre)
+        let found = false;
+        // Eğer astım/alerjik ise kolay odalardan boşluk ara
+        const priorityLimit = (type === 'astim' || type === 'alerjik') ? 2 : 10;
+        
+        for (let a of this.assignments) {
+            const isWc = a.bolum.toLowerCase().includes("wc");
+            const capacity = isWc ? 2 : 1;
+            if (a.students.length < capacity && a.priority <= priorityLimit) {
+                a.students.push(name);
+                found = true;
+                break;
+            }
+        }
+        
+        // Eğer kısıtlı alanda bulamadıysa herhangi bir boşluğa koy
+        if (!found) {
+            for (let a of this.assignments) {
+                const isWc = a.bolum.toLowerCase().includes("wc");
+                const capacity = isWc ? 2 : 1;
+                if (a.students.length < capacity) {
+                    a.students.push(name);
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if (found) {
+            localStorage.setItem('topclean_assignments', JSON.stringify(this.assignments));
+            this.renderFinalList();
+            Swal.fire("Eklendi", `${name} uygun boş bir bölgeye atandı.`, "success");
+        } else {
+            Swal.fire("Üzgünüm", "Tüm kontenjanlar dolu!", "warning");
+        }
+    },
+
+    pdfUret: function() {
+        const hoca = document.getElementById('pdfGorevliHoca').value;
+        const baskan = document.getElementById('pdfKatBaskani').value;
+        if (!hoca) return Swal.fire("Eksik Bilgi", "Lütfen görevli hoca seçin.", "warning");
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // PDF Başlık
+        doc.setFontSize(22);
+        doc.setTextColor(16, 185, 129); // Emerald
+        doc.text("TOPCLEAN TEMİZLİK ÇİZELGESİ", 105, 20, { align: "center" });
+        
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        doc.text("Enfa Enderun Eğitim Kurumları - Bina Hijyen Planı", 105, 28, { align: "center" });
+
+        // Tablo Verisi
+        const body = this.assignments.map(a => [a.kat, a.bolum, a.students.join(", ") || "-"]);
+        
+        doc.autoTable({
+            startY: 40,
+            head: [['KAT', 'BÖLGE / MEAL', 'GÖREVLİ TALEBELER']],
+            body: body,
+            theme: 'striped',
+            headStyles: { fillColor: [16, 185, 129], textColor: 255, fontStyle: 'bold' },
+            styles: { fontSize: 9, cellPadding: 3 },
+            columnStyles: { 0: { cellWidth: 30 }, 1: { cellWidth: 50 }, 2: { cellWidth: 'auto' } }
+        });
+
+        const finalY = doc.lastAutoTable.finalY + 20;
+        
+        // İmza / Alt Bilgi
+        doc.setFontSize(12);
+        doc.setTextColor(0);
+        doc.text(`Kat Sorumlusu Hoca: ${hoca}`, 20, finalY);
+        doc.text(`Kat Başkanı: ${baskan || "Belirtilmedi"}`, 20, finalY + 10);
+        
+        doc.setFontSize(9);
+        doc.setTextColor(150);
+        doc.text("Temizlik imandandır. Lütfen bölgemizi temiz tutalım.", 105, 280, { align: "center" });
+
+        doc.save(`TopClean_Temizlik_Listesi_${new Date().toLocaleDateString()}.pdf`);
+        Swal.fire("PDF Hazır", "Temizlik çizelgesi indirildi. Çıktı alıp asabilirsiniz!", "success");
     }
 };
 
@@ -984,14 +1181,6 @@ function _routeUser() {
 
 // --- ARIZA MANAGER ---
 const ArizaManager = {
-    currentFilter: 'all',
-    setFilter: function(f) {
-        this.currentFilter = f;
-        document.querySelectorAll('[id^="filter-"]').forEach(btn => btn.classList.remove('active'));
-        const activeBtn = document.getElementById('filter-' + f);
-        if (activeBtn) activeBtn.classList.add('active');
-        this.renderYonetim();
-    },
     bildirimModaliAc: function() {
         const select = document.getElementById('arizaBolumSec');
         if (!select || !currentUser.kat) return;
@@ -1028,12 +1217,10 @@ const ArizaManager = {
         const container = document.getElementById('arizaYonetimListesi');
         if (!container) return;
 
-        const filtered = allArizalar.filter(a => {
-            if (this.currentFilter === 'all') return true;
-            return a.durum === this.currentFilter;
-        });
+        // SADECE ÇÖZÜLMEMİŞ ARIZALARI GÖSTER (Gitsin dedin, gidiyor!)
+        const activeArizalar = allArizalar.filter(a => a.durum !== 'cozuldu');
 
-        container.innerHTML = filtered.reverse().map(a => `
+        container.innerHTML = activeArizalar.reverse().map(a => `
             <div class="glass-card p-4 shadow-lg border-emerald border-opacity-10">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <div>
