@@ -912,91 +912,103 @@ const ListeManager = {
     },
 
     pdfUret: function() {
-        const floors = Object.keys(katlar);
-        const template = document.getElementById('pdfExportTemplate');
-        if (!template) return;
+        if (this.assignments.length === 0) {
+            return Swal.fire("Hata", "Önce 'Akıllı Hafızayı Çalıştır' butonuna basarak dağıtım yapmalısınız!", "error");
+        }
 
-        // PDF İçeriğini Oluştur (HTML olarak)
-        let htmlContent = "";
+        const floors = Object.keys(katlar);
         
-        floors.forEach((floor, idx) => {
+        // PDF için geçici bir konteyner oluştur (DOM'da olması html2canvas için daha güvenli)
+        const container = document.createElement('div');
+        container.style.position = 'fixed';
+        container.style.left = '-9999px';
+        container.style.top = '0';
+        container.style.width = '800px';
+        container.style.background = 'white';
+        document.body.appendChild(container);
+
+        let htmlContent = "";
+        floors.forEach((floor) => {
             const leader = this.floorLeaders[floor] || { hoca: 'Belirtilmedi', baskan: 'Belirtilmedi' };
             const floorData = this.assignments.filter(a => a.kat === floor);
             
             htmlContent += `
-                <div class="pdf-page" style="padding: 40px; min-height: 1100px; page-break-after: always; background: white;">
+                <div style="padding: 40px; background: white; color: #333; font-family: 'Inter', sans-serif; page-break-after: always; min-height: 1050px; position: relative;">
                     <!-- Header -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #10b981; padding-bottom: 20px; margin-bottom: 30px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 5px solid #10b981; padding-bottom: 20px; margin-bottom: 30px;">
                         <div>
-                            <h1 style="margin: 0; color: #10b981; font-size: 28px; font-weight: 800; letter-spacing: -1px;">TOPCLEAN</h1>
-                            <p style="margin: 0; color: #666; font-size: 12px; font-weight: 600; text-transform: uppercase;">Bina Hijyen ve Temizlik Planı</p>
+                            <h1 style="margin: 0; color: #10b981; font-size: 32px; font-weight: 800; letter-spacing: -1.5px;">TOPCLEAN</h1>
+                            <p style="margin: 0; color: #666; font-size: 13px; font-weight: 600; text-transform: uppercase;">Bina Hijyen ve Temizlik Planı</p>
                         </div>
                         <div style="text-align: right;">
-                            <div style="font-size: 18px; font-weight: 700; color: #333;">${floor.toUpperCase()}</div>
-                            <div style="font-size: 11px; color: #888;">${new Date().toLocaleDateString('tr-TR')}</div>
+                            <div style="font-size: 20px; font-weight: 800; color: #111;">${floor.toUpperCase()}</div>
+                            <div style="font-size: 12px; color: #999; margin-top: 4px;">Baskı: ${new Date().toLocaleDateString('tr-TR')}</div>
                         </div>
                     </div>
 
                     <!-- Sorumlular -->
-                    <div style="display: flex; gap: 20px; margin-bottom: 30px;">
-                        <div style="flex: 1; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px; border-radius: 12px;">
-                            <div style="font-size: 10px; color: #15803d; font-weight: 800; text-transform: uppercase; margin-bottom: 5px;">Kat Sorumlusu (Hoca)</div>
-                            <div style="font-size: 16px; font-weight: 700; color: #166534;">${leader.hoca || "Belirtilmedi"}</div>
+                    <div style="display: flex; gap: 20px; margin-bottom: 35px;">
+                        <div style="flex: 1; background: #f0fdf4; border: 1.5px solid #bbf7d0; padding: 18px; border-radius: 15px;">
+                            <div style="font-size: 11px; color: #15803d; font-weight: 800; text-transform: uppercase; margin-bottom: 6px;">Kat Sorumlusu (Hoca)</div>
+                            <div style="font-size: 18px; font-weight: 700; color: #166534;">${leader.hoca || "Hoca Belirtilmedi"}</div>
                         </div>
-                        <div style="flex: 1; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px; border-radius: 12px;">
-                            <div style="font-size: 10px; color: #15803d; font-weight: 800; text-transform: uppercase; margin-bottom: 5px;">Kat Başkanı (Talebe)</div>
-                            <div style="font-size: 16px; font-weight: 700; color: #166534;">${leader.baskan || "Belirtilmedi"}</div>
+                        <div style="flex: 1; background: #f0fdf4; border: 1.5px solid #bbf7d0; padding: 18px; border-radius: 15px;">
+                            <div style="font-size: 11px; color: #15803d; font-weight: 800; text-transform: uppercase; margin-bottom: 6px;">Kat Başkanı (Talebe)</div>
+                            <div style="font-size: 18px; font-weight: 700; color: #166534;">${leader.baskan || "Başkan Belirtilmedi"}</div>
                         </div>
                     </div>
 
                     <!-- Liste Tablosu -->
-                    <table style="width: 100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                    <table style="width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid #edf2f7; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);">
                         <thead>
-                            <tr style="background: #10b981; color: white;">
-                                <th style="padding: 15px; text-align: left; font-size: 13px; font-weight: 700; width: 40%;">TEMİZLİK BÖLGESİ / MAHAL</th>
-                                <th style="padding: 15px; text-align: left; font-size: 13px; font-weight: 700;">GÖREVLİ TALEBELER</th>
+                            <tr style="background: #10b981;">
+                                <th style="padding: 18px; text-align: left; font-size: 14px; font-weight: 800; color: white; border-right: 1px solid rgba(255,255,255,0.1);">TEMİZLİK BÖLGESİ / MAHAL</th>
+                                <th style="padding: 18px; text-align: left; font-size: 14px; font-weight: 800; color: white;">GÖREVLİ ÖĞRENCİLER</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${floorData.map((a, i) => `
-                                <tr style="background: ${i % 2 === 0 ? '#ffffff' : '#f9fafb'}; border-bottom: 1px solid #edf2f7;">
-                                    <td style="padding: 15px; font-weight: 700; color: #333; font-size: 14px;">${a.bolum}</td>
-                                    <td style="padding: 15px; color: #4a5568; font-size: 14px; font-weight: 500;">${a.students.join(", ") || "-"}</td>
+                                <tr style="background: ${i % 2 === 0 ? '#ffffff' : '#f8fafc'};">
+                                    <td style="padding: 18px; font-weight: 700; color: #2d3748; font-size: 15px; border-bottom: 1px solid #edf2f7; border-right: 1px solid #edf2f7;">${a.bolum}</td>
+                                    <td style="padding: 18px; color: #4a5568; font-size: 15px; font-weight: 600; border-bottom: 1px solid #edf2f7;">${a.students.join(", ") || "-"}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
                     </table>
 
                     <!-- Footer -->
-                    <div style="position: absolute; bottom: 40px; left: 40px; right: 40px; text-align: center; border-top: 1px solid #eee; padding-top: 20px;">
-                        <p style="margin: 0; color: #10b981; font-weight: 700; font-size: 14px; font-style: italic;">"Temizlik imandandır."</p>
-                        <p style="margin: 5px 0 0; color: #999; font-size: 10px;">Lütfen bölgemizi temiz tutalım ve mülkiyeti muhafaza edelim.</p>
+                    <div style="position: absolute; bottom: 40px; left: 40px; right: 40px; text-align: center; border-top: 1px solid #edf2f7; padding-top: 25px;">
+                        <p style="margin: 0; color: #10b981; font-weight: 800; font-size: 16px; font-style: italic;">"Temizlik imandandır."</p>
+                        <p style="margin: 8px 0 0; color: #a0aec0; font-size: 11px;">Enderun Eğitim Kurumları - TopClean Otomatik Dağıtım Sistemi</p>
                     </div>
                 </div>
             `;
         });
 
-        template.innerHTML = htmlContent;
+        container.innerHTML = htmlContent;
 
-        // html2pdf Ayarları
         const opt = {
             margin: 0,
-            filename: `TopClean_Temizlik_Listesi_${new Date().toLocaleDateString('tr-TR')}.pdf`,
+            filename: `TopClean_Afiş_${new Date().toLocaleDateString('tr-TR')}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+            html2canvas: { scale: 2, useCORS: true, logging: false, letterRendering: true, windowWidth: 800 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
         Swal.fire({
-            title: 'Hazırlanıyor...',
-            text: 'PDF afişiniz profesyonel kalitede oluşturuluyor.',
+            title: 'Afiş Üretiliyor...',
+            text: 'Profesyonel şablon işleniyor, lütfen bekleyin.',
             allowOutsideClick: false,
             didOpen: () => { Swal.showLoading(); }
         });
 
-        html2pdf().set(opt).from(template).save().then(() => {
+        html2pdf().set(opt).from(container).save().then(() => {
             Swal.fire("Başarılı", "Profesyonel afişiniz indirildi!", "success");
-            template.innerHTML = ""; // Belleği temizle
+            document.body.removeChild(container);
+        }).catch(err => {
+            console.error("PDF Error:", err);
+            Swal.fire("Hata", "PDF üretilirken bir sorun oluştu.", "error");
+            document.body.removeChild(container);
         });
     }
 };
