@@ -100,6 +100,7 @@ const usersData = [
 
 let currentUser = null;
 let allReports = [];
+let allArizalar = JSON.parse(localStorage.getItem('topclean_arizalar')) || [];
 let talebeData = JSON.parse(localStorage.getItem('topclean_talebe')) || [
     { name: "Ahmet Y.", saglik: "Alerjik Astım" },
     { name: "Mehmet K.", saglik: "Sağlıklı" }
@@ -141,6 +142,15 @@ function saveData(item) {
         localStorage.setItem('topclean_reports', JSON.stringify(data));
         if (db) db.ref('reports/' + item.id).set(item);
     }
+}
+
+function saveAriza(item) {
+    if (!item.id) item.id = "ARZ-" + new Date().getTime();
+    const idx = allArizalar.findIndex(a => a.id === item.id);
+    if (idx !== -1) allArizalar[idx] = item;
+    else allArizalar.push(item);
+    localStorage.setItem('topclean_arizalar', JSON.stringify(allArizalar));
+    if (db) db.ref('arizalar/' + item.id).set(item);
 }
 
 // --- VOICE MANAGER ---
@@ -420,6 +430,25 @@ const IdarecManager = {
                 </div>
             `).join('') || '<div class="text-center py-3 text-muted small">Bugün henüz aktivite yok</div>';
         }
+    },
+
+    // --- ARIZA MANAGER (ADMIN) ---
+    renderAriza: function() {
+        const container = document.getElementById('arizaListesi');
+        if (!container) return;
+        
+        container.innerHTML = allArizalar.map(a => `
+            <div class="d-flex align-items-center gap-3 p-3 rounded-4 bg-slate-glass" style="border:1px solid rgba(255,255,255,0.05);">
+                <div style="width:10px; height:10px; border-radius:50%; background:${a.durum==='cozuldu'?'#10b981':a.durum==='surec'?'#f59e0b':'#ef4444'};"></div>
+                <div class="flex-grow-1">
+                    <div class="small fw-bold text-white">${a.bolum} <span class="x-small text-muted fw-normal">(${a.kat})</span></div>
+                    <div class="x-small text-muted">${a.detay}</div>
+                </div>
+                <div class="badge rounded-pill ${a.durum==='cozuldu'?'bg-success':a.durum==='surec'?'bg-warning text-dark':'bg-danger'}" style="font-size:0.6rem;">
+                    ${a.durum==='cozuldu'?'Çözüldü':a.durum==='surec'?'Süreçte':'Bekliyor'}
+                </div>
+            </div>
+        `).join('') || '<div class="text-center py-4 text-muted small">Henüz arıza kaydı yok.</div>';
     },
 
     // 1. DENETİM - Isı haritası
@@ -938,8 +967,87 @@ function _routeUser() {
     if (currentUser.rol === "idareci") { showPanel("idarecPanel"); IdarecManager.renderCockpit(); }
     else if (currentUser.rol === "mufettis") { showPanel("adminPanel"); MufettisFocus.renderStream(); }
     else if (currentUser.rol === "liste") { showPanel("listePanel"); ListeManager.load(); }
-    else if (currentUser.rol === "gorevli") { showPanel("gorevliPanel"); loadGorevliPanel(currentUser.kat); }
+    else if (currentUser.rol === "gorevli") { 
+        // Emra Karabalak kontrolü
+        if (currentUser.name === "Emra Karabalak") {
+            showPanel("arizaYonetimPanel");
+            ArizaManager.renderYonetim();
+        } else {
+            showPanel("gorevliPanel"); 
+            loadGorevliPanel(currentUser.kat); 
+        }
+    }
 }
+
+// --- ARIZA MANAGER ---
+const ArizaManager = {
+    bildirimModaliAc: function() {
+        const select = document.getElementById('arizaBolumSec');
+        if (!select || !currentUser.kat) return;
+        
+        const bolumler = Object.keys(katlar[currentUser.kat] || {});
+        select.innerHTML = bolumler.map(b => `<option value="${b}">${b}</option>`).join('');
+        
+        const modal = new bootstrap.Modal(document.getElementById('arizaModal'));
+        modal.show();
+    },
+    kaydet: function() {
+        const bolum = document.getElementById('arizaBolumSec').value;
+        const detay = document.getElementById('arizaDetayText').value;
+        if (!detay) return Swal.fire("Hata", "Lütfen arıza detayını yazın.", "error");
+
+        const yeniAriza = {
+            kat: currentUser.kat,
+            bolum: bolum,
+            gorevli: currentUser.name,
+            detay: detay,
+            tarih: new Date().toISOString(),
+            durum: "bekliyor"
+        };
+
+        saveAriza(yeniAriza);
+        bootstrap.Modal.getInstance(document.getElementById('arizaModal')).hide();
+        document.getElementById('arizaDetayText').value = "";
+        Swal.fire("Başarılı", "Arıza bildirimi Emra Karabalak hocaya iletildi.", "success");
+        
+        // Eğer görevli panelindeyse oradaki listeyi de tazeleyelim (opsiyonel bildirim için)
+        loadGorevliPanel(currentUser.kat);
+    },
+    renderYonetim: function() {
+        const container = document.getElementById('arizaYonetimListesi');
+        if (!container) return;
+
+        container.innerHTML = allArizalar.filter(a => a.durum !== 'cozuldu' || true).reverse().map(a => `
+            <div class="glass-card p-4 shadow-lg border-emerald border-opacity-10">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <div class="x-small text-emerald fw-bold text-uppercase" style="letter-spacing:1px;">${a.kat} / ${a.bolum}</div>
+                        <h3 class="h5 fw-bold text-white mb-0">${a.detay}</h3>
+                    </div>
+                    <div class="text-end">
+                        <div class="x-small text-white fw-bold">${a.gorevli}</div>
+                        <div class="x-small text-muted">${new Date(a.tarih).toLocaleDateString('tr-TR')}</div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <button onclick="ArizaManager.durumGuncelle('${a.id}', 'cozulemedi')" class="btn btn-sm btn-outline-danger flex-grow-1 rounded-pill ${a.durum==='cozulemedi'?'active':''}">Çözülemedi</button>
+                    <button onclick="ArizaManager.durumGuncelle('${a.id}', 'surec')" class="btn btn-sm btn-outline-warning flex-grow-1 rounded-pill ${a.durum==='surec'?'active':''}">Süreçte</button>
+                    <button onclick="ArizaManager.durumGuncelle('${a.id}', 'cozuldu')" class="btn btn-sm btn-outline-success flex-grow-1 rounded-pill ${a.durum==='cozuldu'?'active':''}">Çözüldü</button>
+                </div>
+            </div>
+        `).join('') || '<div class="text-center py-5 text-muted small">Henüz bir arıza bildirimi yok.</div>';
+    },
+    durumGuncelle: function(id, yeniDurum) {
+        const a = allArizalar.find(item => item.id === id);
+        if (a) {
+            a.durum = yeniDurum;
+            saveAriza(a);
+            this.renderYonetim();
+            // Firebase üzerinden personelin ekranına bildirim gitmesi için data güncellenmiş oldu
+        }
+    }
+};
 
 // Geri tuşu mantığı
 function handleBack() {
