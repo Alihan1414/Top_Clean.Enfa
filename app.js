@@ -984,6 +984,14 @@ function _routeUser() {
 
 // --- ARIZA MANAGER ---
 const ArizaManager = {
+    currentFilter: 'all',
+    setFilter: function(f) {
+        this.currentFilter = f;
+        document.querySelectorAll('[id^="filter-"]').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.getElementById('filter-' + f);
+        if (activeBtn) activeBtn.classList.add('active');
+        this.renderYonetim();
+    },
     bildirimModaliAc: function() {
         const select = document.getElementById('arizaBolumSec');
         if (!select || !currentUser.kat) return;
@@ -1020,7 +1028,12 @@ const ArizaManager = {
         const container = document.getElementById('arizaYonetimListesi');
         if (!container) return;
 
-        container.innerHTML = allArizalar.filter(a => a.durum !== 'cozuldu' || true).reverse().map(a => `
+        const filtered = allArizalar.filter(a => {
+            if (this.currentFilter === 'all') return true;
+            return a.durum === this.currentFilter;
+        });
+
+        container.innerHTML = filtered.reverse().map(a => `
             <div class="glass-card p-4 shadow-lg border-emerald border-opacity-10">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <div>
@@ -1072,7 +1085,33 @@ function handleBack() {
 
 function syncFromCloud() {
     if (!db) return;
-    db.ref('reports').on('value', snap => { if (snap.val()) { allReports = Object.values(snap.val()); if (currentUser) _routeUser(); } });
+    
+    // Raporları dinle
+    db.ref('reports').on('value', snap => {
+        if (snap.val()) {
+            allReports = Object.values(snap.val());
+            // Eğer idareci veya müfettiş panelindeysek paneli tazele
+            if (currentUser) {
+                if (currentUser.rol === 'idareci') IdarecManager.renderCockpit();
+                if (currentUser.rol === 'mufettis') MufettisFocus.renderStream();
+                if (currentUser.rol === 'gorevli') loadGorevliPanel(currentUser.kat);
+            }
+        }
+    });
+
+    // Arızaları dinle
+    db.ref('arizalar').on('value', snap => {
+        if (snap.val()) {
+            allArizalar = Object.values(snap.val());
+            // Arıza paneli açıksa tazele
+            const arizaPanel = document.getElementById('arizaYonetimPanel');
+            if (arizaPanel && !arizaPanel.classList.contains('d-none')) {
+                ArizaManager.renderYonetim();
+            }
+            // İdareci panelindeki arıza sekmesi için de tazeleme
+            if (currentUser && currentUser.rol === 'idareci') IdarecManager.renderAriza();
+        }
+    });
 }
 
 // --- THEME MANAGER ---
