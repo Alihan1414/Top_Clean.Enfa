@@ -1203,18 +1203,46 @@ const KriterManager = {
 };
 
 // --- UI CORE ---
-function showPanel(id) {
+// --- NAVIGATION SYSTEM ---
+let panelHistory = [];
+
+function showPanel(id, pushToHistory = true) {
     document.querySelectorAll('.view-panel').forEach(p => p.classList.add('d-none'));
     const target = document.getElementById(id);
-    if (target) target.classList.remove('d-none');
-    document.getElementById('app-header').classList.toggle('d-none', id === 'loginPanel');
+    if (target) {
+        target.classList.remove('d-none');
+        if (pushToHistory) {
+            if (panelHistory[panelHistory.length - 1] !== id) {
+                panelHistory.push(id);
+            }
+        }
+    }
+    const header = document.getElementById('app-header');
+    if (header) header.classList.toggle('d-none', id === 'loginPanel');
+    const backBtn = document.getElementById('backBtn');
+    if (backBtn) {
+        backBtn.style.display = (panelHistory.length > 1 && id !== 'loginPanel') ? 'flex' : 'none';
+    }
+}
+
+function handleBack() {
+    if (panelHistory.length > 1) {
+        panelHistory.pop();
+        const prevPanel = panelHistory[panelHistory.length - 1];
+        if (prevPanel === 'listePanel' && typeof ListeManager !== 'undefined' && ListeManager.currentStep === 2) {
+            ListeManager.showStep(1);
+            return;
+        }
+        showPanel(prevPanel, false);
+    } else {
+        _routeUser();
+    }
 }
 
 function populateUserSelect() {
     const sel = document.getElementById('userSelect');
     if (!sel) return;
     sel.innerHTML = '<option value="" disabled selected>Kullanıcı Seçin</option>' + usersData.map(u => `<option value="${u.name}">${u.name}</option>`).join('');
-    console.log("✅ User list populated.");
 }
 
 function handleLogin(e) {
@@ -1229,36 +1257,24 @@ function handleLogin(e) {
 function _routeUser() {
     if (!currentUser) { showPanel("loginPanel"); return; }
     document.getElementById("headerName").innerText = currentUser.name;
-    // Geri butonu - idareci ve liste panellerinde gizle, diğerleri göster
-    const backBtn = document.getElementById('backBtn');
-    if (backBtn) {
-        const hideBack = ['idareci', 'liste'].includes(currentUser.rol);
-        backBtn.style.display = hideBack ? 'none' : 'flex';
-    }
+    panelHistory = [];
     if (currentUser.rol === "idareci") { showPanel("idarecPanel"); IdarecManager.renderCockpit(); }
     else if (currentUser.rol === "mufettis") { showPanel("adminPanel"); MufettisFocus.renderStream(); }
     else if (currentUser.rol === "liste") { showPanel("listePanel"); ListeManager.load(); }
     else if (currentUser.rol === "gorevli") { 
         showPanel("gorevliPanel"); 
         loadGorevliPanel(currentUser.kat);
-        
-        // Emra Karabalak özel buton kontrolü
         const emraBtn = document.getElementById('emraHocaArizaBtn');
-        if (emraBtn) {
-            emraBtn.classList.toggle('d-none', currentUser.name !== "Emra Karabalak");
-        }
+        if (emraBtn) emraBtn.classList.toggle('d-none', currentUser.name !== "Emra Karabalak");
     }
 }
 
-// --- ARIZA MANAGER ---
 const ArizaManager = {
     bildirimModaliAc: function() {
         const select = document.getElementById('arizaBolumSec');
         if (!select || !currentUser.kat) return;
-        
         const bolumler = Object.keys(katlar[currentUser.kat] || {});
         select.innerHTML = bolumler.map(b => `<option value="${b}">${b}</option>`).join('');
-        
         const modal = new bootstrap.Modal(document.getElementById('arizaModal'));
         modal.show();
     },
@@ -1266,80 +1282,39 @@ const ArizaManager = {
         const bolum = document.getElementById('arizaBolumSec').value;
         const detay = document.getElementById('arizaDetayText').value;
         if (!detay) return Swal.fire("Hata", "Lütfen arıza detayını yazın.", "error");
-
-        const yeniAriza = {
-            kat: currentUser.kat,
-            bolum: bolum,
-            gorevli: currentUser.name,
-            detay: detay,
-            tarih: new Date().toISOString(),
-            durum: "bekliyor"
-        };
-
+        const yeniAriza = { kat: currentUser.kat, bolum: bolum, gorevli: currentUser.name, detay: detay, tarih: new Date().toISOString(), durum: "bekliyor" };
         saveAriza(yeniAriza);
         bootstrap.Modal.getInstance(document.getElementById('arizaModal')).hide();
         document.getElementById('arizaDetayText').value = "";
-        Swal.fire("Başarılı", "Arıza bildirimi Emra Karabalak hocaya iletildi.", "success");
-        
-        // Eğer görevli panelindeyse oradaki listeyi de tazeleyelim (opsiyonel bildirim için)
+        Swal.fire("Başarılı", "Arıza bildirimi iletildi.", "success");
         loadGorevliPanel(currentUser.kat);
     },
     renderYonetim: function() {
         const container = document.getElementById('arizaYonetimListesi');
         if (!container) return;
-
-        // SADECE ÇÖZÜLMEMİŞ ARIZALARI GÖSTER (Gitsin dedin, gidiyor!)
         const activeArizalar = allArizalar.filter(a => a.durum !== 'cozuldu');
-
         container.innerHTML = activeArizalar.reverse().map(a => `
-            <div class="glass-card p-4 shadow-lg border-emerald border-opacity-10">
+            <div class="glass-card p-4 shadow-lg border-emerald border-opacity-10 mb-3">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <div>
-                        <div class="x-small text-emerald fw-bold text-uppercase" style="letter-spacing:1px;">${a.kat} / ${a.bolum}</div>
+                        <div class="x-small text-emerald fw-bold text-uppercase">${a.kat} / ${a.bolum}</div>
                         <h3 class="h5 fw-bold text-white mb-0">${a.detay}</h3>
                     </div>
-                    <div class="text-end">
-                        <div class="x-small text-white fw-bold">${a.gorevli}</div>
-                        <div class="x-small text-muted">${new Date(a.tarih).toLocaleDateString('tr-TR')}</div>
-                    </div>
+                    <div class="x-small text-muted">${new Date(a.tarih).toLocaleDateString('tr-TR')}</div>
                 </div>
-
                 <div class="d-flex flex-wrap gap-2">
-                    <button onclick="ArizaManager.durumGuncelle('${a.id}', 'cozulemedi')" class="btn btn-sm btn-outline-danger flex-grow-1 rounded-pill ${a.durum==='cozulemedi'?'active':''}">Çözülemedi</button>
+                    <button onclick="ArizaManager.durumGuncelle('${a.id}', 'cozulemedi')" class="btn btn-sm btn-outline-danger flex-grow-1 rounded-pill ${a.durum==='cozulemedi'?'active':''}">Bekliyor</button>
                     <button onclick="ArizaManager.durumGuncelle('${a.id}', 'surec')" class="btn btn-sm btn-outline-warning flex-grow-1 rounded-pill ${a.durum==='surec'?'active':''}">Süreçte</button>
-                    <button onclick="ArizaManager.durumGuncelle('${a.id}', 'cozuldu')" class="btn btn-sm btn-outline-success flex-grow-1 rounded-pill ${a.durum==='cozuldu'?'active':''}">Çözüldü</button>
+                    <button onclick="ArizaManager.durumGuncelle('${a.id}', 'cozuldu')" class="btn btn-sm btn-outline-success flex-grow-1 rounded-pill">Çözüldü</button>
                 </div>
             </div>
-        `).join('') || '<div class="text-center py-5 text-muted small">Henüz bir arıza bildirimi yok.</div>';
+        `).join('') || '<div class="text-center py-5 text-muted small">Arıza bildirimi yok.</div>';
     },
     durumGuncelle: function(id, yeniDurum) {
         const a = allArizalar.find(item => item.id === id);
-        if (a) {
-            a.durum = yeniDurum;
-            saveAriza(a);
-            this.renderYonetim();
-            // Firebase üzerinden personelin ekranına bildirim gitmesi için data güncellenmiş oldu
-        }
+        if (a) { a.durum = yeniDurum; saveAriza(a); this.renderYonetim(); }
     }
 };
-
-// Geri tuşu mantığı
-function handleBack() {
-    if (!currentUser) return;
-    const activePanel = document.querySelector('.view-panel:not(.d-none)');
-    const panelId = activePanel ? activePanel.id : '';
-    
-    if (panelId === 'kriterPanel') {
-        // Görevli checklist'ten görev listesine dön
-        showPanel('gorevliPanel');
-        loadGorevliPanel(currentUser.kat);
-    } else if (panelId === 'qrPanel') {
-        _routeUser();
-    } else {
-        // Diğer panellerden de ana route'a dön
-        _routeUser();
-    }
-}
 
 function syncFromCloud() {
     if (!db) return;
