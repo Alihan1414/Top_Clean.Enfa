@@ -196,108 +196,143 @@
                 </div>
             </div>
 
-            <!-- İDARECİ PANELİ -->
+            <!-- İDARECİ PANELİ (COCKPIT) -->
             <div id="idarecPanel" class="view-panel d-none flex-column w-100">
 
-                <!-- BANNER HEADER -->
-                <div class="glass-card banner-card p-4 mb-3 text-center shadow-lg">
-                    <h2 class="h4 fw-bold text-white mb-3" style="text-shadow:0 4px 10px rgba(0,0,0,0.8);">Yönetim Konsolu</h2>
-                    <div class="d-flex flex-wrap justify-content-center gap-2">
-                        <button onclick="IdarecManager.switchSubTab('denetim')" id="tab-denetim" class="tab-btn btn btn-sm btn-emerald rounded-pill px-3 py-2">🗺️ Denetim</button>
-                        <button onclick="IdarecManager.switchSubTab('onay')" id="tab-onay" class="tab-btn btn btn-sm btn-glass-emerald rounded-pill px-3 py-2">✅ Onay</button>
-                        <button onclick="IdarecManager.switchSubTab('grafik')" id="tab-grafik" class="tab-btn btn btn-sm btn-glass-emerald rounded-pill px-3 py-2">📊 Grafik</button>
-                        <button onclick="IdarecManager.switchSubTab('liderlik')" id="tab-liderlik" class="tab-btn btn btn-sm btn-glass-emerald rounded-pill px-3 py-2">🏆 Liderlik</button>
-                        <button onclick="IdarecManager.switchSubTab('ariza')" id="tab-ariza" class="tab-btn btn btn-sm btn-glass-emerald rounded-pill px-3 py-2">📝 Arıza</button>
-                        <button onclick="IdarecManager.switchSubTab('skor')" id="tab-skor" class="tab-btn btn btn-sm btn-glass-emerald rounded-pill px-3 py-2">🌡️ Skor</button>
+                <!-- 1. NABIZ & GENEL DURUM -->
+                <div class="glass-card p-4 mb-4 text-center">
+                    <div class="pulse-circle-container">
+                        <svg width="180" height="180" viewBox="0 0 180 180" style="transform: rotate(-90deg);">
+                            <circle cx="90" cy="90" r="80" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="12"></circle>
+                            <circle id="pulseProgressCircle" cx="90" cy="90" r="80" fill="none" stroke="#10b981" stroke-width="12" stroke-dasharray="502.4" stroke-dashoffset="502.4" style="transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);"></circle>
+                        </svg>
+                        <div class="pulse-label">
+                            <div id="pulseText" class="h1 fw-900 text-white mb-0" style="font-size:3rem;">0%</div>
+                            <div class="x-small text-emerald fw-bold" style="letter-spacing:2px;">BİNA NABZI</div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-center gap-4 mt-2">
+                        <div class="text-center">
+                            <div class="h5 fw-bold text-white mb-0" id="cockpit-stat-active">-</div>
+                            <div class="x-small text-muted">Aktif Personel</div>
+                        </div>
+                        <div class="text-center border-start border-secondary border-opacity-25 ps-4">
+                            <div class="h5 fw-bold text-white mb-0" id="cockpit-stat-alerts">0</div>
+                            <div class="x-small text-muted">Kritik Bölge</div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 1. DENETİM -->
-                <div id="subTabDenetim" class="idarec-sub-tab">
-                    <div class="glass-card p-3 mb-3">
-                        <h6 class="x-small text-emerald fw-bold mb-3 text-uppercase">BİNA TEMİZLİK ISI HARİTASI</h6>
-                        <div id="buildingHeatmap" class="row g-1 text-center"></div>
+                <!-- 2. BİNA RÖNTGENİ (MATRIX) -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase" style="letter-spacing:1.5px;">Bina Sağlık Matrisi</h6>
+                        <span class="x-small text-muted">Canlı Veri</span>
                     </div>
-                    <div class="d-flex gap-2 mb-3 overflow-auto pb-2">
-                        <button onclick="IdarecManager.renderFloor('Bodrum Kat')" class="btn btn-glass-round">B</button>
-                        <button onclick="IdarecManager.renderFloor('Zemin Kat')" class="btn btn-glass-round">Z</button>
-                        <button onclick="IdarecManager.renderFloor('Akademik Kat')" class="btn btn-glass-round">A</button>
-                        <button onclick="IdarecManager.renderFloor('Ara Kat')" class="btn btn-glass-round">Ar</button>
-                        <button onclick="IdarecManager.renderFloor('Üst Kat')" class="btn btn-glass-round">Ü</button>
-                    </div>
-                    <div id="floorMatrix" class="row g-2 mb-4"></div>
-                </div>
-
-                <!-- 2. ONAY -->
-                <div id="subTabOnay" class="idarec-sub-tab d-none">
-                    <div class="glass-card p-3 mb-3">
-                        <h6 class="x-small text-emerald fw-bold mb-3 text-uppercase">Bekleyen Raporlar</h6>
-                        <div id="onayListesi" class="d-flex flex-column gap-3"></div>
+                    <div id="cockpitMatrix" class="cockpit-grid">
+                        <!-- Katlar ve Oda Pikselleri Buraya Gelecek -->
                     </div>
                 </div>
 
-                <!-- 3. GRAFİK -->
-                <div id="subTabGrafik" class="idarec-sub-tab d-none">
-                    <div class="glass-card p-3 mb-3">
-                        <h6 class="x-small text-emerald fw-bold mb-2 text-uppercase">Günlük Rapor Aktivitesi (Son 7 Gün)</h6>
-                        <canvas id="grafikCanvas" height="180"></canvas>
+                <!-- 3. CANLI AKIŞ (FEED) -->
+                <div class="glass-card p-3 mb-4 bg-slate-glass">
+                    <h6 class="x-small text-muted fw-bold mb-3 text-uppercase">Son Aktiviteler</h6>
+                    <div id="cockpitFeed" class="d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;">
+                        <div class="text-center py-4 text-muted small">Veri senkronize ediliyor...</div>
                     </div>
                 </div>
 
-                <!-- 4. LİDERLİK -->
-                <div id="subTabLiderlik" class="idarec-sub-tab d-none">
-                    <div class="glass-card p-3 mb-3">
-                        <h6 class="x-small text-emerald fw-bold mb-3 text-uppercase">Personel Başarı Sıralaması</h6>
-                        <div id="liderlikListesi" class="d-flex flex-column gap-2"></div>
-                    </div>
-                </div>
-
-                <!-- 5. ARIZA -->
-                <div id="subTabAriza" class="idarec-sub-tab d-none">
-                    <div class="glass-card p-3 mb-3">
-                        <h6 class="x-small text-emerald fw-bold mb-3 text-uppercase">Görevli Notları / Arızalar</h6>
-                        <div id="arizaListesi" class="d-flex flex-column gap-2"></div>
-                    </div>
-                </div>
-
-                <!-- 6. SKOR -->
-                <div id="subTabSkor" class="idarec-sub-tab d-none">
-                    <div id="skorContainer" class="d-flex flex-column gap-3"></div>
-                </div>
-
-                <!-- PERSONEL (eski) -->
-                <div id="subTabPersonel" class="idarec-sub-tab d-none">
-                    <div id="userListContainer" class="d-flex flex-column gap-2"></div>
+                <!-- ESKİ FONKSİYONLARA ERİŞİM (Gerekirse) -->
+                <div class="d-flex gap-2 overflow-auto pb-2">
+                    <button onclick="IdarecManager.switchSubTab('grafik')" class="btn btn-glass-emerald btn-sm rounded-pill px-3">📊 Analitik</button>
+                    <button onclick="IdarecManager.switchSubTab('liderlik')" class="btn btn-glass-emerald btn-sm rounded-pill px-3">🏆 Liderlik</button>
+                    <button onclick="IdarecManager.switchSubTab('ariza')" class="btn btn-glass-emerald btn-sm rounded-pill px-3">📝 Arızalar</button>
+                    <button onclick="IdarecManager.switchSubTab('personel')" class="btn btn-glass-emerald btn-sm rounded-pill px-3">👥 Personel</button>
                 </div>
             </div>
 
-            <!-- GÖREVLİ PANELİ -->
+            <!-- ANALİTİK (SUB-TABS) -->
+            <div id="subTabGrafik" class="idarec-sub-tab d-none mt-4">
+                 <div class="glass-card p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase">Rapor Aktivitesi</h6>
+                        <button onclick="showPanel('idarecPanel')" class="btn btn-sm text-muted">Kapat</button>
+                    </div>
+                    <canvas id="grafikCanvas" height="180"></canvas>
+                </div>
+            </div>
+            <div id="subTabLiderlik" class="idarec-sub-tab d-none mt-4">
+                 <div class="glass-card p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase">Liderlik Tablosu</h6>
+                        <button onclick="showPanel('idarecPanel')" class="btn btn-sm text-muted">Kapat</button>
+                    </div>
+                    <div id="liderlikListesi" class="d-flex flex-column gap-2"></div>
+                </div>
+            </div>
+            <div id="subTabAriza" class="idarec-sub-tab d-none mt-4">
+                 <div class="glass-card p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase">Arıza Kayıtları</h6>
+                        <button onclick="showPanel('idarecPanel')" class="btn btn-sm text-muted">Kapat</button>
+                    </div>
+                    <div id="arizaListesi" class="d-flex flex-column gap-2"></div>
+                </div>
+            </div>
+            <div id="subTabPersonel" class="idarec-sub-tab d-none mt-4">
+                <div class="glass-card p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase">Personel Listesi</h6>
+                        <button onclick="showPanel('idarecPanel')" class="btn btn-sm text-muted">Kapat</button>
+                    </div>
+                    <div id="userListContainer" class="d-flex flex-column gap-2"></div>
+                </div>
+            </div>
+            </div>
+
+            <!-- GÖREVLİ PANELİ (BÖLGE ODAKLI MERKEZ) -->
             <div id="gorevliPanel" class="view-panel d-none flex-column w-100">
 
-                <!-- HERO KARTI -->
+                <!-- 1. HOŞ GELDİN & İLERLEME -->
                 <div class="glass-card banner-card p-4 mb-4 shadow-lg">
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <img src="assets/logo_enderun.png" class="avatar-glow" style="width:55px; height:55px; border-width:3px; border-radius:50%; object-fit:cover;">
+                        <img src="assets/logo_enderun.png" class="avatar-glow" style="width:50px; height:50px; border-width:2px; border-radius:50%; object-fit:cover;">
                         <div>
-                            <p class="x-small text-muted mb-0 text-uppercase fw-bold">Hoş Geldin</p>
-                            <h2 class="h5 fw-bold text-white mb-0"><span id="gorevliHocaIsim" class="text-emerald">-</span></h2>
+                            <p class="x-small text-muted mb-0 text-uppercase fw-bold">Görevli Paneli</p>
+                            <h2 class="h5 fw-bold text-white mb-0" id="gorevliHocaIsim">-</h2>
                         </div>
                         <div class="ms-auto text-end">
                             <div id="gorevliTamamSayi" class="h4 fw-bold text-white mb-0">0/0</div>
-                            <div class="x-small text-muted">Görev</div>
+                            <div class="x-small text-emerald fw-bold">BİTEN</div>
                         </div>
                     </div>
-                    <div class="mb-1 d-flex justify-content-between">
-                        <span class="x-small text-muted">Bugünkü ilerleme</span>
-                        <span id="gorevliYuzde" class="x-small text-emerald fw-bold">%0</span>
-                    </div>
-                    <div style="height:8px; background:rgba(255,255,255,0.06); border-radius:10px; overflow:hidden;">
-                        <div id="gorevliProgressBar" style="height:100%; width:0%; background:linear-gradient(90deg,#10b981,#34d399); border-radius:10px; transition:width 0.8s cubic-bezier(0.16,1,0.3,1);"></div>
+                    <div style="height:6px; background:rgba(255,255,255,0.06); border-radius:10px; overflow:hidden;">
+                        <div id="gorevliProgressBar" style="height:100%; width:0%; background:linear-gradient(90deg,#10b981,#34d399); border-radius:10px; transition:width 1s;"></div>
                     </div>
                 </div>
 
-                <!-- GÖREV KARTLARI -->
-                <div id="gorevliBolumListesi" class="w-100 d-flex flex-column gap-3"></div>
+                <!-- 2. KAT RÖNTGENİ (KÜÇÜK MATRİS) -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="x-small text-muted fw-bold mb-0 text-uppercase" style="letter-spacing:1px;">Kat Durum Haritası</h6>
+                        <span id="gorevliKatAd" class="x-small text-emerald fw-bold">-</span>
+                    </div>
+                    <div id="gorevliFloorMatrix" class="d-flex flex-wrap gap-2 p-3 glass-card bg-slate-glass justify-content-center">
+                        <!-- Katın oda pikselleri buraya gelecek -->
+                    </div>
+                </div>
+
+                <!-- 3. SIRADAKİ GÖREV (FOKUS KART) -->
+                <div id="nextTaskContainer">
+                    <!-- Sıradaki görev kartı buraya gelecek -->
+                </div>
+
+                <!-- TÜM GÖREVLER (Liste) -->
+                <div class="mt-4">
+                    <h6 class="x-small text-muted fw-bold mb-3 text-uppercase">Tüm Odalar</h6>
+                    <div id="gorevliBolumListesi" class="w-100 d-flex flex-column gap-2"></div>
+                </div>
             </div>
 
             <!-- KRİTER PANELİ (Görevli Checklist) -->
@@ -332,44 +367,27 @@
                 </div>
             </div>
 
-            <!-- MÜFETTİŞ PANELİ -->
+            <!-- MÜFETTİŞ PANELİ (CANLI DENETİM AKIŞI) -->
             <div id="adminPanel" class="view-panel d-none flex-column w-100">
                 
                 <!-- BINA ONAY ÖZETİ -->
                 <div class="glass-card banner-card p-4 mb-4 text-center shadow-lg">
-                    <h2 class="h4 fw-bold text-white mb-1">Denetim Merkezi</h2>
-                    <p class="x-small text-muted mb-2">Onay bekleyen katlara tıklayın</p>
-                    <div id="mufettisBekleyenBadge" class="badge bg-warning text-dark rounded-pill px-3 py-2" style="font-size:0.85rem;">Yükleniyor...</div>
+                    <h2 class="h4 fw-bold text-white mb-1">Denetim Akışı</h2>
+                    <p class="x-small text-muted mb-2">Canlı olarak gelen temizlik raporlarını onaylayın</p>
+                    <div id="mufettisBekleyenBadge" class="badge bg-warning text-dark rounded-pill px-3 py-2" style="font-size:0.85rem;">Bekleyen Raporlar Yükleniyor...</div>
                 </div>
 
-                <div id="mufettisKatSecim">
-                    <div id="mufettisKatButonlari" class="w-100 d-flex flex-column gap-3"></div>
-                </div>
-                <div id="mufettisOdakModu" class="d-none">
-                    <button onclick="MufettisFocus.geriDon()" class="btn d-flex align-items-center gap-2 mb-3 px-3 py-2 rounded-3" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); color:#ccc; font-size:0.85rem;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-                        Kat Seçimine Dön
-                    </button>
-
-                    <!-- ODA ADI + İLERLEME -->
-                    <div class="glass-card p-4 mb-3 text-center">
-                        <div class="x-small text-emerald fw-bold mb-1 text-uppercase" id="focusKatLabel">Denetim</div>
-                        <h3 id="focusOdaAd" class="h4 fw-bold text-white mb-3">-</h3>
-                        <div style="height:6px; background:rgba(255,255,255,0.06); border-radius:10px; overflow:hidden;">
-                            <div id="focusIlerlemeBar" class="progress-bar bg-emerald" style="height:100%; width:0%; transition:width 0.6s;"></div>
-                        </div>
-                    </div>
-
-                    <!-- 3 DETAY BUTONU (KARAR VERMEDEN ÖNCE BAK) -->
-                    <p class="x-small text-muted text-center mb-2" style="letter-spacing:0.05em;">KARAR VERMEDEN ÖNCE İNCELE</p>
-                    <div id="mufettisDetaylar" class="mb-4"></div>
-
-                    <!-- KARAR BUTONLARI -->
-                    <div class="d-flex gap-3">
-                        <button onclick="MufettisFocus.karar('onaylandi')" class="btn btn-success flex-grow-1 py-4 rounded-4 shadow-success fw-bold">✅ ONAYLA</button>
-                        <button onclick="MufettisFocus.karar('reddedildi')" class="btn btn-danger flex-grow-1 py-4 rounded-4 fw-bold">❌ REDDET</button>
+                <!-- AKIŞ KONTEYNERI -->
+                <div id="mufettisStream" class="d-flex flex-column gap-4 pb-5">
+                    <!-- Rapor Kartları Buraya Gelecek -->
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-emerald" role="status"></div>
+                        <div class="text-muted mt-3 small">Denetim akışı hazırlanıyor...</div>
                     </div>
                 </div>
+
+                <!-- ODAK MODU (Eski odak modunu kaldırıp akışa entegre ediyoruz, butonu tutuyoruz) -->
+                <div id="mufettisOdakModu" class="d-none"></div>
             </div>
 
         </main>
