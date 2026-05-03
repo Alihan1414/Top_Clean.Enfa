@@ -272,6 +272,27 @@ body {
     transform: translateY(-1px);
 }
 
+.btn-glass-emerald.active {
+    background: rgba(16, 185, 129, 0.3) !important;
+    border-color: #10b981 !important;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+}
+
+.btn-glass-danger.active {
+    background: rgba(239, 68, 68, 0.3) !important;
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+}
+
+.btn-glass-warning.active {
+    background: rgba(245, 158, 11, 0.3) !important;
+    border-color: #f59e0b !important;
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* --- LIGHT MODE (GÜNDÜZ MODU) --- */
 body.light-mode {
     --bg-dark: #f8fafc;
