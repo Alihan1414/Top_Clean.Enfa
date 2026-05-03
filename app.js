@@ -696,11 +696,12 @@ const IdarecManager = {
 const ListeManager = {
     currentStep: 1,
     assignments: [],
+    floorLeaders: {},
 
     load: function() {
         console.log("📊 [Liste Panel] Loading v2...");
         this.restoreInputs();
-        this.updateHocaSelect();
+        this.renderLeadersUI();
         this.showStep(1);
     },
 
@@ -718,8 +719,11 @@ const ListeManager = {
         if (saved.diger) document.getElementById('listDiger').value = saved.diger;
         
         this.assignments = JSON.parse(localStorage.getItem('topclean_assignments') || '[]');
+        this.floorLeaders = JSON.parse(localStorage.getItem('topclean_floor_leaders') || '{}');
+        
         if (this.assignments.length > 0) {
             this.renderFinalList();
+            this.renderLeadersUI();
             this.showStep(2);
         }
     },
@@ -734,12 +738,39 @@ const ListeManager = {
         localStorage.setItem('topclean_raw_lists', JSON.stringify(lists));
     },
 
-    updateHocaSelect: function() {
-        const select = document.getElementById('pdfGorevliHoca');
-        if (!select) return;
+    renderLeadersUI: function() {
+        const container = document.getElementById('floorLeadersContainer');
+        if (!container) return;
+        
+        const floors = Object.keys(katlar);
         const hocalar = usersData.filter(u => u.rol === 'gorevli');
-        select.innerHTML = '<option value="">Görevli Hoca Seçin...</option>' + 
-            hocalar.map(h => `<option value="${h.name}">${h.name}</option>`).join('');
+        
+        container.innerHTML = floors.map(floor => {
+            const leader = this.floorLeaders[floor] || { hoca: '', baskan: '' };
+            return `
+                <div class="p-2 border-bottom border-secondary border-opacity-10">
+                    <div class="x-small text-white fw-bold mb-2">${floor.toUpperCase()}</div>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <select onchange="ListeManager.saveLeader('${floor}', 'hoca', this.value)" class="form-select bg-slate-glass text-white border-0 x-small py-2">
+                                <option value="">Hoca Seçin...</option>
+                                ${hocalar.map(h => `<option value="${h.name}" ${leader.hoca === h.name ? 'selected' : ''}>${h.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <input type="text" value="${leader.baskan}" onchange="ListeManager.saveLeader('${floor}', 'baskan', this.value)" 
+                                   placeholder="Kat Başkanı..." class="form-control bg-slate-glass text-white border-0 x-small py-2">
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    },
+
+    saveLeader: function(floor, field, value) {
+        if (!this.floorLeaders[floor]) this.floorLeaders[floor] = { hoca: '', baskan: '' };
+        this.floorLeaders[floor][field] = value;
+        localStorage.setItem('topclean_floor_leaders', JSON.stringify(this.floorLeaders));
     },
 
     parseList: function(text) {
@@ -756,7 +787,6 @@ const ListeManager = {
         const totalTalebeCount = astimList.length + alerjikList.length + saglikliList.length + digerList.length;
         if (totalTalebeCount === 0) return Swal.fire("Hata", "Lütfen en az bir talebe ismi girin.", "error");
 
-        // Bütün odaları topla
         let allRooms = [];
         Object.keys(katlar).forEach(k => {
             Object.keys(katlar[k]).forEach(b => {
@@ -764,12 +794,8 @@ const ListeManager = {
             });
         });
 
-        // Alanları zorluk derecesine göre sırala (Örn: WC en zor, Kütüphane en kolay)
-        // Kolay alanlar (1) -> Zor alanlar (5)
         allRooms.sort((a, b) => a.priority - b.priority);
 
-        // Talebeleri hassasiyete göre sırala
-        // Hassas (Astım/Alerjik) -> Sağlıklı
         const sensitive = [...astimList, ...alerjikList];
         const normal = [...digerList, ...saglikliList];
         
@@ -777,23 +803,19 @@ const ListeManager = {
         this.assignments = [];
 
         allRooms.forEach(room => {
-            const isWc = room.bolum.toLowerCase().includes("wc");
-            const capacity = isWc ? 2 : 1;
+            const isWc = room.bolum.toLowerCase().includes("wc") || room.bolum.toLowerCase().includes("tuvalet");
+            const capacity = isWc ? 2 : 1; // TUVALETLERE 2 KİŞİ
             let assigned = [];
 
             for (let i = 0; i < capacity; i++) {
                 if (pool.length > 0) {
-                    // Eğer oda kolaysa (Kütüphane vs) ve havuzda hassas talebe varsa onu al
                     if (room.priority <= 2 && sensitive.length > 0) {
                         const sIdx = pool.indexOf(sensitive[0]);
                         if (sIdx !== -1) {
                             assigned.push(pool.splice(sIdx, 1)[0]);
                             sensitive.shift();
-                        } else {
-                            assigned.push(pool.shift());
-                        }
+                        } else { assigned.push(pool.shift()); }
                     } else {
-                        // Zor oda ise ve havuzda sağlıklı varsa sona saklanan sağlıklıyı al (havuzun sonu sağlıklı)
                         assigned.push(pool.pop());
                     }
                 }
@@ -803,6 +825,7 @@ const ListeManager = {
 
         localStorage.setItem('topclean_assignments', JSON.stringify(this.assignments));
         this.renderFinalList();
+        this.renderLeadersUI();
         this.showStep(2);
         Swal.fire("Başarılı", "Akıllı hafıza devreye girdi ve dağıtım yapıldı.", "success");
     },
@@ -811,9 +834,7 @@ const ListeManager = {
         const n = name.toLowerCase();
         if (n.includes("wc") || n.includes("tuvalet")) return 5;
         if (n.includes("merdiven") || n.includes("koridor")) return 4;
-        if (n.includes("yatakhane") || n.includes("teras")) return 3;
-        if (n.includes("etüt") || n.includes("lab") || n.includes("kantin")) return 2;
-        return 1; // Mescit, Kütüphane, Hoca Odası
+        return 1;
     },
 
     renderFinalList: function() {
@@ -858,13 +879,11 @@ const ListeManager = {
     },
 
     addStudentToEmptySpot: function(name, type) {
-        // En uygun boş yeri bul (boş kapasiteye göre)
         let found = false;
-        // Eğer astım/alerjik ise kolay odalardan boşluk ara
         const priorityLimit = (type === 'astim' || type === 'alerjik') ? 2 : 10;
         
         for (let a of this.assignments) {
-            const isWc = a.bolum.toLowerCase().includes("wc");
+            const isWc = a.bolum.toLowerCase().includes("wc") || a.bolum.toLowerCase().includes("tuvalet");
             const capacity = isWc ? 2 : 1;
             if (a.students.length < capacity && a.priority <= priorityLimit) {
                 a.students.push(name);
@@ -873,10 +892,9 @@ const ListeManager = {
             }
         }
         
-        // Eğer kısıtlı alanda bulamadıysa herhangi bir boşluğa koy
         if (!found) {
             for (let a of this.assignments) {
-                const isWc = a.bolum.toLowerCase().includes("wc");
+                const isWc = a.bolum.toLowerCase().includes("wc") || a.bolum.toLowerCase().includes("tuvalet");
                 const capacity = isWc ? 2 : 1;
                 if (a.students.length < capacity) {
                     a.students.push(name);
@@ -890,55 +908,80 @@ const ListeManager = {
             localStorage.setItem('topclean_assignments', JSON.stringify(this.assignments));
             this.renderFinalList();
             Swal.fire("Eklendi", `${name} uygun boş bir bölgeye atandı.`, "success");
-        } else {
-            Swal.fire("Üzgünüm", "Tüm kontenjanlar dolu!", "warning");
         }
     },
 
     pdfUret: function() {
-        const hoca = document.getElementById('pdfGorevliHoca').value;
-        const baskan = document.getElementById('pdfKatBaskani').value;
-        if (!hoca) return Swal.fire("Eksik Bilgi", "Lütfen görevli hoca seçin.", "warning");
-
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        // PDF Başlık
-        doc.setFontSize(22);
-        doc.setTextColor(16, 185, 129); // Emerald
-        doc.text("TOPCLEAN TEMİZLİK ÇİZELGESİ", 105, 20, { align: "center" });
-        
-        doc.setFontSize(10);
-        doc.setTextColor(100);
-        doc.text("Enfa Enderun Eğitim Kurumları - Bina Hijyen Planı", 105, 28, { align: "center" });
+        const floors = Object.keys(katlar);
+        let firstPage = true;
 
-        // Tablo Verisi
-        const body = this.assignments.map(a => [a.kat, a.bolum, a.students.join(", ") || "-"]);
-        
-        doc.autoTable({
-            startY: 40,
-            head: [['KAT', 'BÖLGE / MEAL', 'GÖREVLİ TALEBELER']],
-            body: body,
-            theme: 'striped',
-            headStyles: { fillColor: [16, 185, 129], textColor: 255, fontStyle: 'bold' },
-            styles: { fontSize: 9, cellPadding: 3 },
-            columnStyles: { 0: { cellWidth: 30 }, 1: { cellWidth: 50 }, 2: { cellWidth: 'auto' } }
+        floors.forEach(floor => {
+            if (!firstPage) doc.addPage();
+            firstPage = false;
+
+            // Arka plan dekoru (Hafif Emerald şerit)
+            doc.setFillColor(16, 185, 129);
+            doc.rect(0, 0, 210, 40, 'F');
+
+            // Başlıklar
+            doc.setFontSize(24);
+            doc.setTextColor(255);
+            doc.setFont("helvetica", "bold");
+            doc.text("TOPCLEAN TEMİZLİK PLANI", 105, 20, { align: "center" });
+            
+            doc.setFontSize(14);
+            doc.text(`${floor.toUpperCase()} - GÖREV ÇİZELGESİ`, 105, 32, { align: "center" });
+
+            // Sorumlu Bilgileri
+            const leader = this.floorLeaders[floor] || { hoca: 'Belirtilmedi', baskan: 'Belirtilmedi' };
+            doc.setTextColor(0);
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "normal");
+            
+            doc.setDrawColor(16, 185, 129);
+            doc.setLineWidth(0.5);
+            doc.line(20, 48, 190, 48);
+            
+            doc.setFont("helvetica", "bold");
+            doc.text(`GÖREVLİ HOCA:`, 20, 56);
+            doc.setFont("helvetica", "normal");
+            doc.text(leader.hoca || "Belirtilmedi", 55, 56);
+
+            doc.setFont("helvetica", "bold");
+            doc.text(`KAT BAŞKANI:`, 110, 56);
+            doc.setFont("helvetica", "normal");
+            doc.text(leader.baskan || "Belirtilmedi", 145, 56);
+            
+            doc.line(20, 62, 190, 62);
+
+            // Tablo
+            const floorData = this.assignments.filter(a => a.kat === floor);
+            const body = floorData.map(a => [a.bolum, a.students.join(", ") || "BOŞ"]);
+
+            doc.autoTable({
+                startY: 70,
+                head: [['TEMİZLİK MEALİ / BÖLGE', 'GÖREVLİ TALEBELER']],
+                body: body,
+                theme: 'grid',
+                headStyles: { fillColor: [16, 185, 129], textColor: 255, fontSize: 12, halign: 'center' },
+                styles: { fontSize: 11, cellPadding: 5, valign: 'middle' },
+                columnStyles: { 0: { cellWidth: 70, fontStyle: 'bold' }, 1: { halign: 'left' } },
+                alternateRowStyles: { fillColor: [245, 255, 250] }
+            });
+
+            // Alt Bilgi
+            const lastY = doc.lastAutoTable.finalY + 15;
+            doc.setFontSize(10);
+            doc.setTextColor(150);
+            doc.text("Temizlik imandandır. Lütfen bölgemizi temiz tutalım.", 105, 285, { align: "center" });
+            doc.text(`Baskı Tarihi: ${new Date().toLocaleDateString('tr-TR')}`, 190, 285, { align: "right" });
         });
 
-        const finalY = doc.lastAutoTable.finalY + 20;
-        
-        // İmza / Alt Bilgi
-        doc.setFontSize(12);
-        doc.setTextColor(0);
-        doc.text(`Kat Sorumlusu Hoca: ${hoca}`, 20, finalY);
-        doc.text(`Kat Başkanı: ${baskan || "Belirtilmedi"}`, 20, finalY + 10);
-        
-        doc.setFontSize(9);
-        doc.setTextColor(150);
-        doc.text("Temizlik imandandır. Lütfen bölgemizi temiz tutalım.", 105, 280, { align: "center" });
-
-        doc.save(`TopClean_Temizlik_Listesi_${new Date().toLocaleDateString()}.pdf`);
-        Swal.fire("PDF Hazır", "Temizlik çizelgesi indirildi. Çıktı alıp asabilirsiniz!", "success");
+        doc.save(`TopClean_Afiş_${new Date().toLocaleDateString()}.pdf`);
+        Swal.fire("Afiş Hazır", "Her kat için ayrı sayfalar halinde profesyonel PDF oluşturuldu!", "success");
     }
 };
 
