@@ -599,6 +599,24 @@ body.light-mode .badge-premium { background: rgba(16, 185, 129, 0.1) !important;
 .bg-emerald { background-color: #10b981 !important; }
 .shadow-success { box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2) !important; }
 
+/* SYNC STATUS PULSE */
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse-status 2s infinite;
+}
+
+@keyframes pulse-status {
+    0% { transform: scale(0.95); opacity: 0.7; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.7; }
+}
+
+.bg-success { background-color: #10b981 !important; }
+.bg-danger { background-color: #ef4444 !important; }
+
 /* MODAL FIXES - Bootstrap Standartları (1050-1060) */
 .modal { z-index: 1060 !important; }
 .modal-backdrop { z-index: 1050 !important; }
@@ -630,4 +648,3 @@ body.light-mode .bg-dark-glass {
 
 .modal-title { color: #fff !important; }
 body.light-mode .modal-title { color: #0f172a !important; }
-
