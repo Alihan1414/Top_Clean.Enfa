@@ -161,11 +161,17 @@ function saveData(item) {
 
 function saveAriza(item) {
     if (!item.id) item.id = "ARZ-" + new Date().getTime();
+    const isNew = !allArizalar.find(a => a.id === item.id);
     const idx = allArizalar.findIndex(a => a.id === item.id);
     if (idx !== -1) allArizalar[idx] = item;
     else allArizalar.push(item);
     localStorage.setItem('topclean_arizalar', JSON.stringify(allArizalar));
     if (db) db.ref('arizalar/' + item.id).set(item);
+    
+    // Bildirim: Yeni Arıza
+    if (isNew) {
+        NotificationManager.notify("⚠️ Yeni Arıza Bildirimi", `${item.bolum} bölgesinde yeni bir arıza bildirildi.`);
+    }
 }
 
 function saveInventory(item) {
@@ -175,7 +181,73 @@ function saveInventory(item) {
     else allInventory.push(item);
     localStorage.setItem('topclean_inventory', JSON.stringify(allInventory));
     if (db) db.ref('inventory/' + item.id).set(item);
+    
+    // Bildirim: Kritik Stok Kontrolü
+    if (item.stock <= (item.threshold || 0)) {
+        NotificationManager.notify("⚠️ Kritik Stok Uyarısı", `${item.name} stokta azaldı: ${item.stock} ${item.unit} kaldı!`);
+    }
 }
+
+// --- NOTIFICATION MANAGER ---
+const NotificationManager = {
+    askPermission: function() {
+        if (!("Notification" in window)) return;
+        Notification.requestPermission();
+    },
+    notify: function(title, body) {
+        if (Notification.permission === "granted") {
+            new Notification(title, { body, icon: 'icon-512.png' });
+        }
+    }
+};
+
+// --- REPORT MANAGER ---
+const ReportManager = {
+    generateMonthly: function() {
+        if (typeof jspdf === 'undefined') return Swal.fire("Hata", "PDF kütüphanesi yüklenemedi.", "error");
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const ayIsmi = new Date().toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' });
+        
+        // BAŞLIK
+        doc.setFontSize(22); doc.setTextColor(16, 185, 129); doc.text("TopClean Faaliyet Raporu", 20, 20);
+        doc.setFontSize(12); doc.setTextColor(100); doc.text(`Dönem: ${ayIsmi}`, 20, 30);
+        doc.line(20, 35, 190, 35);
+
+        // 1. TEMİZLİK İSTATİSTİKLERİ
+        const data = getData();
+        const bugun = todayISO().substring(0, 7); // YYYY-MM
+        const ayVerisi = data.filter(d => d.tarih && d.tarih.startsWith(bugun));
+        
+        doc.setFontSize(16); doc.setTextColor(0); doc.text("1. Temizlik Performansı", 20, 50);
+        doc.setFontSize(11);
+        doc.text(`Toplam Temizlenen Oda: ${ayVerisi.length}`, 25, 60);
+        doc.text(`Onaylanan Rapor: ${ayVerisi.filter(d=>d.durum==='onaylandi').length}`, 25, 65);
+        doc.text(`Reddedilen Rapor: ${ayVerisi.filter(d=>d.durum==='reddedildi').length}`, 25, 70);
+
+        // 2. ARIZA DURUMU
+        doc.setFontSize(16); doc.text("2. Teknik Arızalar", 20, 85);
+        const resolved = allArizalar.filter(a => a.cozuldu).length;
+        doc.text(`Bildirilen Toplam Arıza: ${allArizalar.length}`, 25, 95);
+        doc.text(`Giderilen Arıza: ${resolved}`, 25, 100);
+        doc.text(`Bekleyen Arıza: ${allArizalar.length - resolved}`, 25, 105);
+
+        // 3. MALZEME TÜKETİMİ (TABLO)
+        doc.setFontSize(16); doc.text("3. Malzeme Stok Durumu", 20, 120);
+        const tableData = allInventory.map(i => [i.name, i.stock, i.unit, i.stock <= i.threshold ? 'KRİTİK' : 'YETERLİ']);
+        
+        doc.autoTable({
+            startY: 125,
+            head: [['Malzeme', 'Mevcut Stok', 'Birim', 'Durum']],
+            body: tableData,
+            theme: 'striped',
+            headStyles: { fillColor: [16, 185, 129] }
+        });
+
+        doc.save(`TopClean_Faaliyet_Raporu_${ayIsmi}.pdf`);
+        Swal.fire("Başarılı", "Aylık faaliyet raporu oluşturuldu.", "success");
+    }
+};
 
 // --- VOICE MANAGER ---
 const VoiceManager = {
@@ -1594,4 +1666,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     
     if (typeof lucide !== 'undefined') lucide.createIcons();
+    updateSyncStatus();
 });
+
+// --- SYNC & ONLINE STATUS ---
+window.addEventListener('online', updateSyncStatus);
+window.addEventListener('offline', updateSyncStatus);
+
+function updateSyncStatus() {
+    const indicator = document.getElementById('syncStatusIndicator');
+    if (!indicator) return;
+    
+    if (navigator.onLine) {
+        indicator.innerHTML = '<span class="pulse-dot bg-success"></span> <span class="x-small text-success">Bulut Senkronize</span>';
+        indicator.title = "İnternet Bağlantısı Aktif";
+    } else {
+        indicator.innerHTML = '<span class="pulse-dot bg-danger"></span> <span class="x-small text-danger">Çevrimdışı (Yerel Kayıt)</span>';
+        indicator.title = "İnternet Yok - Veriler Cihazda Tutuluyor";
+    }
+}
