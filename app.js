@@ -971,13 +971,13 @@ function _routeUser() {
     else if (currentUser.rol === "mufettis") { showPanel("adminPanel"); MufettisFocus.renderStream(); }
     else if (currentUser.rol === "liste") { showPanel("listePanel"); ListeManager.load(); }
     else if (currentUser.rol === "gorevli") { 
-        // Emra Karabalak kontrolü
-        if (currentUser.name === "Emra Karabalak") {
-            showPanel("arizaYonetimPanel");
-            ArizaManager.renderYonetim();
-        } else {
-            showPanel("gorevliPanel"); 
-            loadGorevliPanel(currentUser.kat); 
+        showPanel("gorevliPanel"); 
+        loadGorevliPanel(currentUser.kat);
+        
+        // Emra Karabalak özel buton kontrolü
+        const emraBtn = document.getElementById('emraHocaArizaBtn');
+        if (emraBtn) {
+            emraBtn.classList.toggle('d-none', currentUser.name !== "Emra Karabalak");
         }
     }
 }
