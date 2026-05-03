@@ -100,11 +100,19 @@ const usersData = [
 
 let currentUser = null;
 let allReports = [];
-let allArizalar = JSON.parse(localStorage.getItem('topclean_arizalar')) || [];
-let talebeData = JSON.parse(localStorage.getItem('topclean_talebe')) || [
+try { allReports = JSON.parse(localStorage.getItem('topclean_reports')) || []; } catch(e) { allReports = []; }
+
+let allArizalar = [];
+try { allArizalar = JSON.parse(localStorage.getItem('topclean_arizalar')) || []; } catch(e) { allArizalar = []; }
+
+let talebeData = [
     { name: "Ahmet Y.", saglik: "Alerjik Astım" },
     { name: "Mehmet K.", saglik: "Sağlıklı" }
 ];
+try { 
+    const savedTalebe = localStorage.getItem('topclean_talebe');
+    if (savedTalebe) talebeData = JSON.parse(savedTalebe);
+} catch(e) {}
 
 // --- CORE UTILS ---
 function todayISO() { return new Date().toISOString().split('T')[0]; }
@@ -197,11 +205,6 @@ const InventoryManager = {
             </div>
         `).join('');
     }
-};
-
-// --- ARIZA SİSTEMİ ---
-const ArizaManager = {
-    loadList: function() { Swal.fire("Arıza Sistemi", "Tüm arızalar idareci panelinden takip edilebilir.", "info"); }
 };
 
 // --- CHAT SYSTEM ---
@@ -583,8 +586,8 @@ const IdarecManager = {
         `).join('');
     },
 
-    // 5. ARIZA - Görevli notları
-    renderAriza: function() {
+    // 5. NOTLAR - Görevli notları
+    renderNotlar: function() {
         const container = document.getElementById('arizaListesi');
         if (!container) return;
         const notlar = getData().filter(r => r.not && r.not.trim() !== '');
