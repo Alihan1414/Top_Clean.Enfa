@@ -235,155 +235,171 @@ const ChatManager = {
 
 // --- MUFETTIS / ODAK MODU ---
 const MufettisFocus = {
-    kat: "", odalar: [], index: 0,
-    baslat: function(katAd) {
-        this.kat = katAd; this.odalar = Object.keys(katlar[katAd]); this.index = 0;
-        document.getElementById("mufettisKatSecim").classList.add("d-none");
-        document.getElementById("mufettisOdakModu").classList.remove("d-none");
-        this.odaGoster();
-    },
-    geriDon: function() {
-        document.getElementById("mufettisOdakModu").classList.add("d-none");
-        document.getElementById("mufettisKatSecim").classList.remove("d-none");
-        IdarecManager.mufettisKatlariYukle();
-    },
-    odaGoster: function() {
-        const odaAd = this.odalar[this.index];
-        document.getElementById("focusOdaAd").innerText = odaAd;
-        document.getElementById("focusKatIsim") && (document.getElementById("focusKatIsim").innerText = this.kat);
-        const yuzde = Math.round((this.index / this.odalar.length) * 100);
-        document.getElementById("focusIlerlemeBar").style.width = yuzde + "%";
-        document.getElementById("focusYuzdeMetin") && (document.getElementById("focusYuzdeMetin").innerText = `%${yuzde}`);
+    renderStream: function() {
+        const container = document.getElementById('mufettisStream');
+        if (!container) return;
 
-        // Rapora ait detayları göster
-        const data = getData();
-        const bugun = todayISO();
-        const rapor = data.find(d => d.kat === this.kat && d.bolum === odaAd && toShortDate(new Date(d.tarih).getTime()) === bugun && d.durum === 'bekliyor');
+        const pending = getData().filter(d => d.durum === 'bekliyor');
+        
+        // Badge güncelle
+        const badge = document.getElementById('mufettisBekleyenBadge');
+        if (badge) {
+            badge.innerText = pending.length > 0 ? `⏳ ${pending.length} rapor onay bekliyor` : "✅ Tüm raporlar incelendi";
+            badge.className = pending.length > 0 ? "badge bg-warning text-dark rounded-pill px-3 py-2" : "badge bg-success rounded-pill px-3 py-2";
+        }
 
-        const detayContainer = document.getElementById('mufettisDetaylar');
-        if (!detayContainer) return;
-
-        if (!rapor) {
-            detayContainer.innerHTML = `<div class="text-muted small text-center py-3">Bu oda için bekleyen rapor bulunamadı.</div>`;
+        if (pending.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <div style="font-size:3rem;">✨</div>
+                    <div class="text-white fw-bold mt-2">Harika! Bekleyen iş yok.</div>
+                    <p class="text-muted small">Yeni raporlar geldikçe burada görünecek.</p>
+                </div>
+            `;
             return;
         }
 
-        const hasFoto = !!rapor.foto;
-        const hasNot = rapor.not && rapor.not.trim() !== '';
-        const hasKriter = rapor.kriterler && rapor.kriterler.length > 0;
+        container.innerHTML = pending.map(r => `
+            <div class="glass-card p-4 shadow-lg border-emerald border-opacity-10">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <div class="x-small text-emerald fw-bold text-uppercase" style="letter-spacing:1px;">${r.kat}</div>
+                        <h3 class="h5 fw-bold text-white mb-0">${r.bolum}</h3>
+                    </div>
+                    <div class="text-end">
+                        <div class="x-small text-white fw-bold">${r.gorevli}</div>
+                        <div class="x-small text-muted">${new Date(r.tarih).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}</div>
+                    </div>
+                </div>
 
-        detayContainer.innerHTML = `
-            <div class="d-flex gap-2 mt-3 mb-4">
-                <!-- FOTOĞRAF BUTONU -->
-                <button onclick="MufettisFocus.gosterFoto()" 
-                    class="flex-1 glass-card p-3 text-center ${hasFoto ? '' : 'opacity-40'}" 
-                    style="flex:1; border: 1px solid ${hasFoto ? 'rgba(16,185,129,0.4)' : 'rgba(255,255,255,0.05)'}; border-radius:14px; cursor:${hasFoto ? 'pointer' : 'default'};">
-                    <div style="font-size:1.8rem;">📸</div>
-                    <div class="x-small fw-bold text-white mt-1">Fotoğraf</div>
-                    <div class="x-small" style="color: ${hasFoto ? '#10b981' : '#555'};">${hasFoto ? 'Var ✓' : 'Yok'}</div>
-                </button>
-                <!-- KRİTER LİSTESİ BUTONU -->
-                <button onclick="MufettisFocus.gosterKriter()" 
-                    class="flex-1 glass-card p-3 text-center ${hasKriter ? '' : 'opacity-40'}" 
-                    style="flex:1; border: 1px solid ${hasKriter ? 'rgba(16,185,129,0.4)' : 'rgba(255,255,255,0.05)'}; border-radius:14px; cursor:${hasKriter ? 'pointer' : 'default'};">
-                    <div style="font-size:1.8rem;">✅</div>
-                    <div class="x-small fw-bold text-white mt-1">Kriterler</div>
-                    <div class="x-small" style="color: ${hasKriter ? '#10b981' : '#555'};">${hasKriter ? rapor.kriterler.length + ' madde' : 'Yok'}</div>
-                </button>
-                <!-- NOT BUTONU -->
-                <button onclick="MufettisFocus.gosterNot()" 
-                    class="flex-1 glass-card p-3 text-center ${hasNot ? '' : 'opacity-40'}" 
-                    style="flex:1; border: 1px solid ${hasNot ? 'rgba(251,191,36,0.4)' : 'rgba(255,255,255,0.05)'}; border-radius:14px; cursor:${hasNot ? 'pointer' : 'default'};">
-                    <div style="font-size:1.8rem;">📝</div>
-                    <div class="x-small fw-bold text-white mt-1">Not</div>
-                    <div class="x-small" style="color: ${hasNot ? '#fbbf24' : '#555'};">${hasNot ? 'Var ✓' : 'Yok'}</div>
-                </button>
+                ${r.foto ? `<img src="${r.foto}" class="w-100 rounded-4 mb-3 shadow-sm" style="max-height:250px; object-fit:cover; border:1px solid rgba(255,255,255,0.05);">` : ''}
+                
+                ${r.not ? `<div class="p-3 rounded-4 bg-dark bg-opacity-50 border border-warning border-opacity-25 mb-3">
+                    <div class="x-small text-warning fw-bold mb-1">GÖREVLİ NOTU:</div>
+                    <div class="text-white small italic">"${r.not}"</div>
+                </div>` : ''}
+
+                <div class="d-flex gap-2">
+                    <button onclick="MufettisFocus.kararHizli('${r.id}', 'onaylandi')" class="btn btn-success flex-grow-1 py-3 rounded-pill fw-bold shadow-success">✅ ONAYLA</button>
+                    <button onclick="MufettisFocus.kararHizli('${r.id}', 'reddedildi')" class="btn btn-outline-danger flex-grow-1 py-3 rounded-pill fw-bold">❌ REDDET</button>
+                </div>
             </div>
-        `;
-        // Mevcut raporu sakla
-        this._aktifRapor = rapor;
+        `).join('');
     },
-    gosterFoto: function() {
-        if (!this._aktifRapor?.foto) return;
-        Swal.fire({
-            title: 'Temizlik Fotoğrafı',
-            imageUrl: this._aktifRapor.foto,
-            imageAlt: 'Temizlik fotoğrafı',
-            imageWidth: '100%',
-            background: '#0a0f14',
-            color: '#fff',
-            confirmButtonText: 'Kapat',
-            confirmButtonColor: '#10b981'
-        });
-    },
-    gosterKriter: function() {
-        if (!this._aktifRapor?.kriterler?.length) return;
-        const listHTML = this._aktifRapor.kriterler.map(k => 
-            `<div style="display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.06);">
-                <span style="font-size:1rem;">${k.tamam ? '✅' : '❌'}</span>
-                <span style="font-size:0.85rem; color:#fff;">${k.metin}</span>
-            </div>`
-        ).join('');
-        Swal.fire({
-            title: 'Kriter Listesi',
-            html: `<div style="text-align:left;">${listHTML}</div>`,
-            background: '#0a0f14',
-            color: '#fff',
-            confirmButtonText: 'Kapat',
-            confirmButtonColor: '#10b981'
-        });
-    },
-    gosterNot: function() {
-        if (!this._aktifRapor?.not) return;
-        Swal.fire({
-            title: 'Görevli Notu',
-            html: `<div style="background:rgba(251,191,36,0.1); border:1px solid rgba(251,191,36,0.3); border-radius:12px; padding:16px; text-align:left; color:#fff; font-size:0.9rem;">${this._aktifRapor.not}</div>`,
-            background: '#0a0f14',
-            color: '#fff',
-            confirmButtonText: 'Kapat',
-            confirmButtonColor: '#10b981'
-        });
-    },
-    karar: function(durum) {
+    kararHizli: function(id, durum) {
+        const data = getData();
+        const r = data.find(item => item.id === id);
+        if (!r) return;
+
         if (durum === 'reddedildi') {
-            Swal.fire({ title: 'Red Nedeni?', input: 'textarea', confirmButtonText: 'REDDET' }).then(r => {
-                if (r.isConfirmed) this.kaydet(durum, r.value);
+            Swal.fire({ title: 'Red Nedeni?', input: 'textarea', confirmButtonText: 'REDDET' }).then(res => {
+                if (res.isConfirmed) this.kaydetHizli(id, durum, res.value);
             });
-        } else this.kaydet(durum, "");
+        } else {
+            this.kaydetHizli(id, durum, "");
+        }
     },
-    kaydet: function(durum, not) {
-        saveData({ kat: this.kat, bolum: this.odalar[this.index], durum, not, tarih: new Date().toISOString(), mufettis: currentUser.name });
-        this.index++;
-        if (this.index < this.odalar.length) this.odaGoster();
-        else { Swal.fire("Bitti", "Kat denetimi tamamlandı.", "success"); this.geriDon(); }
+    kaydetHizli: function(id, durum, redNotu) {
+        const data = getData();
+        const idx = data.findIndex(item => item.id === id);
+        if (idx !== -1) {
+            const updated = { ...data[idx], durum, mufettis: currentUser.name, redNotu: redNotu || "" };
+            // saveData helper'ını kullan (bu helper ID'yi bulup güncelliyor)
+            saveData(updated); 
+            this.renderStream();
+            // İdareci paneli açıksa cockpit'i de tazele
+            if (document.getElementById('idarecPanel').classList.contains('active')) IdarecManager.renderCockpit();
+        }
     }
 };
 
 // --- IDARECI MANAGER (6 ÖZELLİK) ---
 const IdarecManager = {
-    currentSubTab: 'denetim',
-    chartInstance: null,
-
     switchSubTab: function(tabId) {
         this.currentSubTab = tabId;
-        // Panelleri gizle
+        // Alt tabları gizle, cockpit'i koru
         document.querySelectorAll('.idarec-sub-tab').forEach(el => el.classList.add('d-none'));
         const target = document.getElementById('subTab' + tabId.charAt(0).toUpperCase() + tabId.slice(1));
-        if (target) target.classList.remove('d-none');
-        // Tab buton stillerini güncelle
-        document.querySelectorAll('.tab-btn').forEach(b => {
-            b.className = b.className.replace('btn-emerald', 'btn-glass-emerald');
-        });
-        const activeBtn = document.getElementById('tab-' + tabId);
-        if (activeBtn) activeBtn.className = activeBtn.className.replace('btn-glass-emerald', 'btn-emerald');
+        if (target) {
+            target.classList.remove('d-none');
+            // Dashboard'u gizle eğer bir alt taba girildiyse (opsiyonel)
+            // document.getElementById('idarecPanel').classList.add('d-none');
+        }
+        
         // İlgili render fonksiyonunu çağır
-        if (tabId === 'denetim') { this.renderHeatmap(); this.renderFloor('Bodrum Kat'); }
-        if (tabId === 'onay') this.renderOnay();
         if (tabId === 'grafik') this.renderGrafik();
         if (tabId === 'liderlik') this.renderLiderlik();
         if (tabId === 'ariza') this.renderAriza();
-        if (tabId === 'skor') this.renderSkor();
         if (tabId === 'personel') this.renderUsers();
+    },
+
+    // --- COCKPIT (BINA RÖNTGENİ) ---
+    renderCockpit: function() {
+        const matrixContainer = document.getElementById('cockpitMatrix');
+        const feedContainer = document.getElementById('cockpitFeed');
+        if (!matrixContainer) return;
+
+        const data = getData();
+        const bugun = todayISO();
+        const bugunRaporlari = data.filter(d => toShortDate(new Date(d.tarih).getTime()) === bugun);
+        
+        // 1. MATRİS OLUŞTUR (KATLAR)
+        matrixContainer.innerHTML = Object.keys(katlar).map(katAd => {
+            const bolumler = Object.keys(katlar[katAd]);
+            const roomsHTML = bolumler.map(bolum => {
+                const r = bugunRaporlari.find(d => d.kat === katAd && d.bolum === bolum);
+                let statusClass = "";
+                if (r) {
+                    if (r.durum === 'onaylandi') statusClass = "status-clean";
+                    else if (r.durum === 'bekliyor') statusClass = "status-pending";
+                    else if (r.durum === 'reddedildi') statusClass = "status-alert";
+                }
+                return `<div class="room-pixel ${statusClass}" title="${bolum}"></div>`;
+            }).join('');
+
+            return `
+                <div class="floor-card">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="x-small fw-bold text-white">${katAd.split(' ')[0]}</span>
+                        <span class="x-small text-muted" style="font-size:0.6rem;">${bolumler.length} Oda</span>
+                    </div>
+                    <div class="room-matrix">${roomsHTML}</div>
+                </div>
+            `;
+        }).join('');
+
+        // 2. NABIZ HESAPLA (PULSE)
+        const toplamOda = Object.values(katlar).reduce((s, k) => s + Object.keys(k).length, 0);
+        const tamamlanan = bugunRaporlari.filter(d => d.durum === 'onaylandi').length;
+        const pct = Math.round((tamamlanan / toplamOda) * 100) || 0;
+        
+        const pulseText = document.getElementById('pulseText');
+        const pulseCircle = document.getElementById('pulseProgressCircle');
+        if (pulseText) pulseText.innerText = pct + "%";
+        if (pulseCircle) {
+            const offset = 502.4 - (502.4 * pct / 100);
+            pulseCircle.style.strokeDashoffset = offset;
+        }
+
+        // 3. STATLAR
+        const activeStaff = new Set(bugunRaporlari.map(r => r.gorevli)).size;
+        document.getElementById('cockpit-stat-active').innerText = activeStaff;
+        document.getElementById('cockpit-stat-alerts').innerText = bugunRaporlari.filter(d => d.durum === 'reddedildi' || (d.not && d.not.length > 5)).length;
+
+        // 4. CANLI AKIŞ (FEED)
+        if (feedContainer) {
+            const lastActs = [...data].reverse().slice(0, 10);
+            feedContainer.innerHTML = lastActs.map(a => `
+                <div class="d-flex align-items-start gap-2 p-2 rounded-3" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05);">
+                    <div style="width:8px; height:8px; border-radius:50%; background:${a.durum==='onaylandi'?'#10b981':a.durum==='reddedildi'?'#ef4444':'#f59e0b'}; margin-top:5px;"></div>
+                    <div class="flex-grow-1">
+                        <div class="x-small text-white fw-bold">${a.gorevli}</div>
+                        <div class="x-small text-muted">${a.bolum} • ${a.durum.toUpperCase()}</div>
+                    </div>
+                    <div class="x-small text-muted" style="font-size:0.6rem;">${new Date(a.tarih).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}</div>
+                </div>
+            `).join('') || '<div class="text-center py-3 text-muted small">Bugün henüz aktivite yok</div>';
+        }
     },
 
     // 1. DENETİM - Isı haritası
@@ -611,42 +627,8 @@ const IdarecManager = {
     },
 
     mufettisKatlariYukle: function() {
-        const c = document.getElementById("mufettisKatButonlari");
-        if (!c) return;
-        const data = getData();
-        const bekleyenler = data.filter(d => d.durum === 'bekliyor');
-        const toplamBekleyen = bekleyenler.length;
-
-        // Genel banner güncelle
-        const badge = document.getElementById('mufettisBekleyenBadge');
-        if (badge) {
-            if (toplamBekleyen === 0) {
-                badge.className = 'badge bg-success rounded-pill px-3 py-2';
-                badge.style.fontSize = '0.85rem';
-                badge.innerText = '✅ Tüm raporlar incelendi';
-            } else {
-                badge.className = 'badge bg-warning text-dark rounded-pill px-3 py-2';
-                badge.style.fontSize = '0.85rem';
-                badge.innerText = `⏳ ${toplamBekleyen} rapor onay bekliyor`;
-            }
-        }
-
-        // Kat butonları
-        c.innerHTML = Object.keys(katlar).map(k => {
-            const katBekleyen = bekleyenler.filter(d => d.kat === k).length;
-            const hasPending = katBekleyen > 0;
-            return `
-            <button onclick="MufettisFocus.baslat('${k}')" 
-                class="btn ${hasPending ? 'btn-warning text-dark' : 'btn-glass-emerald'} w-100 py-3 fw-bold d-flex justify-content-between align-items-center px-4"
-                style="border-radius:14px; ${hasPending ? 'box-shadow: 0 4px 15px rgba(251,191,36,0.3);' : ''}"
-            >
-                <span>${k}</span>
-                ${hasPending 
-                    ? `<span class="badge bg-dark text-warning rounded-pill px-3">⏳ ${katBekleyen} bekliyor</span>`
-                    : `<span style="font-size:0.7rem; opacity:0.5;">Temiz</span>`
-                }
-            </button>`;
-        }).join('');
+        // Eski fonksiyonun yerini renderStream aldı
+        MufettisFocus.renderStream();
     }
 };
 
@@ -729,60 +711,71 @@ const gorevliSureler = {
 };
 
 function loadGorevliPanel(katAd) {
-    const container = document.getElementById('gorevliBolumListesi');
-    if (!container) return;
+    const listContainer = document.getElementById('gorevliBolumListesi');
+    const matrixContainer = document.getElementById('gorevliFloorMatrix');
+    const nextTaskContainer = document.getElementById('nextTaskContainer');
+    if (!listContainer || !matrixContainer) return;
+
     const data = getData();
     const bugun = todayISO();
     const bolumler = Object.keys(katlar[katAd] || {});
     
-    // Tamamlanan sayı
-    const tamam = bolumler.filter(b => 
-        data.find(d => d.kat === katAd && d.bolum === b && toShortDate(new Date(d.tarih).getTime()) === bugun)
-    ).length;
-    const toplam = bolumler.length;
-    const yuzde = toplam > 0 ? Math.round((tamam / toplam) * 100) : 0;
+    // 1. STATLAR & HERO
+    const tamamRaporlari = bolumler.filter(b => data.find(d => d.kat === katAd && d.bolum === b && toShortDate(new Date(d.tarih).getTime()) === bugun));
+    const tamamCount = tamamRaporlari.length;
+    const toplamCount = bolumler.length;
+    const yuzde = toplamCount > 0 ? Math.round((tamamCount / toplamCount) * 100) : 0;
     
-    // Hero güncelle
     document.getElementById('gorevliHocaIsim').innerText = currentUser.name;
-    document.getElementById('gorevliTamamSayi').innerText = `${tamam}/${toplam}`;
-    document.getElementById('gorevliYuzde').innerText = `%${yuzde}`;
+    document.getElementById('gorevliTamamSayi').innerText = `${tamamCount}/${toplamCount}`;
+    document.getElementById('gorevliKatAd').innerText = katAd;
     setTimeout(() => {
         const bar = document.getElementById('gorevliProgressBar');
         if (bar) bar.style.width = yuzde + '%';
     }, 100);
-    
-    // Bölüm kartları
-    container.innerHTML = bolumler.map(bolum => {
-        const rapor = data.find(d => d.kat === katAd && d.bolum === bolum && toShortDate(new Date(d.tarih).getTime()) === bugun);
-        const sure = gorevliSureler[bolum] || 15;
-        const isDone = !!rapor;
-        const isWc = bolum.toLowerCase().includes('wc');
-        const emoji = isWc ? '🚰' : bolum.toLowerCase().includes('merdiven') ? '📋' : '🧹';
-        
-        return `
-        <div class="glass-card bg-slate-glass p-4 d-flex justify-content-between align-items-center ${isDone ? 'border border-emerald border-opacity-25' : ''}" style="transition: all 0.3s;">
-            <div class="d-flex align-items-center gap-3">
-                <div style="font-size:1.6rem; width:44px; height:44px; display:flex; align-items:center; justify-content:center; background:${isDone ? 'rgba(16,185,129,0.1)' : 'rgba(255,255,255,0.04)'}; border-radius:12px; border: 1px solid ${isDone ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.06)'}">${isDone ? '✅' : emoji}</div>
-                <div>
-                    <div class="fw-bold text-white" style="font-size:0.9rem;">${bolum}</div>
-                    <div class="d-flex align-items-center gap-2 mt-1">
-                        <span class="x-small text-muted">⏱️ ${sure} dk</span>
-                        ${isDone ? `<span class="badge badge-premium" style="font-size:0.55rem;">TAMAMLANDI</span>` : `<span style="font-size:0.65rem; color:#666;">Bekliyor</span>`}
-                    </div>
-                </div>
-            </div>
-            ${isDone 
-                ? `<div style="width:36px; height:36px; border-radius:50%; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); display:flex; align-items:center; justify-content:center;">
-                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                   </div>` 
-                : `<button onclick="KriterManager.ac('${katAd}','${bolum}')" class="btn btn-emerald px-3 py-2 rounded-3 fw-bold" style="font-size:0.8rem; white-space:nowrap;">
-                       Başla →
-                   </button>`
-            }
-        </div>`;
+
+    // 2. KAT MATRİSİ (RÖNTGEN)
+    matrixContainer.innerHTML = bolumler.map(bolum => {
+        const r = data.find(d => d.kat === katAd && d.bolum === bolum && toShortDate(new Date(d.tarih).getTime()) === bugun);
+        const statusClass = r ? (r.durum === 'onaylandi' ? 'status-clean' : r.durum === 'reddedildi' ? 'status-alert' : 'status-pending') : '';
+        return `<div class="room-pixel ${statusClass}" style="width:20px; height:20px;" title="${bolum}"></div>`;
     }).join('');
-    
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    // 3. SIRADAKİ GÖREV (FOCUS CARD)
+    const nextRoom = bolumler.find(b => !data.find(d => d.kat === katAd && d.bolum === b && toShortDate(new Date(d.tarih).getTime()) === bugun));
+    if (nextRoom && nextTaskContainer) {
+        nextTaskContainer.innerHTML = `
+            <div class="glass-card p-4 border-emerald shadow-success" style="background:linear-gradient(135deg, rgba(16,185,129,0.1), rgba(0,0,0,0.4));">
+                <div class="x-small text-emerald fw-bold mb-1 text-uppercase">SIRADAKİ GÖREVİN</div>
+                <h3 class="h2 fw-bold text-white mb-4">${nextRoom}</h3>
+                <button onclick="KriterManager.ac('${katAd}','${nextRoom}')" class="btn btn-emerald w-100 py-3 rounded-pill fw-bold" style="font-size:1.1rem;">GÖREVE BAŞLA →</button>
+            </div>
+        `;
+    } else if (nextTaskContainer) {
+        nextTaskContainer.innerHTML = `
+            <div class="glass-card p-4 text-center border-emerald opacity-75">
+                <div style="font-size:2.5rem;">🎉</div>
+                <div class="h5 fw-bold text-white mt-2">Tüm Görevler Tamam!</div>
+                <p class="x-small text-muted mb-0">Katındaki tüm odaları başarıyla temizledin.</p>
+            </div>
+        `;
+    }
+
+    // 4. TÜM LİSTE (SADELEŞTİRİLMİŞ)
+    listContainer.innerHTML = bolumler.map(bolum => {
+        const r = data.find(d => d.kat === katAd && d.bolum === bolum && toShortDate(new Date(d.tarih).getTime()) === bugun);
+        const isDone = !!r;
+        return `
+            <div class="d-flex align-items-center gap-3 p-3 rounded-4 bg-slate-glass ${isDone ? 'opacity-50' : ''}" style="border:1px solid rgba(255,255,255,0.05);">
+                <div style="width:10px; height:10px; border-radius:50%; background:${isDone ? '#10b981' : '#333'};"></div>
+                <div class="flex-grow-1">
+                    <div class="small fw-bold text-white">${bolum}</div>
+                    <div class="x-small text-muted">${isDone ? 'Tamamlandı' : 'Bekliyor'}</div>
+                </div>
+                ${!isDone ? `<button onclick="KriterManager.ac('${katAd}','${bolum}')" class="btn btn-sm btn-glass-emerald rounded-pill px-3">Başla</button>` : '✅'}
+            </div>
+        `;
+    }).join('');
 }
 
 const KriterManager = {
@@ -890,8 +883,8 @@ function _routeUser() {
         const hideBack = ['idareci', 'liste'].includes(currentUser.rol);
         backBtn.style.display = hideBack ? 'none' : 'flex';
     }
-    if (currentUser.rol === "idareci") { showPanel("idarecPanel"); IdarecManager.switchSubTab('denetim'); }
-    else if (currentUser.rol === "mufettis") { showPanel("adminPanel"); IdarecManager.mufettisKatlariYukle(); }
+    if (currentUser.rol === "idareci") { showPanel("idarecPanel"); IdarecManager.renderCockpit(); }
+    else if (currentUser.rol === "mufettis") { showPanel("adminPanel"); MufettisFocus.renderStream(); }
     else if (currentUser.rol === "liste") { showPanel("listePanel"); ListeManager.load(); }
     else if (currentUser.rol === "gorevli") { showPanel("gorevliPanel"); loadGorevliPanel(currentUser.kat); }
 }
