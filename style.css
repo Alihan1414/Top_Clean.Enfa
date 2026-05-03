@@ -257,6 +257,21 @@ body {
     color: #fff;
 }
 
+.btn-glass-danger {
+    background: rgba(239, 68, 68, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    transition: all 0.3s ease;
+}
+
+.btn-glass-danger:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.6);
+    color: #ff6b6b;
+    transform: translateY(-1px);
+}
+
 /* --- LIGHT MODE (GÜNDÜZ MODU) --- */
 body.light-mode {
     --bg-dark: #f8fafc;
