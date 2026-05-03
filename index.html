@@ -68,6 +68,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -541,6 +542,11 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- PDF TEMPLATE (HIDDEN) -->
+    <div id="pdfExportTemplate" style="position: absolute; left: -9999px; top: 0; width: 800px; background: white; font-family: 'Inter', sans-serif; color: #333;">
+        <!-- Bu alan JS ile dinamik doldurulacak -->
     </div>
 
     <script src="app.js?v=premium_final_v1"></script>
