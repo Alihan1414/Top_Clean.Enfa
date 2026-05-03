@@ -467,13 +467,21 @@
         </div>
 
         <div id="arizaYonetimPanel" class="view-panel d-none flex-column w-100">
-            <div class="glass-card banner-card p-4 mb-4 text-center shadow-lg">
+            <div class="glass-card banner-card p-4 mb-3 text-center shadow-lg">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald rounded-pill px-3">← Geri</button>
                     <h2 class="h4 fw-bold text-white mb-0">Arıza Yönetimi</h2>
                     <div style="width:60px;"></div>
                 </div>
-                <p class="x-small text-muted mb-0">Binadaki teknik sorunları buradan yönetin</p>
+                <p class="x-small text-muted mb-3">Binadaki teknik sorunları buradan yönetin</p>
+                
+                <!-- DURUM FİLTRELERİ -->
+                <div class="d-flex justify-content-center gap-2 overflow-auto pb-2 no-scrollbar">
+                    <button onclick="ArizaManager.setFilter('all')" class="btn btn-sm btn-glass-emerald rounded-pill px-3 py-2 x-small fw-bold active" id="filter-all">Tümü</button>
+                    <button onclick="ArizaManager.setFilter('bekliyor')" class="btn btn-sm btn-glass-danger rounded-pill px-3 py-2 x-small fw-bold" id="filter-bekliyor">🔴 Bekliyor</button>
+                    <button onclick="ArizaManager.setFilter('surec')" class="btn btn-sm btn-glass-warning rounded-pill px-3 py-2 x-small fw-bold" id="filter-surec" style="color:#f59e0b; border-color:rgba(245,158,11,0.3);">🟠 Süreçte</button>
+                    <button onclick="ArizaManager.setFilter('cozuldu')" class="btn btn-sm btn-glass-emerald rounded-pill px-3 py-2 x-small fw-bold" id="filter-cozuldu">🟢 Çözüldü</button>
+                </div>
             </div>
             <div id="arizaYonetimListesi" class="d-flex flex-column gap-3 pb-5">
                 <!-- Arıza kartları buraya gelecek -->
