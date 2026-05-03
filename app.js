@@ -115,7 +115,11 @@ try {
 } catch(e) {}
 
 let allInventory = [];
-try { allInventory = JSON.parse(localStorage.getItem('topclean_inventory')) || []; } catch(e) { allInventory = []; }
+try { 
+    const saved = localStorage.getItem('topclean_inventory');
+    allInventory = (saved && saved !== "undefined") ? JSON.parse(saved) : []; 
+    if (!Array.isArray(allInventory)) allInventory = [];
+} catch(e) { allInventory = []; }
 
 // --- CORE UTILS ---
 function todayISO() { return new Date().toISOString().split('T')[0]; }
@@ -203,98 +207,129 @@ const InventoryManager = {
         const container = document.getElementById('inventoryItems');
         if (!container) return;
         
-        // Rol Bazlı Başlık ve Butonlar
-        const isBurak = currentUser?.name === "Burakhan Karaoğlan";
-        const isAdmin = currentUser?.rol === "idareci";
+        const btnWrap = document.getElementById('inventoryAddBtnWrap');
+        const isBurak = currentUser && currentUser.name === "Burakhan Karaoğlan";
         
-        document.getElementById('inventoryAddBtnWrap').classList.toggle('d-none', !isBurak);
+        if (btnWrap) btnWrap.classList.toggle('d-none', !isBurak);
+        if (!Array.isArray(allInventory)) allInventory = [];
         
         container.innerHTML = allInventory.map(i => {
-            const isLow = i.stock <= (i.threshold || 0);
+            if (!i || !i.id) return '';
+            const stock = parseInt(i.stock) || 0;
+            const threshold = parseInt(i.threshold) || 0;
+            const isLow = stock <= threshold;
+            const progress = threshold > 0 ? Math.min(100, (stock / (threshold * 3)) * 100) : 100;
+            
             return `
                 <div class="col-12 col-md-6">
                     <div class="glass-card p-3 d-flex align-items-center gap-3 ${isLow ? 'border-danger-pulse' : ''}">
                         <div class="flex-grow-1">
                             <div class="d-flex justify-content-between">
-                                <span class="fw-bold text-white small">${i.name}</span>
-                                <span class="x-small text-muted">${i.unit}</span>
+                                <span class="fw-bold text-white small">${i.name || 'İsimsiz Ürün'}</span>
+                                <span class="x-small text-muted">${i.unit || 'Adet'}</span>
                             </div>
                             <div class="progress mt-2 mb-1" style="height:6px; background:rgba(255,255,255,0.05);">
-                                <div class="progress-bar ${isLow ? 'bg-danger' : 'bg-emerald'}" style="width:${Math.min(100, (i.stock/((i.threshold||1)*5))*100)}%"></div>
+                                <div class="progress-bar ${isLow ? 'bg-danger' : 'bg-emerald'}" style="width:${progress}%"></div>
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="h5 fw-bold ${isLow ? 'text-danger' : 'text-emerald'} mb-0">${i.stock}</span>
-                                <span class="x-small text-muted">Eşik: ${i.threshold || 0}</span>
+                                <span class="h5 fw-bold ${isLow ? 'text-danger' : 'text-emerald'} mb-0">${stock}</span>
+                                <span class="x-small text-muted">Eşik: ${threshold}</span>
                             </div>
                         </div>
                         ${isBurak ? `
                         <div class="d-flex flex-column gap-2">
-                            <button onclick="InventoryManager.editModal('${i.id}')" class="btn btn-sm btn-glass-emerald p-1 px-2"><i data-lucide="bell" style="width:14px;"></i></button>
-                            <button onclick="InventoryManager.deleteItem('${i.id}')" class="btn btn-sm btn-glass-danger p-1 px-2"><i data-lucide="trash-2" style="width:14px;"></i></button>
+                            <button onclick="InventoryManager.editModal('${i.id}')" class="btn btn-sm btn-glass-emerald p-1 px-2" title="Eşik Ayarla"><i data-lucide="bell" style="width:14px;"></i></button>
+                            <button onclick="InventoryManager.deleteItem('${i.id}')" class="btn btn-sm btn-glass-danger p-1 px-2" title="Sil"><i data-lucide="trash-2" style="width:14px;"></i></button>
                         </div>
                         ` : ''}
                     </div>
                 </div>
             `;
         }).join('') || '<div class="text-center py-5 text-muted small w-100">Henüz malzeme eklenmemiş.</div>';
-        if (typeof lucide !== 'undefined') lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
     },
     addItemModal: function() {
-        const modal = new bootstrap.Modal(document.getElementById('inventoryAddModal'));
-        modal.show();
+        const el = document.getElementById('inventoryAddModal');
+        if (el) new bootstrap.Modal(el).show();
     },
     saveNew: function() {
-        const name = document.getElementById('invName').value;
-        const stock = parseInt(document.getElementById('invStock').value);
-        const unit = document.getElementById('invUnit').value;
-        const threshold = parseInt(document.getElementById('invThreshold').value);
-        if(!name || isNaN(stock)) return Swal.fire("Hata", "Eksik bilgi!", "error");
+        const nameEl = document.getElementById('invName');
+        const stockEl = document.getElementById('invStock');
+        if (!nameEl || !stockEl) return;
+
+        const name = nameEl.value.trim();
+        const stock = parseInt(stockEl.value);
+        const unit = document.getElementById('invUnit')?.value || 'Adet';
+        const threshold = parseInt(document.getElementById('invThreshold')?.value) || 5;
+
+        if(!name || isNaN(stock)) return Swal.fire("Hata", "Eksik bilgi girdiniz!", "error");
         
         saveInventory({ name, stock, unit, threshold, lastUpdate: new Date().toISOString() });
-        bootstrap.Modal.getInstance(document.getElementById('inventoryAddModal')).hide();
+        const modal = bootstrap.Modal.getInstance(document.getElementById('inventoryAddModal'));
+        if (modal) modal.hide();
         this.render();
-        Swal.fire("Başarılı", "Malzeme eklendi.", "success");
+        Swal.fire("Başarılı", "Malzeme envantere eklendi.", "success");
     },
     useModal: function() {
         const sel = document.getElementById('invUseSelect');
-        if(!sel) return;
-        sel.innerHTML = allInventory.map(i => `<option value="${i.id}">${i.name} (Mevcut: ${i.stock})</option>`).join('');
-        new bootstrap.Modal(document.getElementById('inventoryUseModal')).show();
+        const modalEl = document.getElementById('inventoryUseModal');
+        if(!sel || !modalEl) return;
+
+        if (!Array.isArray(allInventory) || allInventory.length === 0) {
+            return Swal.fire("Bilgi", "Envanterde henüz ürün yok.", "info");
+        }
+
+        sel.innerHTML = allInventory.map(i => `<option value="${i.id}">${i.name} (Stok: ${i.stock})</option>`).join('');
+        new bootstrap.Modal(modalEl).show();
     },
     saveUse: function() {
-        const id = document.getElementById('invUseSelect').value;
-        const qty = parseInt(document.getElementById('invUseQty').value);
+        const id = document.getElementById('invUseSelect')?.value;
+        const qty = parseInt(document.getElementById('invUseQty')?.value);
+        if (!id || isNaN(qty)) return;
+
         const item = allInventory.find(i => i.id === id);
-        if(!item || isNaN(qty)) return;
+        if(!item) return;
         
-        if(qty > item.stock) return Swal.fire("Hata", "Yetersiz stok!", "error");
+        if(qty > item.stock) return Swal.fire("Hata", "Yetersiz stok! Mevcut: " + item.stock, "error");
         
         item.stock -= qty;
         saveInventory(item);
-        bootstrap.Modal.getInstance(document.getElementById('inventoryUseModal')).hide();
+        const modal = bootstrap.Modal.getInstance(document.getElementById('inventoryUseModal'));
+        if (modal) modal.hide();
         this.render();
         Swal.fire("Başarılı", "Stok güncellendi.", "success");
     },
     deleteItem: function(id) {
-        Swal.fire({ title: 'Silinsin mi?', text: "Bu malzeme listeden kaldırılacak.", icon: 'warning', showCancelButton: true }).then(r => {
+        Swal.fire({ 
+            title: 'Emin misiniz?', 
+            text: "Bu malzeme listeden tamamen silinecek.", 
+            icon: 'warning', 
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            confirmButtonText: 'Evet, Sil',
+            cancelButtonText: 'İptal'
+        }).then(r => {
             if(r.isConfirmed) {
                 allInventory = allInventory.filter(i => i.id !== id);
                 localStorage.setItem('topclean_inventory', JSON.stringify(allInventory));
-                if(db) db.ref('inventory/' + id).remove();
+                if(window.db) db.ref('inventory/' + id).remove();
                 this.render();
             }
         });
     },
     editModal: function(id) {
         const item = allInventory.find(i => i.id === id);
+        if (!item) return;
         Swal.fire({
-            title: 'Eşik Değeri Ayarla',
+            title: 'Kritik Eşik Ayarla',
+            text: 'Stok bu sayının altına düştüğünde sistem uyarı verecektir.',
             input: 'number',
             inputValue: item.threshold || 0,
-            showCancelButton: true
+            showCancelButton: true,
+            confirmButtonText: 'Güncelle'
         }).then(res => {
             if(res.isConfirmed) {
-                item.threshold = parseInt(res.value);
+                item.threshold = parseInt(res.value) || 0;
                 saveInventory(item);
                 this.render();
             }
@@ -1362,7 +1397,6 @@ function _routeUser() {
         const emraBtn = document.getElementById('emraHocaArizaBtn');
         if (emraBtn) emraBtn.classList.toggle('d-none', currentUser.name !== "Emra Karabalak");
         
-        // Burak Hoca / Depo Sorumlusu Kontrolü
         const depoBtn = document.getElementById('burakHocaDepoBtn');
         if (depoBtn) depoBtn.classList.toggle('d-none', currentUser.name !== "Burakhan Karaoğlan");
     }
