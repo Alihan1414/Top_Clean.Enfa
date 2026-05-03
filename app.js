@@ -114,6 +114,9 @@ try {
     if (savedTalebe) talebeData = JSON.parse(savedTalebe);
 } catch(e) {}
 
+let allInventory = [];
+try { allInventory = JSON.parse(localStorage.getItem('topclean_inventory')) || []; } catch(e) { allInventory = []; }
+
 // --- CORE UTILS ---
 function todayISO() { return new Date().toISOString().split('T')[0]; }
 function toShortDate(ts) { return new Date(ts).toISOString().split('T')[0]; }
@@ -161,6 +164,15 @@ function saveAriza(item) {
     if (db) db.ref('arizalar/' + item.id).set(item);
 }
 
+function saveInventory(item) {
+    if (!item.id) item.id = "INV-" + new Date().getTime();
+    const idx = allInventory.findIndex(i => i.id === item.id);
+    if (idx !== -1) allInventory[idx] = item;
+    else allInventory.push(item);
+    localStorage.setItem('topclean_inventory', JSON.stringify(allInventory));
+    if (db) db.ref('inventory/' + item.id).set(item);
+}
+
 // --- VOICE MANAGER ---
 const VoiceManager = {
     recognition: null, isListening: false,
@@ -186,24 +198,107 @@ const QRManager = {
 };
 
 const InventoryManager = {
-    items: [
-        { id: "SABUN", ad: "Sıvı Sabun", stok: 120, birim: "Litre", min: 20 },
-        { id: "KAGIT", ad: "Tuvalet Kağıdı", stok: 450, birim: "Rulo", min: 100 },
-        { id: "DETERJAN", ad: "Yüzey Temizleyici", stok: 85, birim: "Litre", min: 15 }
-    ],
     ac: function() { showPanel('inventoryPanel'); this.render(); },
     render: function() {
         const container = document.getElementById('inventoryItems');
         if (!container) return;
-        container.innerHTML = this.items.map(i => `
-            <div class="col-6 col-md-4">
-                <div class="glass-card p-3 text-center ${i.stok <= i.min ? 'border-danger' : ''}">
-                    <div class="x-small text-muted mb-1">${i.ad}</div>
-                    <div class="h4 fw-bold text-emerald mb-0">${i.stok}</div>
-                    <div class="x-small opacity-50">${i.birim}</div>
+        
+        // Rol Bazlı Başlık ve Butonlar
+        const isBurak = currentUser?.name === "Burakhan Karaoğlan";
+        const isAdmin = currentUser?.rol === "idareci";
+        
+        document.getElementById('inventoryAddBtnWrap').classList.toggle('d-none', !isBurak);
+        
+        container.innerHTML = allInventory.map(i => {
+            const isLow = i.stock <= (i.threshold || 0);
+            return `
+                <div class="col-12 col-md-6">
+                    <div class="glass-card p-3 d-flex align-items-center gap-3 ${isLow ? 'border-danger-pulse' : ''}">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between">
+                                <span class="fw-bold text-white small">${i.name}</span>
+                                <span class="x-small text-muted">${i.unit}</span>
+                            </div>
+                            <div class="progress mt-2 mb-1" style="height:6px; background:rgba(255,255,255,0.05);">
+                                <div class="progress-bar ${isLow ? 'bg-danger' : 'bg-emerald'}" style="width:${Math.min(100, (i.stock/((i.threshold||1)*5))*100)}%"></div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 fw-bold ${isLow ? 'text-danger' : 'text-emerald'} mb-0">${i.stock}</span>
+                                <span class="x-small text-muted">Eşik: ${i.threshold || 0}</span>
+                            </div>
+                        </div>
+                        ${isBurak ? `
+                        <div class="d-flex flex-column gap-2">
+                            <button onclick="InventoryManager.editModal('${i.id}')" class="btn btn-sm btn-glass-emerald p-1 px-2"><i data-lucide="bell" style="width:14px;"></i></button>
+                            <button onclick="InventoryManager.deleteItem('${i.id}')" class="btn btn-sm btn-glass-danger p-1 px-2"><i data-lucide="trash-2" style="width:14px;"></i></button>
+                        </div>
+                        ` : ''}
+                    </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('') || '<div class="text-center py-5 text-muted small w-100">Henüz malzeme eklenmemiş.</div>';
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    },
+    addItemModal: function() {
+        const modal = new bootstrap.Modal(document.getElementById('inventoryAddModal'));
+        modal.show();
+    },
+    saveNew: function() {
+        const name = document.getElementById('invName').value;
+        const stock = parseInt(document.getElementById('invStock').value);
+        const unit = document.getElementById('invUnit').value;
+        const threshold = parseInt(document.getElementById('invThreshold').value);
+        if(!name || isNaN(stock)) return Swal.fire("Hata", "Eksik bilgi!", "error");
+        
+        saveInventory({ name, stock, unit, threshold, lastUpdate: new Date().toISOString() });
+        bootstrap.Modal.getInstance(document.getElementById('inventoryAddModal')).hide();
+        this.render();
+        Swal.fire("Başarılı", "Malzeme eklendi.", "success");
+    },
+    useModal: function() {
+        const sel = document.getElementById('invUseSelect');
+        if(!sel) return;
+        sel.innerHTML = allInventory.map(i => `<option value="${i.id}">${i.name} (Mevcut: ${i.stock})</option>`).join('');
+        new bootstrap.Modal(document.getElementById('inventoryUseModal')).show();
+    },
+    saveUse: function() {
+        const id = document.getElementById('invUseSelect').value;
+        const qty = parseInt(document.getElementById('invUseQty').value);
+        const item = allInventory.find(i => i.id === id);
+        if(!item || isNaN(qty)) return;
+        
+        if(qty > item.stock) return Swal.fire("Hata", "Yetersiz stok!", "error");
+        
+        item.stock -= qty;
+        saveInventory(item);
+        bootstrap.Modal.getInstance(document.getElementById('inventoryUseModal')).hide();
+        this.render();
+        Swal.fire("Başarılı", "Stok güncellendi.", "success");
+    },
+    deleteItem: function(id) {
+        Swal.fire({ title: 'Silinsin mi?', text: "Bu malzeme listeden kaldırılacak.", icon: 'warning', showCancelButton: true }).then(r => {
+            if(r.isConfirmed) {
+                allInventory = allInventory.filter(i => i.id !== id);
+                localStorage.setItem('topclean_inventory', JSON.stringify(allInventory));
+                if(db) db.ref('inventory/' + id).remove();
+                this.render();
+            }
+        });
+    },
+    editModal: function(id) {
+        const item = allInventory.find(i => i.id === id);
+        Swal.fire({
+            title: 'Eşik Değeri Ayarla',
+            input: 'number',
+            inputValue: item.threshold || 0,
+            showCancelButton: true
+        }).then(res => {
+            if(res.isConfirmed) {
+                item.threshold = parseInt(res.value);
+                saveInventory(item);
+                this.render();
+            }
+        });
     }
 };
 
@@ -1266,6 +1361,10 @@ function _routeUser() {
         loadGorevliPanel(currentUser.kat);
         const emraBtn = document.getElementById('emraHocaArizaBtn');
         if (emraBtn) emraBtn.classList.toggle('d-none', currentUser.name !== "Emra Karabalak");
+        
+        // Burak Hoca / Depo Sorumlusu Kontrolü
+        const depoBtn = document.getElementById('burakHocaDepoBtn');
+        if (depoBtn) depoBtn.classList.toggle('d-none', currentUser.name !== "Burakhan Karaoğlan");
     }
 }
 
@@ -1336,13 +1435,19 @@ function syncFromCloud() {
     db.ref('arizalar').on('value', snap => {
         if (snap.val()) {
             allArizalar = Object.values(snap.val());
-            // Arıza paneli açıksa tazele
             const arizaPanel = document.getElementById('arizaYonetimPanel');
-            if (arizaPanel && !arizaPanel.classList.contains('d-none')) {
-                ArizaManager.renderYonetim();
-            }
-            // İdareci panelindeki arıza sekmesi için de tazeleme
+            if (arizaPanel && !arizaPanel.classList.contains('d-none')) ArizaManager.renderYonetim();
             if (currentUser && currentUser.rol === 'idareci') IdarecManager.renderAriza();
+        }
+    });
+
+    // Envanteri dinle
+    db.ref('inventory').on('value', snap => {
+        if (snap.val()) {
+            allInventory = Object.values(snap.val());
+            const invPanel = document.getElementById('inventoryPanel');
+            if (invPanel && !invPanel.classList.contains('d-none')) InventoryManager.render();
+            if (currentUser && currentUser.rol === 'idareci') IdarecManager.renderSkor(); // Skoru tazele
         }
     });
 }
