@@ -339,5 +339,87 @@ body.light-mode .form-control { background-color: #fff !important; color: #000 !
 
 .btn-login-shine:hover { transform: scale(1.04); box-shadow: 0 12px 30px rgba(16,185,129,0.5); }
 .btn-login-shine:active { transform: scale(0.96); }
+/* --- BUILDING COCKPIT (COMMAND CENTER) --- */
+.cockpit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.floor-card {
+    background: rgba(15, 20, 25, 0.4);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 15px;
+    transition: all 0.4s ease;
+}
+
+.floor-card:hover {
+    background: rgba(15, 20, 25, 0.6);
+    border-color: rgba(16, 185, 129, 0.2);
+    transform: translateY(-5px);
+}
+
+.room-matrix {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.room-pixel {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 4px;
+    background: #1a1a1a;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.room-pixel.status-clean {
+    background: #10b981;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+.room-pixel.status-pending {
+    background: #f59e0b;
+    animation: pulseWarning 2s infinite;
+}
+
+.room-pixel.status-alert {
+    background: #ef4444;
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+    animation: flashAlert 1s infinite;
+}
+
+@keyframes pulseWarning {
+    0% { opacity: 0.4; }
+    50% { opacity: 1; }
+    100% { opacity: 0.4; }
+}
+
+@keyframes flashAlert {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.pulse-circle-container {
+    width: 180px;
+    height: 180px;
+    margin: 0 auto 30px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pulse-label {
+    position: absolute;
+    z-index: 2;
+    text-align: center;
+}
+
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
