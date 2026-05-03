@@ -349,6 +349,13 @@ body.light-mode .form-control, body.light-mode .form-select {
     color: #0f172a !important; 
     border: 1px solid #cbd5e1 !important; 
 }
+body.light-mode .modal-content {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid rgba(0,0,0,0.1) !important;
+}
+body.light-mode .modal-title { color: #0f172a !important; }
+body.light-mode .btn-close { filter: none !important; }
 body.light-mode .form-select option { background: #fff; color: #0f172a; }
 body.light-mode .badge-premium { background: rgba(16, 185, 129, 0.1) !important; color: #059669 !important; }
 
@@ -576,3 +583,18 @@ body.light-mode .badge-premium { background: rgba(16, 185, 129, 0.1) !important;
     padding: 10px 20px !important;
     flex-grow: 1;
 }
+
+/* --- INVENTORY & ALERTS --- */
+.border-danger-pulse {
+    border: 1px solid #ef4444 !important;
+    animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.bg-emerald { background-color: #10b981 !important; }
+.shadow-success { box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2) !important; }
