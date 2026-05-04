@@ -1,0 +1,30 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "reports": {
+      ".read": "auth != null",
+      "$reportId": {
+        ".write": "auth != null"
+      }
+    },
+    "arizalar": {
+      ".read": "auth != null",
+      "$arizaId": {
+        ".write": "auth != null"
+      }
+    },
+    "inventory": {
+      ".read": "auth != null",
+      "$itemId": {
+        ".write": "auth != null"
+      }
+    },
+    "messages": {
+      ".read": "auth != null",
+      "$msgId": {
+        ".write": "auth != null"
+      }
+    }
+  }
+}
