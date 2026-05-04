@@ -256,7 +256,7 @@ const ReportManager = {
 
         // 2. ARIZA DURUMU
         doc.setFontSize(16); doc.text("2. Teknik Arızalar", 20, 85);
-        const resolved = allArizalar.filter(a => a.cozuldu).length;
+        const resolved = allArizalar.filter(a => a.durum === 'cozuldu').length;
         doc.text(`Bildirilen Toplam Arıza: ${allArizalar.length}`, 25, 95);
         doc.text(`Giderilen Arıza: ${resolved}`, 25, 100);
         doc.text(`Bekleyen Arıza: ${allArizalar.length - resolved}`, 25, 105);
@@ -1519,10 +1519,10 @@ function _routeUser() {
 const ArizaManager = {
     bildirimModaliAc: function() {
         const select = document.getElementById('arizaBolumSec');
-        if (!select || !currentUser.kat) return;
+        if (!select || !currentUser || !currentUser.kat) return;
         const bolumler = Object.keys(katlar[currentUser.kat] || {});
         select.innerHTML = bolumler.map(b => `<option value="${b}">${b}</option>`).join('');
-        const modal = new bootstrap.Modal(document.getElementById('arizaModal'));
+        const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('arizaModal'));
         modal.show();
     },
     kaydet: function() {
@@ -1531,7 +1531,9 @@ const ArizaManager = {
         if (!detay) return Swal.fire("Hata", "Lütfen arıza detayını yazın.", "error");
         const yeniAriza = { kat: currentUser.kat, bolum: bolum, gorevli: currentUser.name, detay: detay, tarih: new Date().toISOString(), durum: "bekliyor" };
         saveAriza(yeniAriza);
-        bootstrap.Modal.getInstance(document.getElementById('arizaModal')).hide();
+        const modalEl = document.getElementById('arizaModal');
+        const modal = bootstrap.Modal.getInstance(modalEl) || bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.hide();
         document.getElementById('arizaDetayText').value = "";
         Swal.fire("Başarılı", "Arıza bildirimi iletildi.", "success");
         loadGorevliPanel(currentUser.kat);
@@ -1550,7 +1552,7 @@ const ArizaManager = {
                     <div class="x-small text-muted">${new Date(a.tarih).toLocaleDateString('tr-TR')}</div>
                 </div>
                 <div class="d-flex flex-wrap gap-2">
-                    <button onclick="ArizaManager.durumGuncelle('${a.id}', 'cozulemedi')" class="btn btn-sm btn-outline-danger flex-grow-1 rounded-pill ${a.durum==='cozulemedi'?'active':''}">Bekliyor</button>
+                    <button onclick="ArizaManager.durumGuncelle('${a.id}', 'cozulemedi')" class="btn btn-sm btn-outline-danger flex-grow-1 rounded-pill ${(a.durum==='cozulemedi' || a.durum==='bekliyor')?'active':''}">Bekliyor</button>
                     <button onclick="ArizaManager.durumGuncelle('${a.id}', 'surec')" class="btn btn-sm btn-outline-warning flex-grow-1 rounded-pill ${a.durum==='surec'?'active':''}">Süreçte</button>
                     <button onclick="ArizaManager.durumGuncelle('${a.id}', 'cozuldu')" class="btn btn-sm btn-outline-success flex-grow-1 rounded-pill">Çözüldü</button>
                 </div>
@@ -1588,12 +1590,10 @@ function syncFromCloud() {
 
     // Arızaları dinle
     _listeners.arizalar = db.ref('arizalar').on('value', snap => {
-        if (snap.val()) {
-            allArizalar = Object.values(snap.val());
-            const arizaPanel = document.getElementById('arizaYonetimPanel');
-            if (arizaPanel && !arizaPanel.classList.contains('d-none')) ArizaManager.renderYonetim();
-            if (currentUser && currentUser.rol === 'idareci') IdarecManager.renderAriza();
-        }
+        allArizalar = snap.val() ? Object.values(snap.val()) : [];
+        const arizaPanel = document.getElementById('arizaYonetimPanel');
+        if (arizaPanel && !arizaPanel.classList.contains('d-none')) ArizaManager.renderYonetim();
+        if (currentUser && currentUser.rol === 'idareci') IdarecManager.renderAriza();
     });
 
     // Envanteri dinle
