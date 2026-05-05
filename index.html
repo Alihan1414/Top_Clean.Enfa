@@ -3,442 +3,681 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Çınardere Kurban - 2026 Kurban Organizasyonu</title>
-    <meta name="description" content="Çınardere Erenler Kurban 2012 - İslami kurallara uygun, hijyenik ve profesyonel kurban kesim hizmetleri.">
+    <title>TopClean - Cleaning App Yönetimi</title>
+    
+   <style>
+/* --- RICH VISUALS & BANNERS --- */
+.banner-card {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--bg-dark);
+}
+
+.banner-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1));
+    opacity: 1;
+    z-index: 0;
+    transition: transform 3s ease-out;
+}
+
+.banner-card:hover::before {
+    transform: scale(1.05);
+}
+
+.banner-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.banner-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, var(--bg-dark) 0%, transparent 100%);
+    z-index: 0;
+}
+
+.avatar-glow {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--emerald-primary);
+    background-color: var(--bg-surface);
+    animation: neonPulse 3s infinite alternate;
+}
+
+/* --- TYPOGRAPHY & FX --- */
+</style>
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
-    <!-- Bootstrap 5.3 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;700;900&family=Great+Vibes&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5.3 JS & CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Lucide Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Lucide Icons & Scripts -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="style.css?v=3">
-    <script>
-        // Sayfa yüklendiğinde JavaScript'in çalıştığını CSS'e bildirir
-        document.documentElement.classList.add('js-ready');
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+    <link rel="stylesheet" href="style.css?v=premium_final_v1">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icon-512.png">
 </head>
 <body>
-    <!-- Navbar -->
-    <nav id="navbar" class="navbar navbar-expand-lg fixed-top shadow-sm transition">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="#hero">
-                <img src="assets/logo2.jpg" alt="Çınardere Kurban Logo" class="custom-logo me-2">
-                <div class="logo-text">
-                    <span class="main-brand d-block h5 mb-0 fw-bold">Çınardere Kurban</span>
-                    <span class="sub-brand d-block small">Erenler 2012</span>
-                </div>
-            </a>
-            
-            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" aria-controls="mobileMenu">
-                <i data-lucide="menu"></i>
-            </button>
+    <div class="aurora-container"></div>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item"><a class="nav-link px-3" href="#hero">Ana Sayfa</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="#services">Neden Biz?</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="#process">Hizmet Süreci</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="#pricing">2026 Hisseler</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="#wizard">Kayıt Formu</a></li>
-                    <li class="nav-item ms-lg-3"><a href="#contact" class="btn btn-emerald px-4 rounded-pill text-white fw-bold">İletişim</a></li>
-                </ul>
+    <!-- ENVANTER EKLEME MODALI -->
+    <div class="modal fade" id="inventoryAddModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-premium-glass border-0">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title text-white fw-bold">📦 Yeni Malzeme Girişi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="x-small text-emerald fw-bold mb-2">MALZEME ADI</label>
+                        <input type="text" id="invName" class="form-control bg-dark-glass text-white border-0 rounded-4 py-3" placeholder="Örn: Tuvalet Kağıdı">
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="x-small text-emerald fw-bold mb-2">MİKTAR</label>
+                            <input type="number" id="invStock" class="form-control bg-dark-glass text-white border-0 rounded-4 py-3">
+                        </div>
+                        <div class="col-6">
+                            <label class="x-small text-emerald fw-bold mb-2">BİRİM</label>
+                            <select id="invUnit" class="form-select bg-dark-glass text-white border-0 rounded-4 py-3">
+                                <option value="Adet">Adet</option>
+                                <option value="Paket">Paket</option>
+                                <option value="Litre">Litre</option>
+                                <option value="Koli">Koli</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="x-small text-warning fw-bold mb-2">KRİTİK STOK EŞİĞİ (Uyaracak miktar)</label>
+                        <input type="number" id="invThreshold" class="form-control bg-dark-glass text-white border-0 rounded-4 py-3" value="5">
+                    </div>
+                    <button onclick="InventoryManager.saveNew()" class="btn btn-emerald w-100 py-3 rounded-pill fw-bold shadow-success">LİSTEYE EKLE</button>
+                </div>
             </div>
         </div>
-    </nav>
+    </div>
 
-    <!-- Bootstrap Mobile Offcanvas Menu -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
-        <div class="offcanvas-header border-bottom">
-            <a href="#hero" class="d-flex align-items-center gap-2 text-decoration-none" data-bs-dismiss="offcanvas">
-                <img src="assets/logo2.jpg" alt="Logo" class="custom-logo" style="width: 40px; height: 40px;">
-                <h5 class="offcanvas-title fw-bold text-success mb-0" id="mobileMenuLabel">Çınardere Kurban</h5>
-            </a>
-            <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    <!-- MALZEME KULLANIM MODALI -->
+    <div class="modal fade" id="inventoryUseModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-premium-glass border-0">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title text-white fw-bold">🧼 Malzeme Kullanımı</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="x-small text-emerald fw-bold mb-2">MALZEME SEÇİN</label>
+                        <select id="invUseSelect" class="form-select bg-dark-glass text-white border-0 rounded-4 py-3"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="x-small text-emerald fw-bold mb-2">KAÇ TANE KULLANILDI?</label>
+                        <input type="number" id="invUseQty" class="form-control bg-dark-glass text-white border-0 rounded-4 py-3" value="1">
+                    </div>
+                    <button onclick="InventoryManager.saveUse()" class="btn btn-success w-100 py-3 rounded-pill fw-bold shadow-success">KULLANIMI KAYDET</button>
+                </div>
+            </div>
         </div>
-        <div class="offcanvas-body">
-            <ul class="nav flex-column gap-3 mb-4">
-                <li class="nav-item"><a class="nav-link fs-5 fw-semibold" href="#hero" data-bs-dismiss="offcanvas">Ana Sayfa</a></li>
-                <li class="nav-item"><a class="nav-link fs-5 fw-semibold" href="#services" data-bs-dismiss="offcanvas">Neden Biz?</a></li>
-                <li class="nav-item"><a class="nav-link fs-5 fw-semibold" href="#process" data-bs-dismiss="offcanvas">Hizmet Süreci</a></li>
-                <li class="nav-item"><a class="nav-link fs-5 fw-semibold" href="#pricing" data-bs-dismiss="offcanvas">2026 Hisseler</a></li>
-                <li class="nav-item"><a class="nav-link fs-5 fw-semibold" href="#wizard" data-bs-dismiss="offcanvas">Kayıt Formu</a></li>
-                <li class="nav-item"><a class="nav-link fs-5 fw-semibold" href="#contact" data-bs-dismiss="offcanvas">İletişim</a></li>
-            </ul>
-            <div class="border-top pt-4 mt-auto">
-                <div class="d-flex align-items-center gap-3 mb-3">
-                    <i data-lucide="phone" class="text-success"></i>
-                    <a href="tel:05072574034" class="text-dark text-decoration-none fw-bold">0507 257 40 34</a>
+    </div>
+
+    <!-- TEMA DEĞİŞTİRME BUTONU -->
+    <button onclick="toggleTheme()" class="btn btn-glass-emerald rounded-circle position-fixed d-flex align-items-center justify-content-center shadow-lg" style="top: 20px; right: 20px; width: 45px; height: 45px; z-index: 9999;">
+        <i data-lucide="sun" id="themeIcon" size="20"></i>
+    </button>
+
+    <div class="app-container">
+        <header id="app-header" class="d-none">
+            <div class="header-content container d-flex justify-content-between align-items-center py-3">
+                <div class="d-flex align-items-center gap-2">
+                    <!-- GERİ TUŞU -->
+                    <button id="backBtn" onclick="handleBack()" class="btn d-flex align-items-center gap-1 rounded-3 px-3 py-2 me-1" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); font-size:0.8rem; color:#ccc;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                        <span class="d-none d-sm-inline">Geri</span>
+                    </button>
+                    <img src="assets/logo_enderun_white.png" style="width:30px; height:30px; border-radius:8px;" alt="L">
+                    <h1 class="h5 fw-bold text-gradient mb-0">TopClean</h1>
                 </div>
                 <div class="d-flex align-items-center gap-3">
-                    <i data-lucide="map-pin" class="text-success"></i>
-                    <a href="https://www.google.com/maps/search/?api=1&query=Beşerli+Sokak+No:+5,+Çınardere,+Pendik,+İstanbul" target="_blank" class="mb-0 small text-muted text-decoration-none address-link">İstanbul Pendik Çınardere Beşerli Sokak No: 5</a>
+                    <div id="syncStatusIndicator" class="d-flex align-items-center gap-2 me-3" style="min-width:120px;">
+                        <!-- JS ile dolar -->
+                    </div>
+                    <div class="d-flex flex-column text-end d-none d-md-flex">
+                        <span id="headerName" class="fw-bold text-white small m-0">-</span>
+                        <span class="x-small text-emerald">Aktif Oturum</span>
+                    </div>
+                    <img src="assets/logo_enderun.png" class="avatar-glow" alt="User" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                    <button id="logoutBtn" class="btn btn-sm btn-outline-light rounded-pill px-3 ms-2">Çıkış</button>
                 </div>
             </div>
-        </div>
-    </div>
+        </header>
 
-    <!-- Hero Section -->
-    <header id="hero" class="hero d-flex align-items-center justify-content-center text-center" style="background: url('assets/hero_bg.png?v=3') center/cover no-repeat;">
-        <div class="hero-overlay"></div>
-        <div class="container hero-content position-relative">
-            <h1 class="fade-in-up text-white display-3 fw-bold mb-4">Çınardere Kurban Organizasyonu</h1>
-            <p class="fade-in-up delay-1 lead mb-5 px-md-5 text-light">Bu yıl da Kurban İbadetinizi güvenle yerine getirmeniz için hizmetinizdeyiz. İslami usullere tam riayet, 1. gün teslimat.</p>
-            <div class="hero-buttons fade-in-up delay-2 d-flex flex-column flex-sm-row gap-3 justify-content-center px-4">
-                <a href="#wizard" class="btn btn-emerald-lg btn-lg px-5 rounded-pill shadow">Hemen Kayıt Ol</a>
-                <a href="tel:05072574034" class="btn btn-outline-white-lg btn-lg px-5 rounded-pill">Bizi Arayın</a>
-            </div>
-        </div>
-    </header>
-
-    <!-- Stats Bar -->
-    <section class="stats-bar py-5 border-bottom bg-white">
-        <div class="container">
-            <div class="row g-4 text-center">
-                <div class="col-6 col-md-3 reveal">
-                    <div class="stat-number color-emerald h1 fw-bold mb-1">14</div>
-                    <div class="stat-label small fw-bold text-uppercase tracking-wider">Yıllık Tecrübe</div>
-                    <div class="stat-sub x-small text-muted">2012'den Bu Yana</div>
-                </div>
-                <div class="col-6 col-md-3 reveal delay-1">
-                    <div class="stat-number color-emerald h1 fw-bold mb-1">30+</div>
-                    <div class="stat-label small fw-bold text-uppercase tracking-wider">Profesyonel Kadro</div>
-                    <div class="stat-sub x-small text-muted">Uzman Ekiplerimiz</div>
-                </div>
-                <div class="col-6 col-md-3 reveal delay-2">
-                    <div class="stat-number color-emerald h1 fw-bold mb-1">100%</div>
-                    <div class="stat-label small fw-bold text-uppercase tracking-wider">Memnuniyet</div>
-                    <div class="stat-sub x-small text-muted">Bize Duyulan Güven</div>
-                </div>
-                <div class="col-6 col-md-3 reveal delay-3">
-                    <div class="stat-number color-emerald h1 fw-bold mb-1">1. Gün</div>
-                    <div class="stat-label small fw-bold text-uppercase tracking-wider">Hızlı Teslimat</div>
-                    <div class="stat-sub x-small text-muted">Bayramın İlk Günü</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Services / Why Us -->
-    <section id="services" class="services py-5 bg-emerald-subtle">
-        <div class="container py-lg-5">
-            <div class="section-header text-center mb-5 reveal">
-                <span class="badge rounded-pill bg-emerald px-3 py-2 mb-3">AVANTAJLARIMIZ</span>
-                <h2 class="display-4 fw-bold mb-3 color-emerald">Neden Bizi Seçmelisiniz?</h2>
-                <p class="text-muted lead mx-auto mw-700">İbadetinizi kolaylaştıran, şeffaf ve profesyonel hizmet anlayışı.</p>
-            </div>
-            <div class="row g-4">
-                <div class="col-md-4 reveal">
-                    <div class="feature-card p-4 p-lg-5 h-100 bg-white shadow-sm border-0 rounded-4 transition-up text-center">
-                        <div class="icon-circle bg-emerald-light text-emerald mb-4 mx-auto">
-                            <i data-lucide="scroll-text" size="32"></i>
-                        </div>
-                        <h3 class="h4 fw-bold mb-3">Fıkıh Uygunluğu</h3>
-                        <p class="text-muted mb-0">Hocalarımız eşliğinde, vekaletiniz bizzat alınarak İslami usullere tam uygun kesim yapılır.</p>
-                    </div>
-                </div>
-                <div class="col-md-4 reveal delay-1">
-                    <div class="feature-card p-4 p-lg-5 h-100 bg-white shadow-sm border-0 rounded-4 transition-up text-center">
-                        <div class="icon-circle bg-emerald-light text-emerald mb-4 mx-auto">
-                            <i data-lucide="scale" size="32"></i>
-                        </div>
-                        <h3 class="h4 fw-bold">Adil Paylaşım</h3>
-                        <p class="text-muted mb-0">Hassas terazilerimizle 7 hisse için de eşit ve hak geçmeyecek şekilde titiz parçalama.</p>
-                    </div>
-                </div>
-                <div class="col-md-4 reveal delay-2">
-                    <div class="feature-card p-4 p-lg-5 h-100 bg-white shadow-sm border-0 rounded-4 transition-up text-center">
-                        <div class="icon-circle bg-emerald-light text-emerald mb-4 mx-auto">
-                            <i data-lucide="truck" size="32"></i>
-                        </div>
-                        <h3 class="h4 fw-bold">Hızlı Sevkiyat</h3>
-                        <p class="text-muted mb-0">Özel donanımlı araçlarımızla, bayramın ilk günü etlerinizi adresinize teslim ediyoruz.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Process Flow -->
-    <section id="process" class="process py-5 bg-white overflow-hidden">
-        <div class="container py-lg-5">
-            <div class="section-header text-center mb-5 reveal">
-                <h2 class="display-4 fw-bold color-emerald">5 Adımda Sürecimiz</h2>
-                <p class="text-muted lead">Kurbanınız emin ellerde, süreç adım adım cebinizde.</p>
-            </div>
-            <div class="row g-0 process-row position-relative">
-                <div class="col-md-4 col-lg reveal">
-                    <div class="process-item text-center p-4">
-                        <div class="process-icon mb-3 mx-auto shadow-sm">01</div>
-                        <h4 class="h5 fw-bold mb-2">Vekalet Alımı</h4>
-                        <p class="small text-muted px-lg-3">Telefon veya WhatsApp üzerinden isminize özel vekalet alınır.</p>
-                    </div>
-                </div>
-                <div class="col-md-4 col-lg reveal delay-1">
-                    <div class="process-item text-center p-4">
-                        <div class="process-icon mb-3 mx-auto shadow-sm">02</div>
-                        <h4 class="h5 fw-bold mb-2">Titiz Seçim</h4>
-                        <p class="small text-muted px-lg-3">Kapak atmış, sağlık kontrolünden geçmiş kusursuz hayvanlar seçilir.</p>
-                    </div>
-                </div>
-                <div class="col-md-4 col-lg reveal delay-2">
-                    <div class="process-item text-center p-4">
-                        <div class="process-icon mb-3 mx-auto shadow-sm">03</div>
-                        <h4 class="h5 fw-bold mb-2">Modern Kesim</h4>
-                        <p class="small text-muted px-lg-3">Steril ve hijyenik tesislerimizde dua ile kesim gerçekleştirilir.</p>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg reveal delay-3">
-                    <div class="process-item text-center p-4">
-                        <div class="process-icon mb-3 mx-auto shadow-sm">04</div>
-                        <h4 class="h5 fw-bold mb-2">Hassas Pay</h4>
-                        <p class="small text-muted px-lg-3">Etler dinlendirildikten sonra hassas terazilerle pay edilir.</p>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg reveal delay-4">
-                    <div class="process-item text-center p-4">
-                        <div class="process-icon mb-3 mx-auto shadow-sm">05</div>
-                        <h4 class="h5 fw-bold mb-2">Teslimat</h4>
-                        <p class="small text-muted px-lg-3">Soğuk zincir korunarak 1. gün sonunda kapınıza ulaştırılır.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Pricing Section -->
-    <section id="pricing" class="pricing py-5 bg-white">
-        <div class="container py-lg-5">
-            <div class="section-header text-center mb-5 reveal">
-                <h2 class="display-4 fw-bold color-emerald">2026 KURBAN</h2>
-                <h3 class="h2 fw-bold text-dark mt-2 mb-4" style="color: #b78a3f !important;">HİSSE KAYITLARIMIZ BAŞLAMIŞTIR</h3>
-            </div>
+        <main id="mainContainer" class="container py-4">
             
-            <div class="row g-4 justify-content-center mb-4">
-                <!-- 1. GRUP -->
-                <div class="col-md-5 col-lg-4 reveal">
-                    <div class="price-card p-4 p-md-5 h-100 shadow-sm border-0 text-center" style="background-color: #dcb36d; border-radius: 30px;">
-                        <h3 class="h3 fw-bold text-dark mb-4 mt-2">1.GRUP</h3>
-                        <div class="h4 fw-bold text-dark mb-2">28.000TL</div>
-                        <div class="h4 fw-bold text-dark mb-2">36.000TL</div>
-                    </div>
+            <!-- 1. LOGIN PANEL -->
+            <div id="loginPanel" class="view-panel active d-flex align-items-center justify-content-center w-100" style="min-height: 100vh; position: relative; overflow: hidden; background: #000;">
+
+                <!-- Aero-Emerald Background -->
+                <div class="bg-container">
+                    <div class="grid-lines"></div>
+                    <div class="particles" id="particles"></div>
+                    <div class="data-lines" id="dataLines"></div>
                 </div>
-                <!-- 2. GRUP -->
-                <div class="col-md-5 col-lg-4 reveal delay-1">
-                    <div class="price-card p-4 p-md-5 h-100 shadow-sm border-0 text-center" style="background-color: #dcb36d; border-radius: 30px;">
-                        <h3 class="h3 fw-bold text-dark mb-4 mt-2">2.GRUP</h3>
-                        <div class="h4 fw-bold text-dark mb-2">36.000TL</div>
-                        <div class="h4 fw-bold text-dark mb-2">42.000TL</div>
-                    </div>
+
+                <!-- Scan Line -->
+                <div class="scan-line"></div>
+
+                <!-- Background Logo -->
+                <div class="bg-logo">
+                    <img src="icon-512.png" alt="Yarmanevler Logo">
                 </div>
-            </div>
-            
-            <div class="row g-4 justify-content-center mb-5 pb-4">
-                <!-- 3. GRUP -->
-                <div class="col-md-5 col-lg-4 reveal delay-2">
-                    <div class="price-card p-4 p-md-5 h-100 shadow-sm border-0 text-center" style="background-color: #dcb36d; border-radius: 30px;">
-                        <h3 class="h3 fw-bold text-dark mb-4 mt-2">3.GRUP</h3>
-                        <div class="h4 fw-bold text-dark mb-2">42.000TL</div>
-                        <div class="h4 fw-bold text-dark mb-2">& ÜZERİ</div>
-                    </div>
+
+                <!-- Background Text -->
+                <div class="bg-text">
+                    <div class="bg-text-yarmanevler">Yarmanevler</div>
+                    <div class="bg-text-enderun">ENDERUN</div>
+                    <div class="bg-text-bilisim">BİLİŞİM</div>
                 </div>
-                <!-- BAĞIŞ KURBAN -->
-                <div class="col-md-5 col-lg-4 reveal delay-3">
-                    <div class="price-card p-4 p-md-5 h-100 shadow-sm border-0 text-center d-flex flex-column justify-content-center" style="background-color: #dcb36d; border-radius: 30px;">
-                        <h3 class="h3 fw-bold text-dark mb-4 mt-2">BAĞIŞ KURBAN</h3>
-                        <div class="h4 fw-bold text-dark mb-0">14.000TL</div>
+
+                <!-- Main Card -->
+                <div class="login-card">
+                    <!-- Corner Lights -->
+                    <div class="corner-light cl-tl"></div>
+                    <div class="corner-light cl-tr"></div>
+                    <div class="corner-light cl-bl"></div>
+                    <div class="corner-light cl-br"></div>
+                    <div class="top-glow"></div>
+
+                    <!-- Logo Section -->
+                    <div class="logo-section">
+                        <img src="icon-512.png" alt="Enderun Bilişim" class="logo-img" style="width:120px; border-radius:24px;">
+                    </div>
+
+                    <!-- Title -->
+                    <div class="login-title glitch-text" id="glitchTitle">SİSTEME GİRİŞ</div>
+
+                    <!-- Input Fields -->
+                    <form id="loginForm">
+                        <div class="input-group">
+                            <i data-lucide="user" class="input-icon"></i>
+                            <select id="userSelect" class="input-field" style="appearance: none;" required>
+                                <option value="" disabled selected>Kullanıcı Seçin</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <i data-lucide="lock" class="input-icon"></i>
+                            <input type="password" id="userPass" class="input-field" placeholder="Şifreniz" required>
+                            <i data-lucide="eye" class="eye-icon" id="togglePassword"></i>
+                        </div>
+
+                        <div class="options-row">
+                            <label class="remember-me">
+                                <input type="checkbox">
+                                <span>Beni Hatırla</span>
+                            </label>
+                        </div>
+
+                        <!-- Login Button -->
+                        <button type="submit" class="login-btn" id="loginBtn">
+                            <div class="spinner"></div>
+                            <span class="success-check">✓</span>
+                            <span class="btn-text">GİRİŞ YAP</span>
+                        </button>
+                    </form>
+
+                    <div class="footer">
+                        <i data-lucide="shield" class="footer-icon"></i><br>
+                        GÜVENLİ BAĞLANTI<br>
+                        Sistem tüm verilerinizi end-to-end şifreler
                     </div>
                 </div>
             </div>
 
-            <!-- Features Icons -->
-            <div class="row g-4 justify-content-center text-center reveal delay-3 border-top pt-5 mt-3 px-2">
-                <div class="col-6 col-md-3">
-                    <i data-lucide="scroll-text" class="mb-3" style="width: 48px; height: 48px; color: #212529;"></i>
-                    <p class="fw-bold small text-dark mb-0">İSLAMİ USULLERE<br>UYGUN KESİM</p>
+            <!-- LİSTE SORUMLUSU PANELİ (AKILLI SİSTEM v2) -->
+            <div id="listePanel" class="view-panel d-none flex-column w-100">
+                <div class="glass-card banner-card p-4 mb-4 text-center shadow-lg border-emerald">
+                    <h2 class="h3 fw-bold text-white mb-1">Akıllı Liste Merkezi</h2>
+                    <p class="text-emerald small mb-0 fw-bold">SAĞLIK BAZLI OTOMATİK DAĞITIM SİSTEMİ</p>
                 </div>
-                <div class="col-6 col-md-3">
-                    <i data-lucide="scale" class="mb-3" style="width: 48px; height: 48px; color: #212529;"></i>
-                    <p class="fw-bold small text-dark mb-0">7 HİSSELİ HASSAS<br>TERAZİ</p>
-                </div>
-                <div class="col-6 col-md-3">
-                    <i data-lucide="shield-check" class="mb-3" style="width: 48px; height: 48px; color: #212529;"></i>
-                    <p class="fw-bold small text-dark mb-0">HİJYENİK<br>KESİM</p>
-                </div>
-                <div class="col-6 col-md-3">
-                    <i data-lucide="truck" class="mb-3" style="width: 48px; height: 48px; color: #212529;"></i>
-                    <p class="fw-bold small text-dark mb-0">1.GÜN<br>TESLİM</p>
-                </div>
-            </div>
-            
-            <div class="text-center mt-5 pt-3 reveal delay-4">
-               <a href="#wizard" class="btn btn-emerald-lg btn-lg px-5 rounded-pill shadow fw-bold">HİSSE AL</a>
-            </div>
-        </div>
-    </section>
 
-    <!-- Kurban Rehberi -->
-    <section class="guide py-5 bg-white">
-        <div class="container py-lg-5">
-            <div class="row g-5 align-items-center">
-                <div class="col-lg-6 reveal">
-                    <span class="text-emerald fw-bold d-block mb-3">BİLGİ REHBERİ</span>
-                    <h2 class="display-5 fw-bold mb-4 pe-lg-5">Kurban Etinin Taksimatı Hakkında Sünnet</h2>
-                    <p class="text-muted mb-4 lead">Efendimiz (SAV) kurban etinin üçe bölünmesini tavsiye buyurmuşlardır. Bu paylaşım hem bereketi hem de yardımlaşmayı artırır.</p>
-                    <div class="row g-3">
-                        <div class="col-sm-4 text-center p-3 bg-light rounded-3 transition-up">
-                            <div class="h3 fw-bold color-emerald mb-1">1/3</div>
-                            <div class="small fw-bold text-muted">Yoksullara</div>
+                <!-- 1. ADIM: SAĞLIK LİSTESİ GİRİŞİ -->
+                <div id="listeStep1" class="d-flex flex-column gap-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <h6 class="text-white small fw-bold mb-0 text-uppercase">1. Adım: Talebe Listesi</h6>
+                        <button onclick="_routeUser()" class="btn btn-sm btn-glass-danger py-1 px-3 rounded-pill x-small">Paneli Kapat</button>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="x-small text-danger fw-bold mb-1 ms-2">🔴 ASTIM HASTALARI</label>
+                            <textarea id="listAstim" class="form-control bg-slate-glass text-white border-0 rounded-4 small p-3" rows="5" placeholder="İsimleri araya virgül koyarak yazın..."></textarea>
                         </div>
-                        <div class="col-sm-4 text-center p-3 bg-light rounded-3 transition-up">
-                            <div class="h3 fw-bold color-emerald mb-1">1/3</div>
-                            <div class="small fw-bold text-muted">Akrabalara</div>
+                        <div class="col-6">
+                            <label class="x-small text-warning fw-bold mb-1 ms-2">🟠 ALERJİK RAHATSIZLAR</label>
+                            <textarea id="listAlerjik" class="form-control bg-slate-glass text-white border-0 rounded-4 small p-3" rows="5" placeholder="İsimleri araya virgül koyarak yazın..."></textarea>
                         </div>
-                        <div class="col-sm-4 text-center p-3 bg-light rounded-3 transition-up">
-                            <div class="h3 fw-bold color-emerald mb-1">1/3</div>
-                            <div class="small fw-bold text-muted">Hane Halkına</div>
+                        <div class="col-6">
+                            <label class="x-small text-success fw-bold mb-1 ms-2">🟢 SAĞLIKLI</label>
+                            <textarea id="listSaglikli" class="form-control bg-slate-glass text-white border-0 rounded-4 small p-3" rows="5" placeholder="İsimleri araya virgül koyarak yazın..."></textarea>
+                        </div>
+                        <div class="col-6">
+                            <label class="x-small text-info fw-bold mb-1 ms-2">🔵 DİĞER</label>
+                            <textarea id="listDiger" class="form-control bg-slate-glass text-white border-0 rounded-4 small p-3" rows="5" placeholder="İsimleri araya virgül koyarak yazın..."></textarea>
                         </div>
                     </div>
+                    <button onclick="ListeManager.akilliDagit()" class="btn btn-emerald w-100 py-3 fw-bold rounded-pill shadow-success mt-2">AKILLI HAFIZAYI ÇALIŞTIR VE DAĞIT →</button>
                 </div>
-                <div class="col-lg-6 reveal delay-1">
-                    <div class="p-4 p-md-5 bg-emerald-dark text-white rounded-4 shadow-lg position-relative overflow-hidden">
-                        <div class="position-absolute top-0 end-0 p-5 opacity-10">
-                            <i data-lucide="heart" size="200"></i>
-                        </div>
-                        <h4 class="h3 fw-bold mb-4">Paylaşmanın Mutluluğu</h4>
-                        <p class="mb-4 opacity-75">Sitemiz üzerinden yapacağınız kurban kayıtlarında hissenizin dilediğiniz miktarını güvenilir kurumlar aracılığıyla ihtiyaç sahiplerine bağışlayabilirsiniz.</p>
-                        <a href="https://wa.me/905072574034" class="btn btn-emerald-lg px-4 rounded-pill fw-bold">BAĞIŞ BİLGİSİ AL</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Kurban Başvuru Sİhirbazı (Inline Form) -->
-    <section id="wizard" class="py-5 bg-light">
-        <div class="container py-lg-5">
-            <div class="section-header text-center mb-5 reveal">
-                <h2 class="display-4 fw-bold color-emerald">Kurban Kayıt Formu</h2>
-                <p class="text-muted lead">Kurbanlık seçiminizi yapın, formunuzu doldurun ve hemen bize WhatsApp üzerinden ulaştırın.</p>
-            </div>
-            <div class="row justify-content-center reveal delay-1">
-                <div class="col-lg-8">
-                    <div class="bg-white p-4 p-lg-5 rounded-4 shadow-sm">
-                        <!-- Step Progress -->
-                        <div class="text-end mb-2">
-                             <span class="text-uppercase fw-bold text-muted small" style="letter-spacing: 1px;">ADIM <span id="inline-current-step">1</span> / 7</span>
-                        </div>
-                        <div class="progress mb-4 bg-light rounded-pill" style="height: 4px;">
-                            <div id="inline-progress-bar" class="progress-bar rounded-pill" role="progressbar" style="width: 14%; background-color: #ff6b00;"></div>
-                        </div>
-                        
-                        <form id="inline-wizard-form" class="mt-4">
-                            <div id="inline-wizard-steps-container">
-                                <!-- Steps will be injected by JS -->
-                            </div>
-                        </form>
-                        
-                        <div class="d-flex justify-content-between mt-5 border-top pt-4">
-                            <button id="inline-w-prev-btn" class="btn btn-outline-secondary px-4 px-md-5 py-2 rounded-pill d-none">Geri</button>
-                            <button id="inline-w-next-btn" class="btn btn-emerald px-4 px-md-5 py-2 rounded-pill fw-bold ms-auto">İleri <i data-lucide="chevron-right" class="ms-1"></i></button>
+                <!-- 2. ADIM: SONUÇ VE YÖNETİM -->
+                <div id="listeStep2" class="d-none flex-column gap-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <h6 class="text-white small fw-bold mb-0">DAĞITIM SONUÇLARI</h6>
+                        <div class="d-flex gap-2">
+                            <button onclick="ListeManager.showStep(1)" class="btn btn-sm btn-glass-emerald py-1 px-3 rounded-pill x-small">← GERİ GİT</button>
+                            <button onclick="ListeManager.yeniTalebeEkleModali()" class="btn btn-sm btn-emerald py-1 px-3 rounded-pill x-small">+ Yeni Talebe</button>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact & Form -->
-    <section id="contact" class="contact py-5 bg-light">
-        <div class="container py-lg-4">
-            <div class="row g-5 align-items-center">
-                <div class="col-lg-8 mx-auto text-center reveal">
-                    <h2 class="display-4 fw-bold mb-4 color-emerald">Bize Ulaşın</h2>
-                    <p class="text-muted mb-5 lead">Kayıt oluşturmak veya sorularınız için bizi doğrudan arayabilir ya da ofisimizde ziyaret edebilirsiniz.</p>
                     
-                    <div class="row g-4 justify-content-center">
-                        <div class="col-md-6">
-                            <div class="info-card d-flex flex-column align-items-center gap-3 p-5 bg-white rounded-4 shadow-sm border-top border-4 border-emerald h-100 transition-up">
-                                <div class="icon-circle bg-emerald text-white mx-auto shadow-sm">
-                                    <i data-lucide="phone" size="32"></i>
-                                </div>
-                                <span class="text-muted small fw-bold text-uppercase">Telefon Destek Hattı</span>
-                                <a href="tel:05072574034" class="h3 fw-bold text-dark text-decoration-none transition">0507 257 40 34</a>
-                            </div>
+                    <div id="finalDagitimListesi" class="d-flex flex-column gap-2 pb-3" style="max-height:300px; overflow-y:auto;">
+                        <!-- Dağıtım sonuçları buraya gelecek -->
+                    </div>
+
+                    <!-- KAT SORUMLULARI YÖNETİMİ -->
+                    <div class="glass-card p-3 mb-3 bg-dark bg-opacity-50 border border-emerald border-opacity-20">
+                        <h6 class="x-small text-emerald fw-bold mb-3">KAT SORUMLULARINI BELİRLE</h6>
+                        <div id="floorLeadersContainer" class="d-flex flex-column gap-3">
+                            <!-- Her kat için hoca/başkan seçimi buraya gelecek -->
                         </div>
-                        <div class="col-md-6">
-                            <div class="info-card d-flex flex-column align-items-center gap-3 p-5 bg-white rounded-4 shadow-sm border-top border-4 border-emerald h-100 transition-up">
-                                <div class="icon-circle bg-emerald text-white mx-auto shadow-sm">
-                                    <i data-lucide="map-pin" size="32"></i>
-                                </div>
-                                <span class="text-muted small fw-bold text-uppercase">Adresimiz</span>
-                                <a href="https://www.google.com/maps/search/?api=1&query=Beşerli+Sokak+No:+5,+Çınardere,+Pendik,+İstanbul" target="_blank" class="h5 fw-bold text-dark mb-0 text-decoration-none address-link">İstanbul Pendik Çınardere Beşerli Sokak No: 5</a>
+                    </div>
+
+                    <button onclick="ListeManager.pdfUret()" class="btn btn-danger w-100 py-3 fw-bold rounded-pill shadow-danger d-flex align-items-center justify-content-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        PROFESYONEL PDF ÇIKTISI AL (AFİŞ)
+                    </button>
+                </div>
+            </div>
+
+            <!-- İDARECİ PANELİ (COCKPIT) -->
+            <div id="idarecPanel" class="view-panel d-none flex-column w-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald px-3 rounded-pill">← Geri</button>
+                    <h6 class="text-emerald fw-bold mb-0 x-small">İDARECİ KOKPİTİ</h6>
+                    <div style="width:50px"></div>
+                </div>
+                <!-- 1. NABIZ & GENEL DURUM -->
+                <div class="glass-card p-4 mb-4 text-center">
+                    <div class="pulse-circle-container">
+                        <svg width="180" height="180" viewBox="0 0 180 180" style="transform: rotate(-90deg);">
+                            <circle cx="90" cy="90" r="80" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="12"></circle>
+                            <circle id="pulseProgressCircle" cx="90" cy="90" r="80" fill="none" stroke="#10b981" stroke-width="12" stroke-dasharray="502.4" stroke-dashoffset="502.4" style="transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);"></circle>
+                        </svg>
+                        <div class="pulse-label">
+                            <div id="pulseText" class="h1 fw-900 text-white mb-0" style="font-size:3rem;">0%</div>
+                            <div class="x-small text-emerald fw-bold" style="letter-spacing:2px;">BİNA NABZI</div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-center gap-4 mt-2 mb-3">
+                        <div class="text-center">
+                            <div class="h5 fw-bold text-white mb-0" id="cockpit-stat-active">-</div>
+                            <div class="x-small text-muted">Aktif Personel</div>
+                        </div>
+                        <div class="text-center border-start border-secondary border-opacity-25 ps-4">
+                            <div class="h5 fw-bold text-white mb-0" id="cockpit-stat-alerts">0</div>
+                            <div class="x-small text-muted">Kritik Bölge</div>
+                        </div>
+                    </div>
+                    <button onclick="ReportManager.generateMonthly()" class="btn btn-sm btn-glass-emerald w-100 rounded-pill py-2 fw-bold" style="font-size:0.7rem;">📊 AYLIK FAALİYET RAPORU AL</button>
+                </div>
+
+                <!-- 2. BİNA RÖNTGENİ (MATRIX) -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase" style="letter-spacing:1.5px;">Bina Sağlık Matrisi</h6>
+                        <span class="x-small text-muted">Canlı Veri</span>
+                    </div>
+                    <div id="cockpitMatrix" class="cockpit-grid">
+                        <!-- Katlar ve Oda Pikselleri Buraya Gelecek -->
+                    </div>
+                </div>
+
+                <!-- 3. CANLI AKIŞ (FEED) -->
+                <div class="glass-card p-3 mb-4 bg-slate-glass">
+                    <h6 class="x-small text-muted fw-bold mb-3 text-uppercase">Son Aktiviteler</h6>
+                    <div id="cockpitFeed" class="d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;">
+                        <div class="text-center py-4 text-muted small">Veri senkronize ediliyor...</div>
+                    </div>
+                </div>
+
+                <!-- ESKİ FONKSİYONLARA ERİŞİM (Gerekirse) -->
+                <div class="d-flex gap-2 overflow-auto pb-2">
+                    <button onclick="IdarecManager.switchSubTab('grafik')" class="btn btn-glass-emerald btn-sm rounded-pill px-3">📊 Analitik</button>
+                    <button onclick="IdarecManager.switchSubTab('liderlik')" class="btn btn-glass-emerald btn-sm rounded-pill px-3">🏆 Liderlik</button>
+                    <button onclick="IdarecManager.switchSubTab('ariza')" class="btn btn-glass-emerald btn-sm rounded-pill px-3">📝 Arızalar</button>
+                    <button onclick="InventoryManager.ac()" class="btn btn-glass-emerald btn-sm rounded-pill px-3">📦 Malzemeler</button>
+                    <button onclick="IdarecManager.switchSubTab('personel')" class="btn btn-glass-emerald btn-sm rounded-pill px-3">👥 Personel</button>
+                </div>
+            </div>
+
+            <!-- ANALİTİK (SUB-TABS) -->
+            <div id="subTabGrafik" class="idarec-sub-tab d-none mt-4">
+                 <div class="glass-card p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase">Rapor Aktivitesi</h6>
+                        <button onclick="showPanel('idarecPanel')" class="btn btn-sm text-muted">Kapat</button>
+                    </div>
+                    <canvas id="grafikCanvas" height="180"></canvas>
+                </div>
+            </div>
+            <div id="subTabLiderlik" class="idarec-sub-tab d-none mt-4">
+                 <div class="glass-card p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase">Liderlik Tablosu</h6>
+                        <button onclick="showPanel('idarecPanel')" class="btn btn-sm text-muted">Kapat</button>
+                    </div>
+                    <div id="liderlikListesi" class="d-flex flex-column gap-2"></div>
+                </div>
+            </div>
+            <div id="subTabAriza" class="idarec-sub-tab d-none mt-4">
+                 <div class="glass-card p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase">Arıza Kayıtları</h6>
+                        <button onclick="showPanel('idarecPanel')" class="btn btn-sm text-muted">Kapat</button>
+                    </div>
+                    <div id="arizaListesi" class="d-flex flex-column gap-2"></div>
+                </div>
+            </div>
+            <div id="subTabPersonel" class="idarec-sub-tab d-none mt-4">
+                <div class="glass-card p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase">Personel Listesi</h6>
+                        <button onclick="showPanel('idarecPanel')" class="btn btn-sm text-muted">Kapat</button>
+                    </div>
+                    <div id="userListContainer" class="d-flex flex-column gap-2"></div>
+                </div>
+            </div>
+            </div>
+
+            <!-- GÖREVLİ PANELİ (BÖLGE ODAKLI MERKEZ) -->
+            <div id="gorevliPanel" class="view-panel d-none flex-column w-100">
+
+                <!-- 1. HOŞ GELDİN & İLERLEME -->
+                <div class="glass-card banner-card p-4 mb-4 shadow-lg">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <img src="assets/logo_enderun.png" class="avatar-glow" style="width:50px; height:50px; border-width:2px; border-radius:50%; object-fit:cover;">
+                        <div>
+                            <p class="x-small text-muted mb-0 text-uppercase fw-bold">Görevli Paneli</p>
+                            <h2 class="h5 fw-bold text-white mb-0" id="gorevliHocaIsim">-</h2>
+                        </div>
+                        <div class="ms-auto text-end d-flex flex-column gap-2">
+                            <div class="d-flex align-items-center gap-2 justify-content-end">
+                                <div id="gorevliTamamSayi" class="h4 fw-bold text-white mb-0">0/0</div>
+                                <div class="x-small text-emerald fw-bold">BİTEN</div>
+                            </div>
+                            <div class="d-flex gap-2 justify-content-end">
+                                <!-- Emra hocaya özel buton -->
+                                <button id="emraHocaArizaBtn" onclick="showPanel('arizaYonetimPanel'); ArizaManager.renderYonetim();" class="btn btn-sm btn-glass-emerald rounded-pill px-3 py-1 fw-bold d-none" style="font-size:0.65rem;">⚙️ ARIZA YÖNETİMİ</button>
+                                <!-- Burak hocaya özel buton -->
+                                <button id="burakHocaDepoBtn" onclick="InventoryManager.ac()" class="btn btn-sm btn-glass-emerald rounded-pill px-3 py-1 fw-bold d-none" style="font-size:0.65rem;">📦 DEPO YÖNETİMİ</button>
+                                <button onclick="ArizaManager.bildirimModaliAc()" class="btn btn-sm btn-glass-danger rounded-pill px-3 py-1 fw-bold" style="font-size:0.65rem; letter-spacing:0.5px;">⚠️ ARIZA BİLDİR</button>
+                                <button onclick="InventoryManager.useModal()" class="btn btn-sm btn-glass-emerald rounded-pill px-3 py-1 fw-bold" style="font-size:0.65rem; letter-spacing:0.5px;">🧼 MALZEME KULLAN</button>
                             </div>
                         </div>
                     </div>
+                    <div style="height:6px; background:rgba(255,255,255,0.06); border-radius:10px; overflow:hidden;">
+                        <div id="gorevliProgressBar" style="height:100%; width:0%; background:linear-gradient(90deg,#10b981,#34d399); border-radius:10px; transition:width 1s;"></div>
+                    </div>
+                </div>
+
+                <!-- 2. KAT RÖNTGENİ (KÜÇÜK MATRİS) -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="x-small text-muted fw-bold mb-0 text-uppercase" style="letter-spacing:1px;">Kat Durum Haritası</h6>
+                        <span id="gorevliKatAd" class="x-small text-emerald fw-bold">-</span>
+                    </div>
+                    <div id="gorevliFloorMatrix" class="d-flex flex-wrap gap-2 p-3 glass-card bg-slate-glass justify-content-center">
+                        <!-- Katın oda pikselleri buraya gelecek -->
+                    </div>
+                </div>
+
+                <!-- 3. SIRADAKİ GÖREV (FOKUS KART) -->
+                <div id="nextTaskContainer">
+                    <!-- Sıradaki görev kartı buraya gelecek -->
+                </div>
+
+                <!-- TÜM GÖREVLER (Liste) -->
+                <div class="mt-4">
+                    <h6 class="x-small text-muted fw-bold mb-3 text-uppercase">Tüm Odalar</h6>
+                    <div id="gorevliBolumListesi" class="w-100 d-flex flex-column gap-2"></div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white py-5 pt-lg-6">
-        <div class="container">
-            <div class="row g-5 mb-5 border-bottom border-secondary pb-5 text-center text-md-start">
-                <div class="col-md-6">
-                    <a href="#hero" class="footer-logo d-flex align-items-center justify-content-center justify-content-md-start gap-3 mb-4 text-decoration-none text-white">
-                        <img src="assets/logo2.jpg" alt="Logo" class="custom-logo" style="width: 80px; height: 80px;">
+            <!-- KRİTER PANELİ (Görevli Checklist) -->
+            <div id="kriterPanel" class="view-panel d-none flex-column w-100">
+                <div class="glass-card p-4 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
                         <div>
-                            <span class="h4 fw-bold d-block mb-0">Çınardere Kurban</span>
-                            <span class="small opacity-50">Erenler 2012'den beri</span>
+                            <div id="kriterKatAd" class="x-small text-emerald fw-bold text-uppercase">KAT İSMİ</div>
+                            <h4 id="kriterBolumAd" class="h5 fw-bold text-white mb-0">BÖLÜM ADI</h4>
                         </div>
-                    </a>
-                    <p class="opacity-75 pe-lg-5">İslami hassasiyetlere ve hijyen kurallarına en üst düzeyde bağlı kalarak, her yıl binlerce ailemize güvenle kurban hizmeti sunuyoruz.</p>
-                </div>
-                <div class="col-md-3">
-                    <h5 class="h6 fw-bold mb-4 text-emerald">Navigasyon</h5>
-                    <ul class="list-unstyled d-flex flex-column gap-2 small opacity-75">
-                        <li><a href="#hero" class="text-white text-decoration-none">Ana Sayfa</a></li>
-                        <li><a href="#services" class="text-white text-decoration-none">Hizmetlerimiz</a></li>
-                        <li><a href="#pricing" class="text-white text-decoration-none">2026 Hisseler</a></li>
-                        <li><a href="#contact" class="text-white text-decoration-none">İletişim</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3">
-                    <h5 class="h6 fw-bold mb-4 text-emerald">İletişim</h5>
-                    <ul class="list-unstyled d-flex flex-column gap-2 small opacity-75">
-                        <li class="d-flex align-items-center gap-2 link-hover"><i data-lucide="phone" size="14"></i> 0507 257 40 34</li>
-                        <li class="d-flex align-items-start gap-2 link-hover">
-                            <i data-lucide="map-pin" size="14" class="mt-1"></i>
-                            <a href="https://www.google.com/maps/search/?api=1&query=Beşerli+Sokak+No:+5,+Çınardere,+Pendik,+İstanbul" target="_blank" class="text-white text-decoration-none address-link">İstanbul, Pendik<br>Çınardere Mahallesi<br>Beşerli Sokak No: 5</a>
-                        </li>
-                    </ul>
+                        <span id="kriterSayac" class="badge badge-premium rounded-pill px-3 py-2 fs-6">0/0</span>
+                    </div>
+                    
+                    <div id="kriterListesi" class="d-flex flex-column gap-2 mb-4">
+                        <!-- Checkboxlar buraya gelecek -->
+                    </div>
+
+                    <div class="d-flex gap-2 mb-3">
+                        <button onclick="document.getElementById('gorevliFoto').click()" class="btn btn-glass-emerald flex-grow-1 py-3 rounded-4">
+                            <i data-lucide="camera" class="me-2"></i> Fotoğraf
+                        </button>
+                        <button onclick="VoiceManager.start()" class="btn btn-glass-emerald flex-grow-1 py-3 rounded-4">
+                            <i data-lucide="mic" class="me-2"></i> Sesli Not
+                        </button>
+                    </div>
+                    <input type="file" id="gorevliFoto" capture="environment" accept="image/*" class="d-none">
+                    
+                    <textarea id="gorevliNot" class="form-control bg-slate-glass text-white border-secondary mb-4 rounded-4 p-3 shadow-none" rows="3" placeholder="Vardiya notu veya sorun bildirin..."></textarea>
+                    
+                    <button onclick="KriterManager.veriyiKaydet()" class="btn btn-emerald w-100 py-3 fw-bold rounded-pill mb-3 shadow-success">RAPORU GÖNDER</button>
+                    <button onclick="_routeUser()" class="btn btn-outline-light w-100 py-2 fw-bold rounded-pill">İPTAL ET VE GERİ DÖN</button>
                 </div>
             </div>
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
-                <p class="small opacity-50 mb-0">&copy; 2026 Çınardere Kurban. Tüm Hakları Saklıdır.</p>
-                <div class="footer-credits small opacity-50">Tasarım & Modernizasyon: <span class="text-emerald fw-bold">Alihan Divanlı</span></div>
+
+            <!-- MÜFETTİŞ PANELİ (CANLI DENETİM AKIŞI) -->
+            <div id="adminPanel" class="view-panel d-none flex-column w-100">
+                <div class="d-flex justify-content-start mb-3">
+                    <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald px-3 rounded-pill">← Paneli Kapat</button>
+                </div>
+                <!-- BINA ONAY ÖZETİ -->
+                <div class="glass-card banner-card p-4 mb-4 text-center shadow-lg">
+                    <h2 class="h4 fw-bold text-white mb-1">Denetim Akışı</h2>
+                    <p class="x-small text-muted mb-2">Canlı olarak gelen temizlik raporlarını onaylayın</p>
+                    <div id="mufettisBekleyenBadge" class="badge bg-warning text-dark rounded-pill px-3 py-2" style="font-size:0.85rem;">Bekleyen Raporlar Yükleniyor...</div>
+                </div>
+
+                <!-- AKIŞ KONTEYNERI -->
+                <div id="mufettisStream" class="d-flex flex-column gap-4 pb-5">
+                    <!-- Rapor Kartları Buraya Gelecek -->
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-emerald" role="status"></div>
+                        <div class="text-muted mt-3 small">Denetim akışı hazırlanıyor...</div>
+                    </div>
+                </div>
+
+                <div id="mufettisOdakModu" class="d-none"></div>
+            </div>
+
+            <!-- ENVANTER PANELİ -->
+            <div id="inventoryPanel" class="view-panel d-none flex-column w-100">
+                <div class="glass-card banner-card p-4 mb-4 text-center shadow-lg">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <button onclick="handleBack()" class="btn btn-sm btn-glass-emerald rounded-pill px-3">← Geri</button>
+                        <h2 class="h4 fw-bold text-white mb-0">Depo & Envanter</h2>
+                        <div id="inventoryAddBtnWrap" class="d-none">
+                            <button onclick="InventoryManager.addItemModal()" class="btn btn-sm btn-emerald px-3 rounded-pill">+ Yeni Ekle</button>
+                        </div>
+                    </div>
+                    <p class="x-small text-muted mb-0">Temizlik malzemeleri ve stok durumu</p>
+                </div>
+                
+                <div id="inventoryItems" class="row g-3 pb-5">
+                    <!-- Ürün Listesi Gelecek -->
+                </div>
+            </div>
+
+        </main>
+
+        <!-- FLOATING CHAT BUTTON (SAHA SOHBETİ) -->
+        <button onclick="ChatManager.toggle()" title="Saha Sohbeti"
+            style="position:fixed; bottom:110px; left:16px; z-index:2500;
+                   background: linear-gradient(135deg, #10b981, #059669);
+                   border: none; border-radius: 50px;
+                   width: 72px; height: 52px;
+                   display: flex; align-items: center; justify-content: center;
+                   box-shadow: 0 0 30px rgba(16,185,129,0.7), 0 0 60px rgba(16,185,129,0.3), inset 0 1px 1px rgba(255,255,255,0.3);
+                   animation: neonPulse 2.5s infinite alternate;
+                   cursor: pointer; transition: transform 0.2s ease;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <span style="position:absolute; top:5px; right:5px; width:9px; height:9px; background:#ef4444; border-radius:50%; border:2px solid #050505;"></span>
+        </button>
+
+        <!-- CHAT OVERLAY (SAHA SOHBETİ PANELİ) -->
+        <div id="chatOverlay" class="d-flex flex-column position-fixed h-100 shadow-lg" style="top:0; left:-100%; width: 100%; max-width: 380px; z-index: 3000; transition: left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-right: 1px solid rgba(16, 185, 129, 0.15); backdrop-filter: blur(50px) saturate(200%); background: linear-gradient(180deg, rgba(5,5,10,0.95) 0%, rgba(10,15,20,0.98) 100%);">
+            
+            <!-- BAŞLIK -->
+            <div class="p-4 d-flex justify-content-between align-items-center" style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                <div class="d-flex align-items-center gap-3">
+                    <img src="assets/logo_enderun_white.png" style="width:36px; height:36px; border-radius:8px;" alt="Logo">
+                    <div>
+                        <h4 class="h6 fw-bold text-white mb-0">Saha Sohbeti</h4>
+                        <span style="font-size:0.65rem; color:#10b981;">CANLI • TÜM PERSONEL</span>
+                    </div>
+                </div>
+                <button onclick="ChatManager.toggle()" class="btn d-flex align-items-center justify-content-center rounded-circle border-0" style="width:36px; height:36px; background:rgba(255,255,255,0.06);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            
+            <!-- KRİTİK NOT -->
+            <div class="px-4 py-3" style="background: rgba(220,38,38,0.08); border-bottom: 1px solid rgba(220,38,38,0.2);">
+                <div class="d-flex align-items-start gap-2">
+                    <span style="font-size:1rem;">📌</span>
+                    <div>
+                        <div class="badge bg-danger rounded-pill mb-1" style="font-size:0.6rem;">Kritik Not</div>
+                        <div id="pinnedNotes" class="text-danger fw-bold" style="font-size:0.75rem;">Bugün 2. Katın suyu 14:00'e kadar kesik olacak.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MESAJLAR + BOŞ DURUM -->
+            <div id="chatMessages" class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3" style="position:relative;">
+                <!-- Boş durum görseli -->
+                <div id="chatEmptyState" class="d-flex flex-column align-items-center justify-content-center h-100 text-center" style="opacity:0.5;">
+        <div id="chatOverlay" class="chat-overlay">
+            <div class="p-3 d-flex align-items-center gap-3 border-bottom border-secondary border-opacity-10 bg-dark bg-opacity-80" style="z-index: 10;">
+                <button onclick="ChatManager.toggle()" class="btn btn-sm text-white border-0 p-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                </button>
+                <div class="d-flex align-items-center gap-2">
+                    <img src="assets/logo_enderun_white.png" style="width:36px; height:36px; border-radius:50%;" alt="L">
+                    <div>
+                        <div class="fw-bold text-white small">TopClean Chat</div>
+                        <div class="x-small text-emerald fw-bold" style="font-size:0.6rem;">Online / Topluluk</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="chatMessages">
+                <div id="chatEmptyState" class="flex-column align-items-center justify-content-center h-100 opacity-50" style="display:none;">
+                    <div class="h1">💬</div>
+                    <div class="small">Henüz mesaj yok...</div>
+                </div>
+                <!-- Mesajlar buraya gelecek -->
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Mesaj yazın..." onkeydown="if(event.key==='Enter') ChatManager.send()">
+                <button onclick="ChatManager.send()" class="btn btn-success rounded-circle d-flex align-items-center justify-content-center p-0" style="width:42px; height:42px; background:#00a884; border:none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:2px;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
             </div>
         </div>
-    </footer>
 
-    <!-- Fixed Mobile Bottom Bar -->
-    <div class="mobile-bottom-bar d-md-none position-fixed bottom-0 start-0 w-100 bg-white shadow-lg d-flex z-1000 border-top border-light">
-        <a href="tel:05072574034" class="flex-grow-1 bottom-item d-flex flex-column align-items-center justify-content-center py-2 text-decoration-none text-dark transition">
-            <i data-lucide="phone"></i>
-            <span class="x-small fw-bold mt-1">Hemen Ara</span>
-        </a>
-        <a href="https://wa.me/905072574034" class="flex-grow-1 bottom-item whatsapp d-flex flex-column align-items-center justify-content-center py-2 text-decoration-none text-white transition bg-whatsapp">
-            <i data-lucide="message-circle"></i>
-            <span class="x-small fw-bold mt-1">WhatsApp</span>
-        </a>
+        <div id="arizaYonetimPanel" class="view-panel d-none flex-column w-100">
+            <div class="glass-card banner-card p-4 mb-4 text-center shadow-lg">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald rounded-pill px-3">← Geri</button>
+                    <h2 class="h4 fw-bold text-white mb-0">Arıza Yönetimi</h2>
+                    <div style="width:60px;"></div>
+                </div>
+                <p class="x-small text-muted mb-0">Binadaki teknik sorunları buradan yönetin</p>
+            </div>
+            <div id="arizaYonetimListesi" class="d-flex flex-column gap-3 pb-5">
+                <!-- Arıza kartları buraya gelecek -->
+            </div>
+        </div>
+
+        <!-- FLOATING BOTTOM NAV -->
+        <nav class="mobile-nav d-md-none">
+            <div onclick="_routeUser()" class="nav-item active"><i data-lucide="layout-dashboard"></i><span>Panel</span></div>
+            <div onclick="ChatManager.toggle()" class="nav-item"><i data-lucide="message-square"></i><span>Saha</span></div>
+            <div onclick="InventoryManager.ac()" class="nav-item"><i data-lucide="package"></i><span>Depo</span></div>
+        </nav>
     </div>
 
-    <!-- Wizard Modal was removed, now inline at #wizard above -->
+    <!-- ARIZA BİLDİRİM MODALI -->
+    <div class="modal fade" id="arizaModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-card border-0">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title text-white fw-bold">⚠️ Arıza Bildirimi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="x-small text-emerald fw-bold mb-2">ARIZALI BÖLGE SEÇİN</label>
+                        <select id="arizaBolumSec" class="form-select btn-glass-emerald border-0 text-white rounded-4 py-3">
+                            <!-- Katın odaları buraya gelecek -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="x-small text-emerald fw-bold mb-2">ARIZA DETAYI</label>
+                        <textarea id="arizaDetayText" class="form-control btn-glass-emerald border-0 text-white rounded-4 py-3" rows="3" placeholder="Lamba patladı, musluk akıtıyor vb."></textarea>
+                    </div>
+                    <button onclick="ArizaManager.kaydet()" class="btn btn-danger w-100 py-3 rounded-pill fw-bold shadow-danger mt-2">BİLDİRİMİ GÖNDER</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="app.js?v=3"></script>
+    <!-- PDF TEMPLATE (HIDDEN) -->
+    <div id="pdfExportTemplate" style="position: absolute; left: -9999px; top: 0; width: 800px; background: white; font-family: 'Inter', sans-serif; color: #333;">
+        <!-- Bu alan JS ile dinamik doldurulacak -->
+    </div>
+
+    <script src="app.js?v=premium_final_v1"></script>
 </body>
 </html>
