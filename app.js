@@ -92,7 +92,7 @@ const usersData = [
     { name: "Oğuz Erol", pass: "1234", kat: "Akademik Kat", rol: "gorevli" },
     { name: "Burakhan Karaoğlan", pass: "1234", kat: "Ara Kat", rol: "gorevli", depo: true },
     { name: "Görevli", pass: "1234", kat: "Yatakhane Katı", rol: "gorevli" },
-    { name: "Emra Karabalak", pass: "1234", kat: "Sosyal Alan Katı", rol: "gorevli", arizaYonetim: true },
+    { name: "Emra Karabalak", pass: "1234", kat: "Sosyal Alan Katı", rol: "gorevli" },
     { name: "İç Mesul", pass: "1111", kat: "", rol: "mufettis" },
     { name: "İdareci", pass: "1111", kat: "", rol: "idareci" },
     { name: "Liste Sorumlusu", pass: "1111", kat: "", rol: "liste" }
@@ -125,26 +125,6 @@ try {
 function todayISO() { return new Date().toISOString().split('T')[0]; }
 function toShortDate(ts) { return new Date(ts).toISOString().split('T')[0]; }
 function getData() { return allReports; }
-
-// --- LAZY SCRIPT LOADER ---
-function loadScript(src) {
-    return new Promise((resolve, reject) => {
-        if (document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
-        const s = document.createElement('script');
-        s.src = src; s.onload = resolve; s.onerror = reject;
-        document.head.appendChild(s);
-    });
-}
-function loadJsPDF() {
-    return loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js')
-        .then(() => loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js'));
-}
-function loadHtml2pdf() {
-    return loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
-}
-function loadChartJs() {
-    return loadScript('https://cdn.jsdelivr.net/npm/chart.js');
-}
 
 function saveData(item) {
     const data = allReports;
@@ -212,20 +192,11 @@ function saveInventory(item) {
 const NotificationManager = {
     askPermission: function() {
         if (!("Notification" in window)) return;
-        if (Notification.permission === 'default') {
-            Notification.requestPermission();
-        }
+        Notification.requestPermission();
     },
     notify: function(title, body) {
         if (Notification.permission === "granted") {
             new Notification(title, { body, icon: 'icon-512.png' });
-        } else {
-            // In-app fallback toast
-            const toast = document.createElement('div');
-            toast.style.cssText = 'position:fixed;bottom:90px;right:16px;z-index:9999;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.4);backdrop-filter:blur(20px);color:#fff;padding:12px 16px;border-radius:14px;max-width:300px;font-size:0.8rem;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,0.4);transition:opacity 0.5s ease;';
-            toast.innerHTML = `<div style="color:#34d399;font-size:0.7rem;font-weight:800;margin-bottom:3px;">${title}</div><div style="opacity:0.85;">${body}</div>`;
-            document.body.appendChild(toast);
-            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 500); }, 4000);
         }
     }
 };
@@ -233,7 +204,7 @@ const NotificationManager = {
 // --- REPORT MANAGER ---
 const ReportManager = {
     generateMonthly: function() {
-        loadJsPDF().then(() => {
+        if (typeof jspdf === 'undefined') return Swal.fire("Hata", "PDF kütüphanesi yüklenemedi.", "error");
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const ayIsmi = new Date().toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' });
@@ -256,7 +227,7 @@ const ReportManager = {
 
         // 2. ARIZA DURUMU
         doc.setFontSize(16); doc.text("2. Teknik Arızalar", 20, 85);
-        const resolved = allArizalar.filter(a => a.durum === 'cozuldu').length;
+        const resolved = allArizalar.filter(a => a.cozuldu).length;
         doc.text(`Bildirilen Toplam Arıza: ${allArizalar.length}`, 25, 95);
         doc.text(`Giderilen Arıza: ${resolved}`, 25, 100);
         doc.text(`Bekleyen Arıza: ${allArizalar.length - resolved}`, 25, 105);
@@ -275,7 +246,6 @@ const ReportManager = {
 
         doc.save(`TopClean_Faaliyet_Raporu_${ayIsmi}.pdf`);
         Swal.fire("Başarılı", "Aylık faaliyet raporu oluşturuldu.", "success");
-        }).catch(() => Swal.fire("Hata", "PDF kütüphanesi yüklenemedi.", "error"));
     }
 };
 
@@ -310,7 +280,7 @@ const InventoryManager = {
         if (!container) return;
         
         const btnWrap = document.getElementById('inventoryAddBtnWrap');
-        const isBurak = currentUser && currentUser.depo === true;
+        const isBurak = currentUser && currentUser.name === "Burakhan Karaoğlan";
         
         if (btnWrap) btnWrap.classList.toggle('d-none', !isBurak);
         if (!Array.isArray(allInventory)) allInventory = [];
@@ -771,32 +741,30 @@ const IdarecManager = {
             labels.push(label); counts.push(count);
         }
         
-        const drawChart = () => {
-            this.chartInstance = new Chart(canvas, {
-                type: 'bar',
-                data: {
-                    labels,
-                    datasets: [{ label: 'Rapor Sayısı', data: counts,
-                        backgroundColor: 'rgba(16,185,129,0.3)',
-                        borderColor: '#10b981', borderWidth: 2, borderRadius: 8 }]
-                },
-                options: {
-                    responsive: true, plugins: { legend: { display: false } },
-                    scales: {
-                        x: { ticks: { color: '#888' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                        y: { ticks: { color: '#888', stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } }
-                    }
-                }
-            });
-        };
-
-        if (typeof Chart !== 'undefined') {
-            drawChart();
-        } else {
-            loadChartJs().then(drawChart).catch(() => {
-                if (canvas.parentElement) canvas.parentElement.innerHTML += '<div class="text-muted small text-center">Grafik yüklenemedi.</div>';
-            });
+        if (typeof Chart === 'undefined') {
+            canvas.parentElement.innerHTML += '<div class="text-muted small text-center">Chart.js yüleniyor...</div>';
+            const s = document.createElement('script');
+            s.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+            s.onload = () => this.renderGrafik();
+            document.head.appendChild(s); return;
         }
+        
+        this.chartInstance = new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{ label: 'Rapor Sayısı', data: counts,
+                    backgroundColor: 'rgba(16,185,129,0.3)',
+                    borderColor: '#10b981', borderWidth: 2, borderRadius: 8 }]
+            },
+            options: {
+                responsive: true, plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { color: '#888' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    y: { ticks: { color: '#888', stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                }
+            }
+        });
     },
 
     // 4. LİDERLİK - Personel sıralama
@@ -1236,17 +1204,12 @@ const ListeManager = {
             didOpen: () => { Swal.showLoading(); }
         });
 
-        loadHtml2pdf().then(() => {
         html2pdf().set(opt).from(container).save().then(() => {
             Swal.fire("Başarılı", "Profesyonel afişiniz indirildi!", "success");
             document.body.removeChild(container);
         }).catch(err => {
             console.error("PDF Error:", err);
             Swal.fire("Hata", "PDF üretilirken bir sorun oluştu.", "error");
-            document.body.removeChild(container);
-        });
-        }).catch(() => {
-            Swal.fire("Hata", "PDF kütüphanesi yüklenemedi.", "error");
             document.body.removeChild(container);
         });
     }
@@ -1489,12 +1452,7 @@ function handleLogin(e) {
     const name = document.getElementById('userSelect').value;
     const pass = document.getElementById('userPass').value;
     const user = usersData.find(u => u.name === name && u.pass === pass);
-    if (user) { 
-        currentUser = user; 
-        localStorage.setItem('topclean_session', JSON.stringify(user)); 
-        NotificationManager.askPermission();
-        _routeUser(); 
-    }
+    if (user) { currentUser = user; localStorage.setItem('topclean_session', JSON.stringify(user)); _routeUser(); }
     else Swal.fire("Hata", "Hatalı şifre!", "error");
 }
 
@@ -1509,20 +1467,20 @@ function _routeUser() {
         showPanel("gorevliPanel"); 
         loadGorevliPanel(currentUser.kat);
         const emraBtn = document.getElementById('emraHocaArizaBtn');
-        if (emraBtn) emraBtn.classList.toggle('d-none', !currentUser.arizaYonetim);
+        if (emraBtn) emraBtn.classList.toggle('d-none', currentUser.name !== "Emra Karabalak");
         
         const depoBtn = document.getElementById('burakHocaDepoBtn');
-        if (depoBtn) depoBtn.classList.toggle('d-none', !currentUser.depo);
+        if (depoBtn) depoBtn.classList.toggle('d-none', currentUser.name !== "Burakhan Karaoğlan");
     }
 }
 
 const ArizaManager = {
     bildirimModaliAc: function() {
         const select = document.getElementById('arizaBolumSec');
-        if (!select || !currentUser || !currentUser.kat) return;
+        if (!select || !currentUser.kat) return;
         const bolumler = Object.keys(katlar[currentUser.kat] || {});
         select.innerHTML = bolumler.map(b => `<option value="${b}">${b}</option>`).join('');
-        const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('arizaModal'));
+        const modal = new bootstrap.Modal(document.getElementById('arizaModal'));
         modal.show();
     },
     kaydet: function() {
@@ -1531,9 +1489,7 @@ const ArizaManager = {
         if (!detay) return Swal.fire("Hata", "Lütfen arıza detayını yazın.", "error");
         const yeniAriza = { kat: currentUser.kat, bolum: bolum, gorevli: currentUser.name, detay: detay, tarih: new Date().toISOString(), durum: "bekliyor" };
         saveAriza(yeniAriza);
-        const modalEl = document.getElementById('arizaModal');
-        const modal = bootstrap.Modal.getInstance(modalEl) || bootstrap.Modal.getOrCreateInstance(modalEl);
-        modal.hide();
+        bootstrap.Modal.getInstance(document.getElementById('arizaModal')).hide();
         document.getElementById('arizaDetayText').value = "";
         Swal.fire("Başarılı", "Arıza bildirimi iletildi.", "success");
         loadGorevliPanel(currentUser.kat);
@@ -1552,7 +1508,7 @@ const ArizaManager = {
                     <div class="x-small text-muted">${new Date(a.tarih).toLocaleDateString('tr-TR')}</div>
                 </div>
                 <div class="d-flex flex-wrap gap-2">
-                    <button onclick="ArizaManager.durumGuncelle('${a.id}', 'cozulemedi')" class="btn btn-sm btn-outline-danger flex-grow-1 rounded-pill ${(a.durum==='cozulemedi' || a.durum==='bekliyor')?'active':''}">Bekliyor</button>
+                    <button onclick="ArizaManager.durumGuncelle('${a.id}', 'cozulemedi')" class="btn btn-sm btn-outline-danger flex-grow-1 rounded-pill ${a.durum==='cozulemedi'?'active':''}">Bekliyor</button>
                     <button onclick="ArizaManager.durumGuncelle('${a.id}', 'surec')" class="btn btn-sm btn-outline-warning flex-grow-1 rounded-pill ${a.durum==='surec'?'active':''}">Süreçte</button>
                     <button onclick="ArizaManager.durumGuncelle('${a.id}', 'cozuldu')" class="btn btn-sm btn-outline-success flex-grow-1 rounded-pill">Çözüldü</button>
                 </div>
@@ -1565,21 +1521,14 @@ const ArizaManager = {
     }
 };
 
-// --- FIREBASE LISTENER REFERENCES (cleanup için) ---
-const _listeners = {};
-
 function syncFromCloud() {
     if (!db) return;
     
-    // Önceki dinleyicileri temizle
-    if (_listeners.reports) { db.ref('reports').off('value', _listeners.reports); }
-    if (_listeners.arizalar) { db.ref('arizalar').off('value', _listeners.arizalar); }
-    if (_listeners.inventory) { db.ref('inventory').off('value', _listeners.inventory); }
-
     // Raporları dinle
-    _listeners.reports = db.ref('reports').on('value', snap => {
+    db.ref('reports').on('value', snap => {
         if (snap.val()) {
             allReports = Object.values(snap.val());
+            // Eğer idareci veya müfettiş panelindeysek paneli tazele
             if (currentUser) {
                 if (currentUser.rol === 'idareci') IdarecManager.renderCockpit();
                 if (currentUser.rol === 'mufettis') MufettisFocus.renderStream();
@@ -1589,29 +1538,24 @@ function syncFromCloud() {
     });
 
     // Arızaları dinle
-    _listeners.arizalar = db.ref('arizalar').on('value', snap => {
-        allArizalar = snap.val() ? Object.values(snap.val()) : [];
-        const arizaPanel = document.getElementById('arizaYonetimPanel');
-        if (arizaPanel && !arizaPanel.classList.contains('d-none')) ArizaManager.renderYonetim();
-        if (currentUser && currentUser.rol === 'idareci') IdarecManager.renderAriza();
+    db.ref('arizalar').on('value', snap => {
+        if (snap.val()) {
+            allArizalar = Object.values(snap.val());
+            const arizaPanel = document.getElementById('arizaYonetimPanel');
+            if (arizaPanel && !arizaPanel.classList.contains('d-none')) ArizaManager.renderYonetim();
+            if (currentUser && currentUser.rol === 'idareci') IdarecManager.renderAriza();
+        }
     });
 
     // Envanteri dinle
-    _listeners.inventory = db.ref('inventory').on('value', snap => {
+    db.ref('inventory').on('value', snap => {
         if (snap.val()) {
             allInventory = Object.values(snap.val());
             const invPanel = document.getElementById('inventoryPanel');
             if (invPanel && !invPanel.classList.contains('d-none')) InventoryManager.render();
-            if (currentUser && currentUser.rol === 'idareci') IdarecManager.renderSkor();
+            if (currentUser && currentUser.rol === 'idareci') IdarecManager.renderSkor(); // Skoru tazele
         }
     });
-}
-
-function stopCloudSync() {
-    if (!db) return;
-    if (_listeners.reports) { db.ref('reports').off('value', _listeners.reports); _listeners.reports = null; }
-    if (_listeners.arizalar) { db.ref('arizalar').off('value', _listeners.arizalar); _listeners.arizalar = null; }
-    if (_listeners.inventory) { db.ref('inventory').off('value', _listeners.inventory); _listeners.inventory = null; }
 }
 
 // --- THEME MANAGER ---
@@ -1625,10 +1569,6 @@ function toggleTheme() {
     if (icon) {
         icon.setAttribute('data-lucide', isLight ? 'moon' : 'sun');
         if (typeof lucide !== 'undefined') lucide.createIcons();
-    }
-
-    if (typeof ListeManager !== 'undefined' && ListeManager.renderLeadersUI) {
-        ListeManager.renderLeadersUI();
     }
 }
 
@@ -1650,7 +1590,6 @@ function spawnBubble(container, isBurst = false) {
     bubble.style.height = size + 'px';
     bubble.style.left = Math.random() * 100 + '%';
     bubble.style.bottom = isBurst ? '0' : '-60px';
-    
     if (isBurst) {
         bubble.style.animationDuration = (0.5 + Math.random() * 1.5) + 's';
         bubble.style.background = 'radial-gradient(circle at 30% 30%, #34d399, #10b981)';
@@ -1663,30 +1602,101 @@ function spawnBubble(container, isBurst = false) {
     if (isBurst) setTimeout(() => bubble.remove(), 2000);
 }
 
-function loginReveal() {
-    const landing = document.getElementById('loginLanding');
-    const formWrap = document.getElementById('loginForm-wrap');
-    const container = document.getElementById('loginBubbles');
-    if (!landing || !formWrap) return;
-    
-    for (let i = 0; i < 60; i++) {
-        setTimeout(() => spawnBubble(container, true), i * 10);
+function toggleTheme() {
+    const body = document.body;
+    body.classList.toggle('light-mode');
+    const isLight = body.classList.contains('light-mode');
+    localStorage.setItem('topclean_theme', isLight ? 'light' : 'dark');
+    if (typeof ListeManager !== 'undefined' && ListeManager.renderLeadersUI) {
+        ListeManager.renderLeadersUI();
+    }
+}
+
+// ============================================================
+// AERO-EMERALD LOGIN ANIMATION ENGINE
+// ============================================================
+function initAeroBackground() {
+    const particlesEl = document.getElementById('particles');
+    const dataLinesEl = document.getElementById('dataLines');
+    if (!particlesEl || !dataLinesEl) return;
+
+    // -- PARTICLES --
+    for (let i = 0; i < 35; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = 1 + Math.random() * 3;
+        p.style.cssText = `
+            width: ${size}px;
+            height: ${size}px;
+            left: ${Math.random() * 100}%;
+            animation-duration: ${8 + Math.random() * 15}s;
+            animation-delay: ${Math.random() * 10}s;
+            opacity: ${0.3 + Math.random() * 0.7};
+        `;
+        particlesEl.appendChild(p);
     }
 
-    landing.style.opacity = '0';
-    landing.style.transform = 'translateY(-20px) scale(0.95)';
-    landing.style.filter = 'blur(10px)';
-    
-    setTimeout(() => {
-        landing.style.display = 'none';
-        formWrap.style.display = 'block';
-        setTimeout(() => {
-            formWrap.style.opacity = '1';
-            formWrap.style.transform = 'scale(1)';
-            formWrap.style.filter = 'blur(0px)';
-            formWrap.style.pointerEvents = 'auto';
-        }, 50);
-    }, 500);
+    // -- DATA LINES --
+    for (let i = 0; i < 8; i++) {
+        const line = document.createElement('div');
+        line.className = 'data-line';
+        const width = 100 + Math.random() * 200;
+        line.style.cssText = `
+            top: ${Math.random() * 100}%;
+            width: ${width}px;
+            animation-duration: ${5 + Math.random() * 8}s;
+            animation-delay: ${Math.random() * 6}s;
+        `;
+        dataLinesEl.appendChild(line);
+    }
+}
+
+function initGlitchEffect() {
+    const el = document.getElementById('glitchTitle');
+    if (!el) return;
+    setInterval(() => {
+        el.classList.add('glitching');
+        setTimeout(() => el.classList.remove('glitching'), 200);
+    }, 4000 + Math.random() * 3000);
+}
+
+function initPasswordToggle() {
+    const toggle = document.getElementById('togglePassword');
+    const passInput = document.getElementById('userPass');
+    if (!toggle || !passInput) return;
+    toggle.addEventListener('click', () => {
+        const isPass = passInput.type === 'password';
+        passInput.type = isPass ? 'text' : 'password';
+        // swap icon
+        toggle.setAttribute('data-lucide', isPass ? 'eye-off' : 'eye');
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    });
+}
+
+function setLoginBtnLoading(loading, success = false) {
+    const btn = document.getElementById('loginBtn');
+    if (!btn) return;
+    const spinner = btn.querySelector('.spinner');
+    const check = btn.querySelector('.success-check');
+    const text = btn.querySelector('.btn-text');
+    if (loading) {
+        btn.classList.add('loading');
+        btn.disabled = true;
+        if (spinner) spinner.style.display = 'inline-block';
+        if (text) text.textContent = 'GİRİŞ YAPILIYOR...';
+    } else if (success) {
+        if (spinner) spinner.style.display = 'none';
+        if (check) check.style.display = 'inline';
+        if (text) text.textContent = 'BAŞARILI!';
+        btn.style.borderColor = '#00ff88';
+        btn.style.background = 'rgba(0,255,136,0.15)';
+    } else {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+        if (spinner) spinner.style.display = 'none';
+        if (check) check.style.display = 'none';
+        if (text) text.textContent = 'GİRİŞ YAP';
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -1701,18 +1711,47 @@ document.addEventListener("DOMContentLoaded", () => {
         currentUser = JSON.parse(s); 
         _routeUser(); 
     } else { 
-        showPanel("loginPanel"); 
+        showPanel("loginPanel");
+        // Boot Aero-Emerald login animations
+        setTimeout(() => {
+            initAeroBackground();
+            initGlitchEffect();
+            initPasswordToggle();
+        }, 100);
     }
     
     syncFromCloud();
-    initLoginBubbles();
-    
-    document.getElementById('loginForm')?.addEventListener('submit', handleLogin);
+
+    // ---- LOGIN FORM: New .login-btn submit handler ----
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            setLoginBtnLoading(true);
+            // Small artificial delay for the cyberpunk feel
+            await new Promise(r => setTimeout(r, 600));
+            const result = handleLogin(e);
+            // If handleLogin returns false (bad credentials), stop loader
+            // handleLogin calls Swal internally and returns nothing on success
+            if (result === false) {
+                setLoginBtnLoading(false);
+            } else {
+                setLoginBtnLoading(false, true);
+                // Give success animation a moment before routing
+                setTimeout(() => {}, 500);
+            }
+        });
+    }
+
     document.getElementById('logoutBtn')?.addEventListener('click', () => { 
-        stopCloudSync();
         localStorage.removeItem('topclean_session'); 
         currentUser = null; 
-        showPanel("loginPanel"); 
+        showPanel("loginPanel");
+        setTimeout(() => {
+            initAeroBackground();
+            initGlitchEffect();
+            initPasswordToggle();
+        }, 150);
     });
     
     if (typeof lucide !== 'undefined') lucide.createIcons();
