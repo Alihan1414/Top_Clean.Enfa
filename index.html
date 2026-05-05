@@ -76,6 +76,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 
     <link rel="stylesheet" href="style.css?v=premium_final_v1">
+    <link rel="stylesheet" href="login.css?v=yamanevler_v1">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-512.png">
 </head>
@@ -177,69 +178,98 @@
         <main id="mainContainer" class="container py-4">
             
             <!-- 1. LOGIN PANEL -->
-            <div id="loginPanel" class="view-panel active d-flex align-items-center justify-content-center w-100" style="min-height: 100vh; position: relative; overflow: hidden; background: var(--bg-main);">
+            <div id="loginPanel" class="view-panel active d-flex align-items-center justify-content-center w-100" style="min-height: 100vh; position: relative; overflow: hidden; background: #040a12;">
 
-                <!-- Aero-Emerald Background -->
-                <div class="bg-container">
-                    <div class="grid-lines"></div>
-                    <div class="particles" id="particles"></div>
+                <!-- Animated Background -->
+                <div class="login-bg-container">
+                    <!-- Gradient Orbs -->
+                    <div class="login-orb login-orb-1"></div>
+                    <div class="login-orb login-orb-2"></div>
+                    <div class="login-orb login-orb-3"></div>
+                    <!-- Grid -->
+                    <div class="login-grid-overlay"></div>
+                    <!-- Particles -->
+                    <div class="login-particles" id="particles"></div>
+                    <!-- Data Lines -->
                     <div class="data-lines" id="dataLines"></div>
                 </div>
 
                 <!-- Scan Line -->
-                <div class="scan-line"></div>
+                <div class="login-scan-line"></div>
 
                 <!-- Main Card -->
-                <div class="login-card">
-                    <!-- Corner Lights -->
-                    <div class="corner-light cl-tl"></div>
-                    <div class="corner-light cl-tr"></div>
-                    <div class="corner-light cl-bl"></div>
-                    <div class="corner-light cl-br"></div>
-                    <div class="top-glow"></div>
+                <div class="login-card-v2">
+                    <!-- Top Accent Bar -->
+                    <div class="login-card-accent"></div>
+                    
+                    <!-- Corner Accents -->
+                    <div class="lc-corner lc-tl"></div>
+                    <div class="lc-corner lc-tr"></div>
+                    <div class="lc-corner lc-bl"></div>
+                    <div class="lc-corner lc-br"></div>
 
                     <!-- Logo Section -->
-                    <div class="logo-section">
-                        <img src="icon-512.png" alt="Enderun Bilişim" class="logo-img" style="width:120px; border-radius:24px;">
+                    <div class="login-logo-area">
+                        <div class="login-logo-glow"></div>
+                        <img src="assets/logo_yamanevler.png" alt="Yamanevler Enderun Bilişim" class="login-logo-img">
                     </div>
 
-                    <!-- Title -->
-                    <div class="login-title glitch-text" id="glitchTitle">SİSTEME GİRİŞ</div>
+                    <!-- Divider -->
+                    <div class="login-divider">
+                        <span class="login-divider-line"></span>
+                        <span class="login-divider-text">SİSTEM GİRİŞİ</span>
+                        <span class="login-divider-line"></span>
+                    </div>
 
                     <!-- Input Fields -->
                     <form id="loginForm">
-                        <div class="input-group">
-                            <i data-lucide="user" class="input-icon"></i>
-                            <select id="userSelect" class="input-field" style="appearance: none;" required>
+                        <div class="login-input-wrap">
+                            <div class="login-input-icon">
+                                <i data-lucide="user"></i>
+                            </div>
+                            <select id="userSelect" class="login-input" required>
                                 <option value="" disabled selected>Kullanıcı Seçin</option>
                             </select>
+                            <div class="login-input-focus-bar"></div>
                         </div>
 
-                        <div class="input-group">
-                            <i data-lucide="lock" class="input-icon"></i>
-                            <input type="password" id="userPass" class="input-field" placeholder="Şifreniz" required>
-                            <i data-lucide="eye" class="eye-icon" id="togglePassword"></i>
+                        <div class="login-input-wrap">
+                            <div class="login-input-icon">
+                                <i data-lucide="lock"></i>
+                            </div>
+                            <input type="password" id="userPass" class="login-input" placeholder="Şifreniz" required>
+                            <i data-lucide="eye" class="login-eye-toggle" id="togglePassword"></i>
+                            <div class="login-input-focus-bar"></div>
                         </div>
 
-                        <div class="options-row">
-                            <label class="remember-me">
+                        <div class="login-options">
+                            <label class="login-remember">
                                 <input type="checkbox">
+                                <span class="login-checkbox-custom"></span>
                                 <span>Beni Hatırla</span>
                             </label>
                         </div>
 
                         <!-- Login Button -->
-                        <button type="submit" class="login-btn" id="loginBtn">
+                        <button type="submit" class="login-submit-btn" id="loginBtn">
                             <div class="spinner"></div>
                             <span class="success-check">✓</span>
                             <span class="btn-text">GİRİŞ YAP</span>
+                            <div class="login-btn-shine"></div>
                         </button>
                     </form>
 
-                    <div class="footer">
-                        <i data-lucide="shield" class="footer-icon"></i><br>
-                        GÜVENLİ BAĞLANTI<br>
-                        Sistem tüm verilerinizi end-to-end şifreler
+                    <!-- Footer -->
+                    <div class="login-footer">
+                        <div class="login-footer-icon">
+                            <i data-lucide="shield-check"></i>
+                        </div>
+                        <span>Güvenli Bağlantı &bull; End-to-End Şifreleme</span>
+                    </div>
+
+                    <!-- Powered By -->
+                    <div class="login-powered">
+                        TopClean v5.1 &bull; Enderun Bilişim
                     </div>
                 </div>
             </div>
