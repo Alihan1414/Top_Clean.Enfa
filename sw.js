@@ -1,13 +1,12 @@
-// TopClean v6.1 Service Worker — Post-Refactor
-const CACHE_NAME = 'topclean-cache-v6.1';
-const DYNAMIC_CACHE = 'topclean-dynamic-v6.1';
+// TopClean v6.0 Service Worker — Final Evolution (PWA optimized)
+const CACHE_NAME = 'topclean-cache-v6.0';
+const DYNAMIC_CACHE = 'topclean-dynamic-v6.0';
 const ASSETS = [
     './',
     './index.html',
     './style.css',
     './app.js',
     './icon-512.png',
-    './icon-192.png',
     './manifest.json'
 ];
 
@@ -33,7 +32,8 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Fetch: CDN → DYNAMIC_CACHE, uygulama → CACHE_NAME
+// Fetch: Stale-While-Revalidate stratejisi
+// Önce cache'den hızlıca göster, arka planda ağdan güncelle
 self.addEventListener('fetch', (event) => {
     // Sadece GET isteklerini cache'le
     if (event.request.method !== 'GET') return;
@@ -44,26 +44,18 @@ self.addEventListener('fetch', (event) => {
         return event.respondWith(fetch(event.request));
     }
 
-    // CDN istekleri → DYNAMIC_CACHE (stale-while-revalidate)
-    const isCDN = event.request.url.includes('cdn.jsdelivr.net') ||
-                  event.request.url.includes('cdnjs.cloudflare.com') ||
-                  event.request.url.includes('unpkg.com') ||
-                  event.request.url.includes('gstatic.com') ||
-                  event.request.url.includes('fonts.googleapis.com') ||
-                  event.request.url.includes('fonts.gstatic.com');
-
-    const cacheName = isCDN ? DYNAMIC_CACHE : CACHE_NAME;
-
     event.respondWith(
-        caches.open(cacheName).then((cache) => {
+        caches.open(CACHE_NAME).then((cache) => {
             return cache.match(event.request).then((cachedResponse) => {
                 const fetchPromise = fetch(event.request).then((networkResponse) => {
+                    // Başarılı ağ yanıtını cache'e yaz
                     if (networkResponse && networkResponse.status === 200) {
                         cache.put(event.request, networkResponse.clone());
                     }
                     return networkResponse;
                 }).catch(() => null);
 
+                // Cache varsa hemen döndür, yoksa ağı bekle
                 return cachedResponse || fetchPromise;
             });
         })
