@@ -2,15 +2,6 @@
     --emerald-primary: #10b981;
     --emerald-light: #34d399;
     --emerald-neon: #059669;
-    --bg-main: #ffffff;
-    --bg-surface: #f8fafc;
-    --glass-bg: linear-gradient(160deg, rgba(255,255,255,0.9), rgba(245,245,250,0.95));
-    --glass-border: rgba(0, 0, 0, 0.05);
-    --text-main: #0f172a;
-    --text-sub: #64748b;
-}
-
-body:not(.light-mode) {
     --bg-main: #050505;
     --bg-surface: #0a0a0a;
     --glass-bg: linear-gradient(160deg, rgba(20,20,25,0.7), rgba(5,5,10,0.8));
@@ -20,9 +11,9 @@ body:not(.light-mode) {
 }
 
 body.light-mode {
-    --bg-main: #ffffff;
-    --bg-surface: #f8fafc;
-    --glass-bg: linear-gradient(160deg, rgba(255,255,255,0.9), rgba(245,245,250,0.95));
+    --bg-main: #f8fafc;
+    --bg-surface: #ffffff;
+    --glass-bg: linear-gradient(160deg, rgba(255,255,255,0.85), rgba(248,250,252,0.95));
     --glass-border: rgba(0, 0, 0, 0.08);
     --text-main: #0f172a;
     --text-sub: #64748b;
@@ -666,7 +657,7 @@ body.light-mode .modal-title { color: #0f172a !important; }
     width: 100%;
     height: 100%;
     z-index: 0;
-    background: var(--bg-main);
+    background: #000000;
 }
 .grid-lines {
     position: absolute;
@@ -778,15 +769,16 @@ body.light-mode .modal-title { color: #0f172a !important; }
     position: relative;
     z-index: 10;
     width: 420px;
-    background: var(--bg-surface);
+    background: rgba(8, 16, 12, 0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--emerald-primary);
-    border-radius: 20px;
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    border-radius: 8px;
     padding: 40px 35px;
     box-shadow: 
-        0 20px 40px rgba(0,0,0,0.1),
-        0 0 0 1px var(--glass-border);
+        0 0 60px rgba(0, 255, 136, 0.1),
+        0 0 120px rgba(0, 255, 136, 0.03),
+        inset 0 0 60px rgba(0, 255, 136, 0.01);
 }
 .corner-light {
     position: absolute;
