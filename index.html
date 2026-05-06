@@ -1,67 +1,70 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TopClean - Cleaning App Yönetimi</title>
-    
-   <style>
-/* --- RICH VISUALS & BANNERS --- */
-.banner-card {
-    position: relative;
-    overflow: hidden;
-    background-color: var(--bg-dark);
-}
 
-.banner-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1));
-    opacity: 1;
-    z-index: 0;
-    transition: transform 3s ease-out;
-}
+    <style>
+        /* --- RICH VISUALS & BANNERS --- */
+        .banner-card {
+            position: relative;
+            overflow: hidden;
+            background-color: var(--bg-dark);
+        }
 
-.banner-card:hover::before {
-    transform: scale(1.05);
-}
+        .banner-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1));
+            opacity: 1;
+            z-index: 0;
+            transition: transform 3s ease-out;
+        }
 
-.banner-card > * {
-    position: relative;
-    z-index: 1;
-}
+        .banner-card:hover::before {
+            transform: scale(1.05);
+        }
 
-.banner-card::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, var(--bg-dark) 0%, transparent 100%);
-    z-index: 0;
-}
+        .banner-card>* {
+            position: relative;
+            z-index: 1;
+        }
 
-.avatar-glow {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid var(--emerald-primary);
-    background-color: var(--bg-surface);
-    animation: neonPulse 3s infinite alternate;
-}
+        .banner-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, var(--bg-dark) 0%, transparent 100%);
+            z-index: 0;
+        }
 
-/* --- TYPOGRAPHY & FX --- */
-</style>
+        .avatar-glow {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--emerald-primary);
+            background-color: var(--bg-surface);
+            animation: neonPulse 3s infinite alternate;
+        }
+
+        /* --- TYPOGRAPHY & FX --- */
+    </style>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;700;900&family=Great+Vibes&family=Homemade+Apple&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;700;900&family=Great+Vibes&family=Homemade+Apple&display=swap"
+        rel="stylesheet">
 
     <!-- Bootstrap 5.3 JS & CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- Lucide Icons & Scripts -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -69,7 +72,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    
+
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -79,6 +82,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-512.png">
 </head>
+
 <body>
     <div class="aurora-container"></div>
 
@@ -93,12 +97,15 @@
                 <div class="modal-body p-4">
                     <div class="mb-3">
                         <label class="x-small text-emerald fw-bold mb-2">MALZEME ADI</label>
-                        <input type="text" id="invName" class="form-control bg-dark-glass text-white border-0 rounded-4 py-3" placeholder="Örn: Tuvalet Kağıdı">
+                        <input type="text" id="invName"
+                            class="form-control bg-dark-glass text-white border-0 rounded-4 py-3"
+                            placeholder="Örn: Tuvalet Kağıdı">
                     </div>
                     <div class="row g-2 mb-3">
                         <div class="col-6">
                             <label class="x-small text-emerald fw-bold mb-2">MİKTAR</label>
-                            <input type="number" id="invStock" class="form-control bg-dark-glass text-white border-0 rounded-4 py-3">
+                            <input type="number" id="invStock"
+                                class="form-control bg-dark-glass text-white border-0 rounded-4 py-3">
                         </div>
                         <div class="col-6">
                             <label class="x-small text-emerald fw-bold mb-2">BİRİM</label>
@@ -112,9 +119,11 @@
                     </div>
                     <div class="mb-3">
                         <label class="x-small text-warning fw-bold mb-2">KRİTİK STOK EŞİĞİ (Uyaracak miktar)</label>
-                        <input type="number" id="invThreshold" class="form-control bg-dark-glass text-white border-0 rounded-4 py-3" value="5">
+                        <input type="number" id="invThreshold"
+                            class="form-control bg-dark-glass text-white border-0 rounded-4 py-3" value="5">
                     </div>
-                    <button onclick="InventoryManager.saveNew()" class="btn btn-emerald w-100 py-3 rounded-pill fw-bold shadow-success">LİSTEYE EKLE</button>
+                    <button onclick="InventoryManager.saveNew()"
+                        class="btn btn-emerald w-100 py-3 rounded-pill fw-bold shadow-success">LİSTEYE EKLE</button>
                 </div>
             </div>
         </div>
@@ -131,20 +140,25 @@
                 <div class="modal-body p-4">
                     <div class="mb-3">
                         <label class="x-small text-emerald fw-bold mb-2">MALZEME SEÇİN</label>
-                        <select id="invUseSelect" class="form-select bg-dark-glass text-white border-0 rounded-4 py-3"></select>
+                        <select id="invUseSelect"
+                            class="form-select bg-dark-glass text-white border-0 rounded-4 py-3"></select>
                     </div>
                     <div class="mb-3">
                         <label class="x-small text-emerald fw-bold mb-2">KAÇ TANE KULLANILDI?</label>
-                        <input type="number" id="invUseQty" class="form-control bg-dark-glass text-white border-0 rounded-4 py-3" value="1">
+                        <input type="number" id="invUseQty"
+                            class="form-control bg-dark-glass text-white border-0 rounded-4 py-3" value="1">
                     </div>
-                    <button onclick="InventoryManager.saveUse()" class="btn btn-success w-100 py-3 rounded-pill fw-bold shadow-success">KULLANIMI KAYDET</button>
+                    <button onclick="InventoryManager.saveUse()"
+                        class="btn btn-success w-100 py-3 rounded-pill fw-bold shadow-success">KULLANIMI KAYDET</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- TEMA DEĞİŞTİRME BUTONU -->
-    <button onclick="toggleTheme()" class="btn btn-glass-emerald rounded-circle position-fixed d-flex align-items-center justify-content-center shadow-lg" style="top: 20px; right: 20px; width: 45px; height: 45px; z-index: 9999;">
+    <button onclick="toggleTheme()"
+        class="btn btn-glass-emerald rounded-circle position-fixed d-flex align-items-center justify-content-center shadow-lg"
+        style="top: 20px; right: 20px; width: 45px; height: 45px; z-index: 9999;">
         <i data-lucide="sun" id="themeIcon" size="20"></i>
     </button>
 
@@ -153,11 +167,17 @@
             <div class="header-content container d-flex justify-content-between align-items-center py-3">
                 <div class="d-flex align-items-center gap-2">
                     <!-- GERİ TUŞU -->
-                    <button id="backBtn" onclick="handleBack()" class="btn d-flex align-items-center gap-1 rounded-3 px-3 py-2 me-1" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); font-size:0.8rem; color:#ccc;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                    <button id="backBtn" onclick="handleBack()"
+                        class="btn d-flex align-items-center gap-1 rounded-3 px-3 py-2 me-1"
+                        style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); font-size:0.8rem; color:#ccc;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6" />
+                        </svg>
                         <span class="d-none d-sm-inline">Geri</span>
                     </button>
-                    <img src="assets/logo_enderun_white.png" style="width:30px; height:30px; border-radius:8px;" alt="L">
+                    <img src="assets/logo_enderun_white.png" style="width:30px; height:30px; border-radius:8px;"
+                        alt="L">
                     <h1 class="h5 fw-bold text-gradient mb-0">TopClean</h1>
                 </div>
                 <div class="d-flex align-items-center gap-3">
@@ -168,21 +188,27 @@
                         <span id="headerName" class="fw-bold text-white small m-0">-</span>
                         <span class="x-small text-emerald">Aktif Oturum</span>
                     </div>
-                    <img src="assets/logo_enderun.png" class="avatar-glow" alt="User" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                    <img src="assets/logo_enderun.png" class="avatar-glow" alt="User"
+                        style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
                     <button id="logoutBtn" class="btn btn-sm btn-outline-light rounded-pill px-3 ms-2">Çıkış</button>
                 </div>
             </div>
         </header>
 
         <main id="mainContainer" class="container py-4">
-            
+
             <!-- 1. LOGIN PANEL (PREMIUM RE-DESIGN) -->
             <div id="loginPanel" class="view-panel active login-screen">
-                
+
                 <!-- NEW BACKGROUND SYSTEM -->
                 <div class="login-bg-container">
-                    <div class="login-bg-main"></div>
+                    <!-- Clear background (what you see through the wiped area) -->
+                    <div class="login-bg-clear"></div>
+                    <!-- Misty background (the foggy glass) -->
+                    <div class="login-bg-mist"></div>
+                    <!-- Overlay for depth -->
                     <div class="login-bg-overlay"></div>
+
                     <div class="bubble-container" id="loginBubbles"></div>
                 </div>
 
@@ -274,27 +300,38 @@
                 <div id="listeStep1" class="d-flex flex-column gap-3">
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <h6 class="text-white small fw-bold mb-0 text-uppercase">1. Adım: Talebe Listesi</h6>
-                        <button onclick="_routeUser()" class="btn btn-sm btn-glass-danger py-1 px-3 rounded-pill x-small">Paneli Kapat</button>
+                        <button onclick="_routeUser()"
+                            class="btn btn-sm btn-glass-danger py-1 px-3 rounded-pill x-small">Paneli Kapat</button>
                     </div>
                     <div class="row g-2">
                         <div class="col-6">
                             <label class="x-small text-danger fw-bold mb-1 ms-2">🔴 ASTIM HASTALARI</label>
-                            <textarea id="listAstim" class="form-control bg-slate-glass text-white border-0 rounded-4 small p-3" rows="5" placeholder="İsimleri araya virgül koyarak yazın..."></textarea>
+                            <textarea id="listAstim"
+                                class="form-control bg-slate-glass text-white border-0 rounded-4 small p-3" rows="5"
+                                placeholder="İsimleri araya virgül koyarak yazın..."></textarea>
                         </div>
                         <div class="col-6">
                             <label class="x-small text-warning fw-bold mb-1 ms-2">🟠 ALERJİK RAHATSIZLAR</label>
-                            <textarea id="listAlerjik" class="form-control bg-slate-glass text-white border-0 rounded-4 small p-3" rows="5" placeholder="İsimleri araya virgül koyarak yazın..."></textarea>
+                            <textarea id="listAlerjik"
+                                class="form-control bg-slate-glass text-white border-0 rounded-4 small p-3" rows="5"
+                                placeholder="İsimleri araya virgül koyarak yazın..."></textarea>
                         </div>
                         <div class="col-6">
                             <label class="x-small text-success fw-bold mb-1 ms-2">🟢 SAĞLIKLI</label>
-                            <textarea id="listSaglikli" class="form-control bg-slate-glass text-white border-0 rounded-4 small p-3" rows="5" placeholder="İsimleri araya virgül koyarak yazın..."></textarea>
+                            <textarea id="listSaglikli"
+                                class="form-control bg-slate-glass text-white border-0 rounded-4 small p-3" rows="5"
+                                placeholder="İsimleri araya virgül koyarak yazın..."></textarea>
                         </div>
                         <div class="col-6">
                             <label class="x-small text-info fw-bold mb-1 ms-2">🔵 DİĞER</label>
-                            <textarea id="listDiger" class="form-control bg-slate-glass text-white border-0 rounded-4 small p-3" rows="5" placeholder="İsimleri araya virgül koyarak yazın..."></textarea>
+                            <textarea id="listDiger"
+                                class="form-control bg-slate-glass text-white border-0 rounded-4 small p-3" rows="5"
+                                placeholder="İsimleri araya virgül koyarak yazın..."></textarea>
                         </div>
                     </div>
-                    <button onclick="ListeManager.akilliDagit()" class="btn btn-emerald w-100 py-3 fw-bold rounded-pill shadow-success mt-2">AKILLI HAFIZAYI ÇALIŞTIR VE DAĞIT →</button>
+                    <button onclick="ListeManager.akilliDagit()"
+                        class="btn btn-emerald w-100 py-3 fw-bold rounded-pill shadow-success mt-2">AKILLI HAFIZAYI
+                        ÇALIŞTIR VE DAĞIT →</button>
                 </div>
 
                 <!-- 2. ADIM: SONUÇ VE YÖNETİM -->
@@ -302,12 +339,15 @@
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <h6 class="text-white small fw-bold mb-0">DAĞITIM SONUÇLARI</h6>
                         <div class="d-flex gap-2">
-                            <button onclick="ListeManager.showStep(1)" class="btn btn-sm btn-glass-emerald py-1 px-3 rounded-pill x-small">← GERİ GİT</button>
-                            <button onclick="ListeManager.yeniTalebeEkleModali()" class="btn btn-sm btn-emerald py-1 px-3 rounded-pill x-small">+ Yeni Talebe</button>
+                            <button onclick="ListeManager.showStep(1)"
+                                class="btn btn-sm btn-glass-emerald py-1 px-3 rounded-pill x-small">← GERİ GİT</button>
+                            <button onclick="ListeManager.yeniTalebeEkleModali()"
+                                class="btn btn-sm btn-emerald py-1 px-3 rounded-pill x-small">+ Yeni Talebe</button>
                         </div>
                     </div>
-                    
-                    <div id="finalDagitimListesi" class="d-flex flex-column gap-2 pb-3" style="max-height:300px; overflow-y:auto;">
+
+                    <div id="finalDagitimListesi" class="d-flex flex-column gap-2 pb-3"
+                        style="max-height:300px; overflow-y:auto;">
                         <!-- Dağıtım sonuçları buraya gelecek -->
                     </div>
 
@@ -319,8 +359,16 @@
                         </div>
                     </div>
 
-                    <button onclick="ListeManager.pdfUret()" class="btn btn-danger w-100 py-3 fw-bold rounded-pill shadow-danger d-flex align-items-center justify-content-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <button onclick="ListeManager.pdfUret()"
+                        class="btn btn-danger w-100 py-3 fw-bold rounded-pill shadow-danger d-flex align-items-center justify-content-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
                         PROFESYONEL PDF ÇIKTISI AL (AFİŞ)
                     </button>
                 </div>
@@ -329,7 +377,8 @@
             <!-- İDARECİ PANELİ (COCKPIT) -->
             <div id="idarecPanel" class="view-panel d-none flex-column w-100">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald px-3 rounded-pill">← Geri</button>
+                    <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald px-3 rounded-pill">←
+                        Geri</button>
                     <h6 class="text-emerald fw-bold mb-0 x-small">İDARECİ KOKPİTİ</h6>
                     <div style="width:50px"></div>
                 </div>
@@ -337,15 +386,18 @@
                 <div class="glass-card p-4 mb-4 text-center">
                     <div class="pulse-circle-container">
                         <svg width="180" height="180" viewBox="0 0 180 180" style="transform: rotate(-90deg);">
-                            <circle cx="90" cy="90" r="80" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="12"></circle>
-                            <circle id="pulseProgressCircle" cx="90" cy="90" r="80" fill="none" stroke="#10b981" stroke-width="12" stroke-dasharray="502.4" stroke-dashoffset="502.4" style="transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);"></circle>
+                            <circle cx="90" cy="90" r="80" fill="none" stroke="rgba(255,255,255,0.05)"
+                                stroke-width="12"></circle>
+                            <circle id="pulseProgressCircle" cx="90" cy="90" r="80" fill="none" stroke="#10b981"
+                                stroke-width="12" stroke-dasharray="502.4" stroke-dashoffset="502.4"
+                                style="transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);"></circle>
                         </svg>
                         <div class="pulse-label">
                             <div id="pulseText" class="h1 fw-900 text-white mb-0" style="font-size:3rem;">0%</div>
                             <div class="x-small text-emerald fw-bold" style="letter-spacing:2px;">BİNA NABZI</div>
                         </div>
                     </div>
-                    
+
                     <div class="d-flex justify-content-center gap-4 mt-2 mb-3">
                         <div class="text-center">
                             <div class="h5 fw-bold text-white mb-0" id="cockpit-stat-active">-</div>
@@ -356,13 +408,16 @@
                             <div class="x-small text-muted">Kritik Bölge</div>
                         </div>
                     </div>
-                    <button onclick="ReportManager.generateMonthly()" class="btn btn-sm btn-glass-emerald w-100 rounded-pill py-2 fw-bold" style="font-size:0.7rem;">📊 AYLIK FAALİYET RAPORU AL</button>
+                    <button onclick="ReportManager.generateMonthly()"
+                        class="btn btn-sm btn-glass-emerald w-100 rounded-pill py-2 fw-bold"
+                        style="font-size:0.7rem;">📊 AYLIK FAALİYET RAPORU AL</button>
                 </div>
 
                 <!-- 2. BİNA RÖNTGENİ (MATRIX) -->
                 <div class="mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase" style="letter-spacing:1.5px;">Bina Sağlık Matrisi</h6>
+                        <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase" style="letter-spacing:1.5px;">Bina
+                            Sağlık Matrisi</h6>
                         <span class="x-small text-muted">Canlı Veri</span>
                     </div>
                     <div id="cockpitMatrix" class="cockpit-grid">
@@ -380,17 +435,22 @@
 
                 <!-- ESKİ FONKSİYONLARA ERİŞİM (Gerekirse) -->
                 <div class="d-flex gap-2 overflow-auto pb-2">
-                    <button onclick="IdarecManager.switchSubTab('grafik')" class="btn btn-glass-emerald btn-sm rounded-pill px-3">📊 Analitik</button>
-                    <button onclick="IdarecManager.switchSubTab('liderlik')" class="btn btn-glass-emerald btn-sm rounded-pill px-3">🏆 Liderlik</button>
-                    <button onclick="IdarecManager.switchSubTab('ariza')" class="btn btn-glass-emerald btn-sm rounded-pill px-3">📝 Arızalar</button>
-                    <button onclick="InventoryManager.ac()" class="btn btn-glass-emerald btn-sm rounded-pill px-3">📦 Malzemeler</button>
-                    <button onclick="IdarecManager.switchSubTab('personel')" class="btn btn-glass-emerald btn-sm rounded-pill px-3">👥 Personel</button>
+                    <button onclick="IdarecManager.switchSubTab('grafik')"
+                        class="btn btn-glass-emerald btn-sm rounded-pill px-3">📊 Analitik</button>
+                    <button onclick="IdarecManager.switchSubTab('liderlik')"
+                        class="btn btn-glass-emerald btn-sm rounded-pill px-3">🏆 Liderlik</button>
+                    <button onclick="IdarecManager.switchSubTab('ariza')"
+                        class="btn btn-glass-emerald btn-sm rounded-pill px-3">📝 Arızalar</button>
+                    <button onclick="InventoryManager.ac()" class="btn btn-glass-emerald btn-sm rounded-pill px-3">📦
+                        Malzemeler</button>
+                    <button onclick="IdarecManager.switchSubTab('personel')"
+                        class="btn btn-glass-emerald btn-sm rounded-pill px-3">👥 Personel</button>
                 </div>
             </div>
 
             <!-- ANALİTİK (SUB-TABS) -->
             <div id="subTabGrafik" class="idarec-sub-tab d-none mt-4">
-                 <div class="glass-card p-3 mb-3">
+                <div class="glass-card p-3 mb-3">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase">Rapor Aktivitesi</h6>
                         <button onclick="showPanel('idarecPanel')" class="btn btn-sm text-muted">Kapat</button>
@@ -399,7 +459,7 @@
                 </div>
             </div>
             <div id="subTabLiderlik" class="idarec-sub-tab d-none mt-4">
-                 <div class="glass-card p-3 mb-3">
+                <div class="glass-card p-3 mb-3">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase">Liderlik Tablosu</h6>
                         <button onclick="showPanel('idarecPanel')" class="btn btn-sm text-muted">Kapat</button>
@@ -408,7 +468,7 @@
                 </div>
             </div>
             <div id="subTabAriza" class="idarec-sub-tab d-none mt-4">
-                 <div class="glass-card p-3 mb-3">
+                <div class="glass-card p-3 mb-3">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase">Arıza Kayıtları</h6>
                         <button onclick="showPanel('idarecPanel')" class="btn btn-sm text-muted">Kapat</button>
@@ -425,141 +485,162 @@
                     <div id="userListContainer" class="d-flex flex-column gap-2"></div>
                 </div>
             </div>
-            </div>
+    </div>
 
-            <!-- GÖREVLİ PANELİ (BÖLGE ODAKLI MERKEZ) -->
-            <div id="gorevliPanel" class="view-panel d-none flex-column w-100">
+    <!-- GÖREVLİ PANELİ (BÖLGE ODAKLI MERKEZ) -->
+    <div id="gorevliPanel" class="view-panel d-none flex-column w-100">
 
-                <!-- 1. HOŞ GELDİN & İLERLEME -->
-                <div class="glass-card banner-card p-4 mb-4 shadow-lg">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <img src="assets/logo_enderun.png" class="avatar-glow" style="width:50px; height:50px; border-width:2px; border-radius:50%; object-fit:cover;">
-                        <div>
-                            <p class="x-small text-muted mb-0 text-uppercase fw-bold">Görevli Paneli</p>
-                            <h2 class="h5 fw-bold text-white mb-0" id="gorevliHocaIsim">-</h2>
-                        </div>
-                        <div class="ms-auto text-end d-flex flex-column gap-2">
-                            <div class="d-flex align-items-center gap-2 justify-content-end">
-                                <div id="gorevliTamamSayi" class="h4 fw-bold text-white mb-0">0/0</div>
-                                <div class="x-small text-emerald fw-bold">BİTEN</div>
-                            </div>
-                            <div class="d-flex gap-2 justify-content-end">
-                                <!-- Emra hocaya özel buton -->
-                                <button id="emraHocaArizaBtn" onclick="showPanel('arizaYonetimPanel'); ArizaManager.renderYonetim();" class="btn btn-sm btn-glass-emerald rounded-pill px-3 py-1 fw-bold d-none" style="font-size:0.65rem;">⚙️ ARIZA YÖNETİMİ</button>
-                                <!-- Burak hocaya özel buton -->
-                                <button id="burakHocaDepoBtn" onclick="InventoryManager.ac()" class="btn btn-sm btn-glass-emerald rounded-pill px-3 py-1 fw-bold d-none" style="font-size:0.65rem;">📦 DEPO YÖNETİMİ</button>
-                                <button onclick="ArizaManager.bildirimModaliAc()" class="btn btn-sm btn-glass-danger rounded-pill px-3 py-1 fw-bold" style="font-size:0.65rem; letter-spacing:0.5px;">⚠️ ARIZA BİLDİR</button>
-                                <button onclick="InventoryManager.useModal()" class="btn btn-sm btn-glass-emerald rounded-pill px-3 py-1 fw-bold" style="font-size:0.65rem; letter-spacing:0.5px;">🧼 MALZEME KULLAN</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="height:6px; background:rgba(255,255,255,0.06); border-radius:10px; overflow:hidden;">
-                        <div id="gorevliProgressBar" style="height:100%; width:0%; background:linear-gradient(90deg,#10b981,#34d399); border-radius:10px; transition:width 1s;"></div>
-                    </div>
+        <!-- 1. HOŞ GELDİN & İLERLEME -->
+        <div class="glass-card banner-card p-4 mb-4 shadow-lg">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <img src="assets/logo_enderun.png" class="avatar-glow"
+                    style="width:50px; height:50px; border-width:2px; border-radius:50%; object-fit:cover;">
+                <div>
+                    <p class="x-small text-muted mb-0 text-uppercase fw-bold">Görevli Paneli</p>
+                    <h2 class="h5 fw-bold text-white mb-0" id="gorevliHocaIsim">-</h2>
                 </div>
-
-                <!-- 2. KAT RÖNTGENİ (KÜÇÜK MATRİS) -->
-                <div class="mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 class="x-small text-muted fw-bold mb-0 text-uppercase" style="letter-spacing:1px;">Kat Durum Haritası</h6>
-                        <span id="gorevliKatAd" class="x-small text-emerald fw-bold">-</span>
+                <div class="ms-auto text-end d-flex flex-column gap-2">
+                    <div class="d-flex align-items-center gap-2 justify-content-end">
+                        <div id="gorevliTamamSayi" class="h4 fw-bold text-white mb-0">0/0</div>
+                        <div class="x-small text-emerald fw-bold">BİTEN</div>
                     </div>
-                    <div id="gorevliFloorMatrix" class="d-flex flex-wrap gap-2 p-3 glass-card bg-slate-glass justify-content-center">
-                        <!-- Katın oda pikselleri buraya gelecek -->
+                    <div class="d-flex gap-2 justify-content-end">
+                        <!-- Emra hocaya özel buton -->
+                        <button id="emraHocaArizaBtn"
+                            onclick="showPanel('arizaYonetimPanel'); ArizaManager.renderYonetim();"
+                            class="btn btn-sm btn-glass-emerald rounded-pill px-3 py-1 fw-bold d-none"
+                            style="font-size:0.65rem;">⚙️ ARIZA YÖNETİMİ</button>
+                        <!-- Burak hocaya özel buton -->
+                        <button id="burakHocaDepoBtn" onclick="InventoryManager.ac()"
+                            class="btn btn-sm btn-glass-emerald rounded-pill px-3 py-1 fw-bold d-none"
+                            style="font-size:0.65rem;">📦 DEPO YÖNETİMİ</button>
+                        <button onclick="ArizaManager.bildirimModaliAc()"
+                            class="btn btn-sm btn-glass-danger rounded-pill px-3 py-1 fw-bold"
+                            style="font-size:0.65rem; letter-spacing:0.5px;">⚠️ ARIZA BİLDİR</button>
+                        <button onclick="InventoryManager.useModal()"
+                            class="btn btn-sm btn-glass-emerald rounded-pill px-3 py-1 fw-bold"
+                            style="font-size:0.65rem; letter-spacing:0.5px;">🧼 MALZEME KULLAN</button>
                     </div>
-                </div>
-
-                <!-- 3. SIRADAKİ GÖREV (FOKUS KART) -->
-                <div id="nextTaskContainer">
-                    <!-- Sıradaki görev kartı buraya gelecek -->
-                </div>
-
-                <!-- TÜM GÖREVLER (Liste) -->
-                <div class="mt-4">
-                    <h6 class="x-small text-muted fw-bold mb-3 text-uppercase">Tüm Odalar</h6>
-                    <div id="gorevliBolumListesi" class="w-100 d-flex flex-column gap-2"></div>
                 </div>
             </div>
-
-            <!-- KRİTER PANELİ (Görevli Checklist) -->
-            <div id="kriterPanel" class="view-panel d-none flex-column w-100">
-                <div class="glass-card p-4 mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div>
-                            <div id="kriterKatAd" class="x-small text-emerald fw-bold text-uppercase">KAT İSMİ</div>
-                            <h4 id="kriterBolumAd" class="h5 fw-bold text-white mb-0">BÖLÜM ADI</h4>
-                        </div>
-                        <span id="kriterSayac" class="badge badge-premium rounded-pill px-3 py-2 fs-6">0/0</span>
-                    </div>
-                    
-                    <div id="kriterListesi" class="d-flex flex-column gap-2 mb-4">
-                        <!-- Checkboxlar buraya gelecek -->
-                    </div>
-
-                    <div class="d-flex gap-2 mb-3">
-                        <button onclick="document.getElementById('gorevliFoto').click()" class="btn btn-glass-emerald flex-grow-1 py-3 rounded-4">
-                            <i data-lucide="camera" class="me-2"></i> Fotoğraf
-                        </button>
-                        <button onclick="VoiceManager.start()" class="btn btn-glass-emerald flex-grow-1 py-3 rounded-4">
-                            <i data-lucide="mic" class="me-2"></i> Sesli Not
-                        </button>
-                    </div>
-                    <input type="file" id="gorevliFoto" capture="environment" accept="image/*" class="d-none">
-                    
-                    <textarea id="gorevliNot" class="form-control bg-slate-glass text-white border-secondary mb-4 rounded-4 p-3 shadow-none" rows="3" placeholder="Vardiya notu veya sorun bildirin..."></textarea>
-                    
-                    <button onclick="KriterManager.veriyiKaydet()" class="btn btn-emerald w-100 py-3 fw-bold rounded-pill mb-3 shadow-success">RAPORU GÖNDER</button>
-                    <button onclick="_routeUser()" class="btn btn-outline-light w-100 py-2 fw-bold rounded-pill">İPTAL ET VE GERİ DÖN</button>
+            <div style="height:6px; background:rgba(255,255,255,0.06); border-radius:10px; overflow:hidden;">
+                <div id="gorevliProgressBar"
+                    style="height:100%; width:0%; background:linear-gradient(90deg,#10b981,#34d399); border-radius:10px; transition:width 1s;">
                 </div>
             </div>
+        </div>
 
-            <!-- MÜFETTİŞ PANELİ (CANLI DENETİM AKIŞI) -->
-            <div id="adminPanel" class="view-panel d-none flex-column w-100">
-                <div class="d-flex justify-content-start mb-3">
-                    <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald px-3 rounded-pill">← Paneli Kapat</button>
-                </div>
-                <!-- BINA ONAY ÖZETİ -->
-                <div class="glass-card banner-card p-4 mb-4 text-center shadow-lg">
-                    <h2 class="h4 fw-bold text-white mb-1">Denetim Akışı</h2>
-                    <p class="x-small text-muted mb-2">Canlı olarak gelen temizlik raporlarını onaylayın</p>
-                    <div id="mufettisBekleyenBadge" class="badge bg-warning text-dark rounded-pill px-3 py-2" style="font-size:0.85rem;">Bekleyen Raporlar Yükleniyor...</div>
-                </div>
+        <!-- 2. KAT RÖNTGENİ (KÜÇÜK MATRİS) -->
+        <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="x-small text-muted fw-bold mb-0 text-uppercase" style="letter-spacing:1px;">Kat Durum
+                    Haritası</h6>
+                <span id="gorevliKatAd" class="x-small text-emerald fw-bold">-</span>
+            </div>
+            <div id="gorevliFloorMatrix"
+                class="d-flex flex-wrap gap-2 p-3 glass-card bg-slate-glass justify-content-center">
+                <!-- Katın oda pikselleri buraya gelecek -->
+            </div>
+        </div>
 
-                <!-- AKIŞ KONTEYNERI -->
-                <div id="mufettisStream" class="d-flex flex-column gap-4 pb-5">
-                    <!-- Rapor Kartları Buraya Gelecek -->
-                    <div class="text-center py-5">
-                        <div class="spinner-border text-emerald" role="status"></div>
-                        <div class="text-muted mt-3 small">Denetim akışı hazırlanıyor...</div>
-                    </div>
-                </div>
+        <!-- 3. SIRADAKİ GÖREV (FOKUS KART) -->
+        <div id="nextTaskContainer">
+            <!-- Sıradaki görev kartı buraya gelecek -->
+        </div>
 
-                <div id="mufettisOdakModu" class="d-none"></div>
+        <!-- TÜM GÖREVLER (Liste) -->
+        <div class="mt-4">
+            <h6 class="x-small text-muted fw-bold mb-3 text-uppercase">Tüm Odalar</h6>
+            <div id="gorevliBolumListesi" class="w-100 d-flex flex-column gap-2"></div>
+        </div>
+    </div>
+
+    <!-- KRİTER PANELİ (Görevli Checklist) -->
+    <div id="kriterPanel" class="view-panel d-none flex-column w-100">
+        <div class="glass-card p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <div id="kriterKatAd" class="x-small text-emerald fw-bold text-uppercase">KAT İSMİ</div>
+                    <h4 id="kriterBolumAd" class="h5 fw-bold text-white mb-0">BÖLÜM ADI</h4>
+                </div>
+                <span id="kriterSayac" class="badge badge-premium rounded-pill px-3 py-2 fs-6">0/0</span>
             </div>
 
-            <!-- ENVANTER PANELİ -->
-            <div id="inventoryPanel" class="view-panel d-none flex-column w-100">
-                <div class="glass-card banner-card p-4 mb-4 text-center shadow-lg">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <button onclick="handleBack()" class="btn btn-sm btn-glass-emerald rounded-pill px-3">← Geri</button>
-                        <h2 class="h4 fw-bold text-white mb-0">Depo & Envanter</h2>
-                        <div id="inventoryAddBtnWrap" class="d-none">
-                            <button onclick="InventoryManager.addItemModal()" class="btn btn-sm btn-emerald px-3 rounded-pill">+ Yeni Ekle</button>
-                        </div>
-                    </div>
-                    <p class="x-small text-muted mb-0">Temizlik malzemeleri ve stok durumu</p>
-                </div>
-                
-                <div id="inventoryItems" class="row g-3 pb-5">
-                    <!-- Ürün Listesi Gelecek -->
-                </div>
+            <div id="kriterListesi" class="d-flex flex-column gap-2 mb-4">
+                <!-- Checkboxlar buraya gelecek -->
             </div>
 
-        </main>
+            <div class="d-flex gap-2 mb-3">
+                <button onclick="document.getElementById('gorevliFoto').click()"
+                    class="btn btn-glass-emerald flex-grow-1 py-3 rounded-4">
+                    <i data-lucide="camera" class="me-2"></i> Fotoğraf
+                </button>
+                <button onclick="VoiceManager.start()" class="btn btn-glass-emerald flex-grow-1 py-3 rounded-4">
+                    <i data-lucide="mic" class="me-2"></i> Sesli Not
+                </button>
+            </div>
+            <input type="file" id="gorevliFoto" capture="environment" accept="image/*" class="d-none">
 
-        <!-- FLOATING CHAT BUTTON (SAHA SOHBETİ) -->
-        <button onclick="ChatManager.toggle()" title="Saha Sohbeti"
-            style="position:fixed; bottom:110px; left:16px; z-index:2500;
+            <textarea id="gorevliNot"
+                class="form-control bg-slate-glass text-white border-secondary mb-4 rounded-4 p-3 shadow-none" rows="3"
+                placeholder="Vardiya notu veya sorun bildirin..."></textarea>
+
+            <button onclick="KriterManager.veriyiKaydet()"
+                class="btn btn-emerald w-100 py-3 fw-bold rounded-pill mb-3 shadow-success">RAPORU GÖNDER</button>
+            <button onclick="_routeUser()" class="btn btn-outline-light w-100 py-2 fw-bold rounded-pill">İPTAL ET VE
+                GERİ DÖN</button>
+        </div>
+    </div>
+
+    <!-- MÜFETTİŞ PANELİ (CANLI DENETİM AKIŞI) -->
+    <div id="adminPanel" class="view-panel d-none flex-column w-100">
+        <div class="d-flex justify-content-start mb-3">
+            <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald px-3 rounded-pill">← Paneli
+                Kapat</button>
+        </div>
+        <!-- BINA ONAY ÖZETİ -->
+        <div class="glass-card banner-card p-4 mb-4 text-center shadow-lg">
+            <h2 class="h4 fw-bold text-white mb-1">Denetim Akışı</h2>
+            <p class="x-small text-muted mb-2">Canlı olarak gelen temizlik raporlarını onaylayın</p>
+            <div id="mufettisBekleyenBadge" class="badge bg-warning text-dark rounded-pill px-3 py-2"
+                style="font-size:0.85rem;">Bekleyen Raporlar Yükleniyor...</div>
+        </div>
+
+        <!-- AKIŞ KONTEYNERI -->
+        <div id="mufettisStream" class="d-flex flex-column gap-4 pb-5">
+            <!-- Rapor Kartları Buraya Gelecek -->
+            <div class="text-center py-5">
+                <div class="spinner-border text-emerald" role="status"></div>
+                <div class="text-muted mt-3 small">Denetim akışı hazırlanıyor...</div>
+            </div>
+        </div>
+
+        <div id="mufettisOdakModu" class="d-none"></div>
+    </div>
+
+    <!-- ENVANTER PANELİ -->
+    <div id="inventoryPanel" class="view-panel d-none flex-column w-100">
+        <div class="glass-card banner-card p-4 mb-4 text-center shadow-lg">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <button onclick="handleBack()" class="btn btn-sm btn-glass-emerald rounded-pill px-3">← Geri</button>
+                <h2 class="h4 fw-bold text-white mb-0">Depo & Envanter</h2>
+                <div id="inventoryAddBtnWrap" class="d-none">
+                    <button onclick="InventoryManager.addItemModal()" class="btn btn-sm btn-emerald px-3 rounded-pill">+
+                        Yeni Ekle</button>
+                </div>
+            </div>
+            <p class="x-small text-muted mb-0">Temizlik malzemeleri ve stok durumu</p>
+        </div>
+
+        <div id="inventoryItems" class="row g-3 pb-5">
+            <!-- Ürün Listesi Gelecek -->
+        </div>
+    </div>
+
+    </main>
+
+    <!-- FLOATING CHAT BUTTON (SAHA SOHBETİ) -->
+    <button onclick="ChatManager.toggle()" title="Saha Sohbeti" style="position:fixed; bottom:110px; left:16px; z-index:2500;
                    background: linear-gradient(135deg, #10b981, #059669);
                    border: none; border-radius: 50px;
                    width: 72px; height: 52px;
@@ -567,124 +648,169 @@
                    box-shadow: 0 0 30px rgba(16,185,129,0.7), 0 0 60px rgba(16,185,129,0.3), inset 0 1px 1px rgba(255,255,255,0.3);
                    animation: neonPulse 2.5s infinite alternate;
                    cursor: pointer; transition: transform 0.2s ease;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-            <span style="position:absolute; top:5px; right:5px; width:9px; height:9px; background:#ef4444; border-radius:50%; border:2px solid #050505;"></span>
-        </button>
+        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span
+            style="position:absolute; top:5px; right:5px; width:9px; height:9px; background:#ef4444; border-radius:50%; border:2px solid #050505;"></span>
+    </button>
 
-        <!-- CHAT OVERLAY (SAHA SOHBETİ PANELİ) -->
-        <div id="chatOverlay" class="d-flex flex-column position-fixed h-100 shadow-lg" style="top:0; left:-100%; width: 100%; max-width: 380px; z-index: 3000; transition: left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-right: 1px solid rgba(16, 185, 129, 0.15); backdrop-filter: blur(50px) saturate(200%); background: linear-gradient(180deg, rgba(5,5,10,0.95) 0%, rgba(10,15,20,0.98) 100%);">
-            
-            <!-- BAŞLIK -->
-            <div class="p-4 d-flex justify-content-between align-items-center" style="border-bottom: 1px solid rgba(255,255,255,0.06);">
-                <div class="d-flex align-items-center gap-3">
-                    <img src="assets/logo_enderun_white.png" style="width:36px; height:36px; border-radius:8px;" alt="Logo">
-                    <div>
-                        <h4 class="h6 fw-bold text-white mb-0">Saha Sohbeti</h4>
-                        <span style="font-size:0.65rem; color:#10b981;">CANLI • TÜM PERSONEL</span>
-                    </div>
-                </div>
-                <button onclick="ChatManager.toggle()" class="btn d-flex align-items-center justify-content-center rounded-circle border-0" style="width:36px; height:36px; background:rgba(255,255,255,0.06);">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                </button>
-            </div>
-            
-            <!-- KRİTİK NOT -->
-            <div class="px-4 py-3" style="background: rgba(220,38,38,0.08); border-bottom: 1px solid rgba(220,38,38,0.2);">
-                <div class="d-flex align-items-start gap-2">
-                    <span style="font-size:1rem;">📌</span>
-                    <div>
-                        <div class="badge bg-danger rounded-pill mb-1" style="font-size:0.6rem;">Kritik Not</div>
-                        <div id="pinnedNotes" class="text-danger fw-bold" style="font-size:0.75rem;">Bugün 2. Katın suyu 14:00'e kadar kesik olacak.</div>
-                    </div>
+    <!-- CHAT OVERLAY (SAHA SOHBETİ PANELİ) -->
+    <div id="chatOverlay" class="d-flex flex-column position-fixed h-100 shadow-lg"
+        style="top:0; left:-100%; width: 100%; max-width: 380px; z-index: 3000; transition: left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-right: 1px solid rgba(16, 185, 129, 0.15); backdrop-filter: blur(50px) saturate(200%); background: linear-gradient(180deg, rgba(5,5,10,0.95) 0%, rgba(10,15,20,0.98) 100%);">
+
+        <!-- BAŞLIK -->
+        <div class="p-4 d-flex justify-content-between align-items-center"
+            style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+            <div class="d-flex align-items-center gap-3">
+                <img src="assets/logo_enderun_white.png" style="width:36px; height:36px; border-radius:8px;" alt="Logo">
+                <div>
+                    <h4 class="h6 fw-bold text-white mb-0">Saha Sohbeti</h4>
+                    <span style="font-size:0.65rem; color:#10b981;">CANLI • TÜM PERSONEL</span>
                 </div>
             </div>
+            <button onclick="ChatManager.toggle()"
+                class="btn d-flex align-items-center justify-content-center rounded-circle border-0"
+                style="width:36px; height:36px; background:rgba(255,255,255,0.06);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+        </div>
 
-            <!-- MESAJLAR + BOŞ DURUM -->
-            <div id="chatMessages" class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3" style="position:relative;">
-                <!-- Boş durum görseli -->
-                <div id="chatEmptyState" class="d-flex flex-column align-items-center justify-content-center h-100 text-center" style="opacity:0.5;">
-        <div id="chatOverlay" class="chat-overlay">
-            <div class="p-3 d-flex align-items-center gap-3 border-bottom border-secondary border-opacity-10 bg-dark bg-opacity-80" style="z-index: 10;">
-                <button onclick="ChatManager.toggle()" class="btn btn-sm text-white border-0 p-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-                </button>
-                <div class="d-flex align-items-center gap-2">
-                    <img src="assets/logo_enderun_white.png" style="width:36px; height:36px; border-radius:50%;" alt="L">
-                    <div>
-                        <div class="fw-bold text-white small">TopClean Chat</div>
-                        <div class="x-small text-emerald fw-bold" style="font-size:0.6rem;">Online / Topluluk</div>
-                    </div>
+        <!-- KRİTİK NOT -->
+        <div class="px-4 py-3" style="background: rgba(220,38,38,0.08); border-bottom: 1px solid rgba(220,38,38,0.2);">
+            <div class="d-flex align-items-start gap-2">
+                <span style="font-size:1rem;">📌</span>
+                <div>
+                    <div class="badge bg-danger rounded-pill mb-1" style="font-size:0.6rem;">Kritik Not</div>
+                    <div id="pinnedNotes" class="text-danger fw-bold" style="font-size:0.75rem;">Bugün 2. Katın suyu
+                        14:00'e kadar kesik olacak.</div>
                 </div>
-            </div>
-
-            <div id="chatMessages">
-                <div id="chatEmptyState" class="flex-column align-items-center justify-content-center h-100 opacity-50" style="display:none;">
-                    <div class="h1">💬</div>
-                    <div class="small">Henüz mesaj yok...</div>
-                </div>
-                <!-- Mesajlar buraya gelecek -->
-            </div>
-
-            <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="Mesaj yazın..." onkeydown="if(event.key==='Enter') ChatManager.send()">
-                <button onclick="ChatManager.send()" class="btn btn-success rounded-circle d-flex align-items-center justify-content-center p-0" style="width:42px; height:42px; background:#00a884; border:none;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:2px;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                </button>
             </div>
         </div>
 
-        <div id="arizaYonetimPanel" class="view-panel d-none flex-column w-100">
-            <div class="glass-card banner-card p-4 mb-4 text-center shadow-lg">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald rounded-pill px-3">← Geri</button>
-                    <h2 class="h4 fw-bold text-white mb-0">Arıza Yönetimi</h2>
-                    <div style="width:60px;"></div>
-                </div>
-                <p class="x-small text-muted mb-0">Binadaki teknik sorunları buradan yönetin</p>
-            </div>
-            <div id="arizaYonetimListesi" class="d-flex flex-column gap-3 pb-5">
-                <!-- Arıza kartları buraya gelecek -->
-            </div>
-        </div>
-
-        <!-- FLOATING BOTTOM NAV -->
-        <nav class="mobile-nav d-md-none">
-            <div onclick="_routeUser()" class="nav-item active"><i data-lucide="layout-dashboard"></i><span>Panel</span></div>
-            <div onclick="ChatManager.toggle()" class="nav-item"><i data-lucide="message-square"></i><span>Saha</span></div>
-            <div onclick="InventoryManager.ac()" class="nav-item"><i data-lucide="package"></i><span>Depo</span></div>
-        </nav>
-    </div>
-
-    <!-- ARIZA BİLDİRİM MODALI -->
-    <div class="modal fade" id="arizaModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content glass-card border-0">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title text-white fw-bold">⚠️ Arıza Bildirimi</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="x-small text-emerald fw-bold mb-2">ARIZALI BÖLGE SEÇİN</label>
-                        <select id="arizaBolumSec" class="form-select btn-glass-emerald border-0 text-white rounded-4 py-3">
-                            <!-- Katın odaları buraya gelecek -->
-                        </select>
+        <!-- MESAJLAR + BOŞ DURUM -->
+        <div id="chatMessages" class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3"
+            style="position:relative;">
+            <!-- Boş durum görseli -->
+            <div id="chatEmptyState"
+                class="d-flex flex-column align-items-center justify-content-center h-100 text-center"
+                style="opacity:0.5;">
+                <div id="chatOverlay" class="chat-overlay">
+                    <div class="p-3 d-flex align-items-center gap-3 border-bottom border-secondary border-opacity-10 bg-dark bg-opacity-80"
+                        style="z-index: 10;">
+                        <button onclick="ChatManager.toggle()" class="btn btn-sm text-white border-0 p-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
+                        </button>
+                        <div class="d-flex align-items-center gap-2">
+                            <img src="assets/logo_enderun_white.png" style="width:36px; height:36px; border-radius:50%;"
+                                alt="L">
+                            <div>
+                                <div class="fw-bold text-white small">TopClean Chat</div>
+                                <div class="x-small text-emerald fw-bold" style="font-size:0.6rem;">Online / Topluluk
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="x-small text-emerald fw-bold mb-2">ARIZA DETAYI</label>
-                        <textarea id="arizaDetayText" class="form-control btn-glass-emerald border-0 text-white rounded-4 py-3" rows="3" placeholder="Lamba patladı, musluk akıtıyor vb."></textarea>
+
+                    <div id="chatMessages">
+                        <div id="chatEmptyState"
+                            class="flex-column align-items-center justify-content-center h-100 opacity-50"
+                            style="display:none;">
+                            <div class="h1">💬</div>
+                            <div class="small">Henüz mesaj yok...</div>
+                        </div>
+                        <!-- Mesajlar buraya gelecek -->
                     </div>
-                    <button onclick="ArizaManager.kaydet()" class="btn btn-danger w-100 py-3 rounded-pill fw-bold shadow-danger mt-2">BİLDİRİMİ GÖNDER</button>
+
+                    <div class="chat-input-area">
+                        <input type="text" id="chatInput" placeholder="Mesaj yazın..."
+                            onkeydown="if(event.key==='Enter') ChatManager.send()">
+                        <button onclick="ChatManager.send()"
+                            class="btn btn-success rounded-circle d-flex align-items-center justify-content-center p-0"
+                            style="width:42px; height:42px; background:#00a884; border:none;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                stroke-linejoin="round" style="margin-left:2px;">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="arizaYonetimPanel" class="view-panel d-none flex-column w-100">
+                    <div class="glass-card banner-card p-4 mb-4 text-center shadow-lg">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald rounded-pill px-3">←
+                                Geri</button>
+                            <h2 class="h4 fw-bold text-white mb-0">Arıza Yönetimi</h2>
+                            <div style="width:60px;"></div>
+                        </div>
+                        <p class="x-small text-muted mb-0">Binadaki teknik sorunları buradan yönetin</p>
+                    </div>
+                    <div id="arizaYonetimListesi" class="d-flex flex-column gap-3 pb-5">
+                        <!-- Arıza kartları buraya gelecek -->
+                    </div>
+                </div>
+
+                <!-- FLOATING BOTTOM NAV -->
+                <nav class="mobile-nav d-md-none">
+                    <div onclick="_routeUser()" class="nav-item active"><i
+                            data-lucide="layout-dashboard"></i><span>Panel</span></div>
+                    <div onclick="ChatManager.toggle()" class="nav-item"><i
+                            data-lucide="message-square"></i><span>Saha</span></div>
+                    <div onclick="InventoryManager.ac()" class="nav-item"><i data-lucide="package"></i><span>Depo</span>
+                    </div>
+                </nav>
+            </div>
+
+            <!-- ARIZA BİLDİRİM MODALI -->
+            <div class="modal fade" id="arizaModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content glass-card border-0">
+                        <div class="modal-header border-0 pb-0">
+                            <h5 class="modal-title text-white fw-bold">⚠️ Arıza Bildirimi</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body p-4">
+                            <div class="mb-3">
+                                <label class="x-small text-emerald fw-bold mb-2">ARIZALI BÖLGE SEÇİN</label>
+                                <select id="arizaBolumSec"
+                                    class="form-select btn-glass-emerald border-0 text-white rounded-4 py-3">
+                                    <!-- Katın odaları buraya gelecek -->
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="x-small text-emerald fw-bold mb-2">ARIZA DETAYI</label>
+                                <textarea id="arizaDetayText"
+                                    class="form-control btn-glass-emerald border-0 text-white rounded-4 py-3" rows="3"
+                                    placeholder="Lamba patladı, musluk akıtıyor vb."></textarea>
+                            </div>
+                            <button onclick="ArizaManager.kaydet()"
+                                class="btn btn-danger w-100 py-3 rounded-pill fw-bold shadow-danger mt-2">BİLDİRİMİ
+                                GÖNDER</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- PDF TEMPLATE (HIDDEN) -->
-    <div id="pdfExportTemplate" style="position: absolute; left: -9999px; top: 0; width: 800px; background: white; font-family: 'Inter', sans-serif; color: #333;">
-        <!-- Bu alan JS ile dinamik doldurulacak -->
-    </div>
+            <!-- PDF TEMPLATE (HIDDEN) -->
+            <div id="pdfExportTemplate"
+                style="position: absolute; left: -9999px; top: 0; width: 800px; background: white; font-family: 'Inter', sans-serif; color: #333;">
+                <!-- Bu alan JS ile dinamik doldurulacak -->
+            </div>
 
-    <script src="app.js?v=premium_final_v1"></script>
+            <script src="app.js?v=premium_final_v1"></script>
 </body>
+
 </html>
