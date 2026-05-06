@@ -968,3 +968,399 @@ body.light-mode .modal-title { color: #0f172a !important; }
     .logo-img { width: 200px; }
     .login-title { font-size: 11px; letter-spacing: 6px; }
 }
+
+/* ============================================================
+   PREMIUM LOGIN RE-DESIGN (MATCHING REFERENCE IMAGE)
+   ============================================================ */
+
+.login-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #050a05;
+    z-index: 9999;
+}
+
+/* BACKGROUND SYSTEM */
+.login-bg-container {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.login-bg-main {
+    position: absolute;
+    inset: 0;
+    background: url('assets/login_bg.png') no-repeat center center;
+    background-size: cover;
+    filter: saturate(1.2) brightness(0.9);
+}
+
+.login-bg-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 70% 50%, transparent 0%, rgba(0, 20, 10, 0.4) 100%);
+}
+
+/* HANDWRITTEN GLASS TEXT */
+.glass-text-container {
+    position: absolute;
+    top: 35%;
+    left: 10%;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.glass-title {
+    font-family: 'Homemade Apple', cursive;
+    font-size: 5rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    line-height: 1;
+    transform: rotate(-5deg);
+    text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    filter: blur(0.5px);
+}
+
+.glass-subtitle {
+    font-family: 'Homemade Apple', cursive;
+    font-size: 2.5rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+    margin-left: 2rem;
+    transform: rotate(-2deg);
+    text-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+}
+
+.heart {
+    color: #10b981;
+    display: inline-block;
+    margin-left: 10px;
+    filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.5));
+}
+
+/* PREMIUM CARD */
+.login-card-premium {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 420px;
+    padding: 2px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    backdrop-filter: blur(25px) saturate(180%);
+    border-radius: 32px;
+    box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5), 
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.login-card-content {
+    padding: 40px 35px;
+    background: rgba(10, 20, 15, 0.4);
+    border-radius: 30px;
+}
+
+.login-logo-wrap {
+    text-align: center;
+}
+
+.logo-circle {
+    width: 80px;
+    height: 80px;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.2);
+}
+
+.logo-circle img {
+    width: 50px;
+    height: 50px;
+    filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.5));
+}
+
+.brand-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 4px;
+    color: #fff;
+    margin: 0;
+}
+
+.brand-tagline {
+    font-size: 0.75rem;
+    color: #10b981;
+    font-weight: 600;
+    letter-spacing: 3px;
+    margin-top: 5px;
+}
+
+.brand-tagline span {
+    opacity: 0.3;
+    padding: 0 5px;
+}
+
+/* PREMIUM INPUTS */
+.premium-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.premium-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 18px 20px 18px 55px;
+    color: #fff;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.premium-input:focus {
+    background: rgba(0, 0, 0, 0.6);
+    border-color: rgba(16, 185, 129, 0.4);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+}
+
+.premium-input-group .input-icon {
+    position: absolute;
+    left: 20px;
+    color: rgba(255, 255, 255, 0.4);
+    width: 20px;
+}
+
+.premium-input-group .eye-icon {
+    position: absolute;
+    right: 20px;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    width: 18px;
+    transition: color 0.3s;
+}
+
+.premium-input-group .eye-icon:hover {
+    color: #10b981;
+}
+
+/* CHECKBOX & LINKS */
+.premium-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.premium-checkbox input {
+    display: none;
+}
+
+.checkmark {
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    position: relative;
+    transition: all 0.3s;
+}
+
+.premium-checkbox input:checked + .checkmark {
+    background: #10b981;
+    border-color: #10b981;
+}
+
+.premium-checkbox input:checked + .checkmark::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-size: 12px;
+}
+
+.label-text {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.forgot-link {
+    font-size: 0.85rem;
+    color: #10b981;
+    text-decoration: none;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+
+.forgot-link:hover {
+    opacity: 1;
+}
+
+/* BUTTONS */
+.premium-login-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: none;
+    border-radius: 16px;
+    padding: 18px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+    box-shadow: 0 15px 30px rgba(16, 185, 129, 0.2);
+}
+
+.premium-login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(16, 185, 129, 0.3);
+}
+
+.premium-login-btn:active {
+    transform: translateY(1px);
+}
+
+.btn-arrow {
+    width: 20px;
+    transition: transform 0.3s;
+}
+
+.premium-login-btn:hover .btn-arrow {
+    transform: translateX(5px);
+}
+
+.divider {
+    text-align: center;
+    position: relative;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.divider span {
+    position: relative;
+    background: rgba(10, 20, 15, 0);
+    padding: 0 15px;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.premium-guest-btn {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 16px;
+    color: #fff;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s;
+}
+
+.premium-guest-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* BOTTOM SLIDER */
+.bottom-slider {
+    position: absolute;
+    bottom: 40px;
+    left: 10%;
+    z-index: 10;
+}
+
+.slider-track {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    padding: 12px 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.slider-text {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 500;
+}
+
+.slider-arrows {
+    color: #10b981;
+    animation: slideArrows 1.5s infinite;
+}
+
+@keyframes slideArrows {
+    0% { transform: translateX(0); opacity: 0.2; }
+    50% { transform: translateX(5px); opacity: 1; }
+    100% { transform: translateX(0); opacity: 0.2; }
+}
+
+/* BUBBLES */
+.bubble-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.premium-bubble {
+    position: absolute;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2), transparent 70%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    backdrop-filter: blur(1px);
+    animation: bubbleFloat var(--duration) ease-in-out infinite;
+}
+
+@keyframes bubbleFloat {
+    0%, 100% { transform: translate(0, 0); }
+    33% { transform: translate(10px, -20px); }
+    66% { transform: translate(-10px, -10px); }
+}
+
+@media (max-width: 768px) {
+    .glass-text-container {
+        display: none;
+    }
+    .bottom-slider {
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+    }
+    .slider-track {
+        justify-content: center;
+    }
+}
