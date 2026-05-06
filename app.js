@@ -1572,34 +1572,30 @@ function toggleTheme() {
     }
 }
 
-// --- LOGIN CINEMATIC ---
+// --- PREMIUM LOGIN CINEMATIC ---
 function initLoginBubbles() {
     const container = document.getElementById('loginBubbles');
     if (!container) return;
-    container.innerHTML = ''; // Temizle
-    for (let i = 0; i < 20; i++) {
-        spawnBubble(container, false);
+    container.innerHTML = ''; 
+    for (let i = 0; i < 15; i++) {
+        spawnPremiumBubble(container);
     }
 }
 
-function spawnBubble(container, isBurst = false) {
+function spawnPremiumBubble(container) {
     const bubble = document.createElement('div');
-    bubble.className = 'login-bubble';
-    const size = isBurst ? (5 + Math.random() * 15) : (10 + Math.random() * 25);
+    bubble.className = 'premium-bubble';
+    const size = 20 + Math.random() * 40;
+    const duration = 10 + Math.random() * 20;
+    
     bubble.style.width = size + 'px';
     bubble.style.height = size + 'px';
     bubble.style.left = Math.random() * 100 + '%';
-    bubble.style.bottom = isBurst ? '0' : '-60px';
-    if (isBurst) {
-        bubble.style.animationDuration = (0.5 + Math.random() * 1.5) + 's';
-        bubble.style.background = 'radial-gradient(circle at 30% 30%, #34d399, #10b981)';
-        bubble.style.boxShadow = '0 0 20px #10b981';
-    } else {
-        bubble.style.animationDuration = (6 + Math.random() * 10) + 's';
-        bubble.style.animationDelay = (Math.random() * 5) + 's';
-    }
+    bubble.style.top = Math.random() * 100 + '%';
+    bubble.style.setProperty('--duration', duration + 's');
+    bubble.style.animationDelay = -(Math.random() * duration) + 's';
+    
     container.appendChild(bubble);
-    if (isBurst) setTimeout(() => bubble.remove(), 2000);
 }
 
 function toggleTheme() {
@@ -1712,10 +1708,9 @@ document.addEventListener("DOMContentLoaded", () => {
         _routeUser(); 
     } else { 
         showPanel("loginPanel");
-        // Boot Aero-Emerald login animations
+        // Boot Premium Login animations
         setTimeout(() => {
-            initAeroBackground();
-            initGlitchEffect();
+            initLoginBubbles();
             initPasswordToggle();
         }, 100);
     }
@@ -1748,8 +1743,7 @@ document.addEventListener("DOMContentLoaded", () => {
         currentUser = null; 
         showPanel("loginPanel");
         setTimeout(() => {
-            initAeroBackground();
-            initGlitchEffect();
+            initLoginBubbles();
             initPasswordToggle();
         }, 150);
     });
