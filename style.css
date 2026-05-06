@@ -994,7 +994,7 @@ body.light-mode .modal-title { color: #0f172a !important; }
     z-index: 0;
 }
 
-.login-bg-main {
+.login-bg-clear {
     position: absolute;
     inset: 0;
     background: url('assets/login_bg.png') no-repeat center center;
@@ -1002,10 +1002,22 @@ body.light-mode .modal-title { color: #0f172a !important; }
     filter: saturate(1.2) brightness(0.9);
 }
 
+.login-bg-mist {
+    position: absolute;
+    inset: 0;
+    background: url('assets/login_bg.png') no-repeat center center;
+    background-size: cover;
+    filter: blur(12px) brightness(1.1) opacity(0.9);
+    /* The wipe mask: cuts a hole in the mist to reveal the clear background underneath */
+    -webkit-mask-image: radial-gradient(ellipse 40% 50% at 20% 40%, transparent 20%, black 50%);
+    mask-image: radial-gradient(ellipse 40% 50% at 20% 40%, transparent 20%, black 50%);
+}
+
 .login-bg-overlay {
     position: absolute;
     inset: 0;
     background: radial-gradient(circle at 70% 50%, transparent 0%, rgba(0, 20, 10, 0.4) 100%);
+    pointer-events: none;
 }
 
 /* HANDWRITTEN GLASS TEXT */
