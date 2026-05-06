@@ -56,7 +56,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;700;900&family=Great+Vibes&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;700;900&family=Great+Vibes&family=Homemade+Apple&display=swap" rel="stylesheet">
 
     <!-- Bootstrap 5.3 JS & CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -176,70 +176,89 @@
 
         <main id="mainContainer" class="container py-4">
             
-            <!-- 1. LOGIN PANEL -->
-            <div id="loginPanel" class="view-panel active d-flex align-items-center justify-content-center w-100" style="min-height: 100vh; position: relative; overflow: hidden; background: var(--bg-main);">
-
-                <!-- Aero-Emerald Background -->
-                <div class="bg-container">
-                    <div class="grid-lines"></div>
-                    <div class="particles" id="particles"></div>
-                    <div class="data-lines" id="dataLines"></div>
+            <!-- 1. LOGIN PANEL (PREMIUM RE-DESIGN) -->
+            <div id="loginPanel" class="view-panel active login-screen">
+                
+                <!-- NEW BACKGROUND SYSTEM -->
+                <div class="login-bg-container">
+                    <div class="login-bg-main"></div>
+                    <div class="login-bg-overlay"></div>
+                    <div class="bubble-container" id="loginBubbles"></div>
                 </div>
 
-                <!-- Scan Line -->
-                <div class="scan-line"></div>
-
-                <!-- Main Card -->
-                <div class="login-card">
-                    <!-- Corner Lights -->
-                    <div class="corner-light cl-tl"></div>
-                    <div class="corner-light cl-tr"></div>
-                    <div class="corner-light cl-bl"></div>
-                    <div class="corner-light cl-br"></div>
-                    <div class="top-glow"></div>
-
-                    <!-- Logo Section -->
-                    <div class="logo-section">
-                        <img src="icon-512.png" alt="Enderun Bilişim" class="logo-img" style="width:120px; border-radius:24px;">
+                <!-- HANDWRITTEN GLASS TEXT -->
+                <div class="glass-text-container">
+                    <div class="glass-wipe-area">
+                        <h1 class="glass-title">TopClean</h1>
+                        <p class="glass-subtitle">sizinle <span class="heart">❤️</span></p>
                     </div>
+                    <div class="squeegee-handle">
+                        <div class="squeegee-head"></div>
+                        <div class="squeegee-shaft"></div>
+                    </div>
+                </div>
 
-                    <!-- Title -->
-                    <div class="login-title glitch-text" id="glitchTitle">SİSTEME GİRİŞ</div>
-
-                    <!-- Input Fields -->
-                    <form id="loginForm">
-                        <div class="input-group">
-                            <i data-lucide="user" class="input-icon"></i>
-                            <select id="userSelect" class="input-field" style="appearance: none;" required>
-                                <option value="" disabled selected>Kullanıcı Seçin</option>
-                            </select>
+                <!-- MAIN LOGIN CARD -->
+                <div class="login-card-premium">
+                    <div class="login-card-content">
+                        <!-- Logo -->
+                        <div class="login-logo-wrap">
+                            <div class="logo-circle">
+                                <img src="icon-512.png" alt="TopClean Logo">
+                            </div>
+                            <h2 class="brand-name">TOPCLEAN</h2>
+                            <p class="brand-tagline"><span>—</span> sizinle <span>—</span></p>
                         </div>
 
-                        <div class="input-group">
-                            <i data-lucide="lock" class="input-icon"></i>
-                            <input type="password" id="userPass" class="input-field" placeholder="Şifreniz" required>
-                            <i data-lucide="eye" class="eye-icon" id="togglePassword"></i>
+                        <!-- Form -->
+                        <form id="loginForm" class="mt-4">
+                            <div class="premium-input-group">
+                                <i data-lucide="user" class="input-icon"></i>
+                                <select id="userSelect" class="premium-input" required>
+                                    <option value="" disabled selected>Kullanıcı Adı</option>
+                                </select>
+                            </div>
+
+                            <div class="premium-input-group mt-3">
+                                <i data-lucide="lock" class="input-icon"></i>
+                                <input type="password" id="userPass" class="premium-input" placeholder="Şifre" required>
+                                <i data-lucide="eye" id="togglePassword" class="eye-icon"></i>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-3 px-1">
+                                <label class="premium-checkbox">
+                                    <input type="checkbox">
+                                    <span class="checkmark"></span>
+                                    <span class="label-text">Beni Hatırla</span>
+                                </label>
+                                <a href="#" class="forgot-link">Şifremi Unuttum?</a>
+                            </div>
+
+                            <button type="submit" id="loginBtn" class="premium-login-btn mt-4">
+                                <span class="btn-text">Giriş Yap</span>
+                                <i data-lucide="arrow-right" class="btn-arrow"></i>
+                                <div class="spinner"></div>
+                            </button>
+
+                            <div class="divider mt-4">
+                                <span>veya</span>
+                            </div>
+
+                            <button type="button" class="premium-guest-btn mt-3">
+                                <i data-lucide="user-plus" class="btn-icon"></i>
+                                <span>Misafir Girişi</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- BOTTOM SLIDER (DECORATIVE) -->
+                <div class="bottom-slider">
+                    <div class="slider-track">
+                        <span class="slider-text">Temizlemek için kaydır</span>
+                        <div class="slider-arrows">
+                            <i data-lucide="chevrons-right"></i>
                         </div>
-
-                        <div class="options-row">
-                            <label class="remember-me">
-                                <input type="checkbox">
-                                <span>Beni Hatırla</span>
-                            </label>
-                        </div>
-
-                        <!-- Login Button -->
-                        <button type="submit" class="login-btn" id="loginBtn">
-                            <div class="spinner"></div>
-                            <span class="success-check">✓</span>
-                            <span class="btn-text">GİRİŞ YAP</span>
-                        </button>
-                    </form>
-
-                    <div class="footer">
-                        <i data-lucide="shield" class="footer-icon"></i><br>
-                        GÜVENLİ BAĞLANTI<br>
-                        Sistem tüm verilerinizi end-to-end şifreler
                     </div>
                 </div>
             </div>
