@@ -1585,17 +1585,27 @@ function initLoginBubbles() {
 function spawnPremiumBubble(container) {
     const bubble = document.createElement('div');
     bubble.className = 'premium-bubble';
-    const size = 20 + Math.random() * 40;
-    const duration = 10 + Math.random() * 20;
+    const size = 15 + Math.random() * 45;
+    const duration = 15 + Math.random() * 25;
+    const xMove = (Math.random() - 0.5) * 100 + 'px';
+    const yMove = -(100 + Math.random() * 200) + 'px'; // Hepsi yukarı doğru çıksın
     
     bubble.style.width = size + 'px';
     bubble.style.height = size + 'px';
     bubble.style.left = Math.random() * 100 + '%';
-    bubble.style.top = Math.random() * 100 + '%';
+    bubble.style.bottom = '-50px'; // Aşağıdan başlasınlar
     bubble.style.setProperty('--duration', duration + 's');
+    bubble.style.setProperty('--xMove', xMove);
+    bubble.style.setProperty('--yMove', yMove);
     bubble.style.animationDelay = -(Math.random() * duration) + 's';
     
     container.appendChild(bubble);
+    
+    // Animasyon bittiğinde temizle ve yenisini çıkar
+    setTimeout(() => {
+        bubble.remove();
+        spawnPremiumBubble(container);
+    }, duration * 1000);
 }
 
 function toggleTheme() {
