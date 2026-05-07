@@ -1706,7 +1706,7 @@ function setLoginBtnLoading(loading, success = false) {
 }
 
 // ============================================================
-// LOGIN BUBBLE ANIMATION SYSTEM
+// PREMIUM CLEANING ANIMATION ENGINE (BUBBLES, FOAM, WIPE)
 // ============================================================
 let bubbleInterval = null;
 
@@ -1717,27 +1717,40 @@ function spawnPremiumBubble() {
     const bubble = document.createElement('div');
     bubble.classList.add('premium-bubble');
 
-    const size = Math.random() * 70 + 20;
+    // More variety in size and duration
+    const size = Math.random() * 80 + 20;
     bubble.style.width = size + 'px';
     bubble.style.height = size + 'px';
 
     bubble.style.left = Math.random() * 100 + '%';
-    bubble.style.top = Math.random() * 100 + '%';
+    bubble.style.bottom = '-100px';
 
-    const xMove = (Math.random() - 0.5) * 200;
-    const yMove = -(Math.random() * 300 + 100);
+    // Horizontal drift
+    const xMove = (Math.random() - 0.5) * 300;
+    const yMove = -(window.innerHeight + 200);
     bubble.style.setProperty('--xMove', xMove + 'px');
     bubble.style.setProperty('--yMove', yMove + 'px');
 
-    const duration = Math.random() * 8 + 6;
+    const duration = Math.random() * 10 + 10;
     bubble.style.setProperty('--duration', duration + 's');
-    bubble.style.animationDelay = (Math.random() * 3) + 's';
+    
+    // Add random rotation speed
+    const rotation = (Math.random() - 0.5) * 360;
+    bubble.style.setProperty('--rotation', rotation + 'deg');
 
     container.appendChild(bubble);
 
+    // Click to pop!
+    bubble.style.pointerEvents = 'auto';
+    bubble.addEventListener('mousedown', () => {
+        bubble.style.transform = 'scale(1.5)';
+        bubble.style.opacity = '0';
+        setTimeout(() => bubble.remove(), 200);
+    });
+
     setTimeout(() => {
         if (bubble.parentNode) bubble.remove();
-    }, (duration + 3) * 1000);
+    }, duration * 1000);
 }
 
 function initLoginBubbles() {
@@ -1745,13 +1758,11 @@ function initLoginBubbles() {
     if (!container) return;
 
     container.innerHTML = '';
-    if (bubbleInterval) {
-        clearInterval(bubbleInterval);
-        bubbleInterval = null;
-    }
+    if (bubbleInterval) clearInterval(bubbleInterval);
 
-    for (let i = 0; i < 15; i++) {
-        setTimeout(() => spawnPremiumBubble(), i * 300);
+    // Initial burst
+    for (let i = 0; i < 20; i++) {
+        setTimeout(() => spawnPremiumBubble(), Math.random() * 5000);
     }
 
     bubbleInterval = setInterval(() => {
@@ -1759,9 +1770,86 @@ function initLoginBubbles() {
             spawnPremiumBubble();
         } else {
             clearInterval(bubbleInterval);
-            bubbleInterval = null;
         }
+    }, 1200);
+}
+
+function initFoamLayer() {
+    const container = document.getElementById('foamLayer');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    const particleCount = 20;
+    for (let i = 0; i < particleCount; i++) {
+        const p = document.createElement('div');
+        p.className = 'foam-particle';
+        const size = 40 + Math.random() * 100;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.bottom = (Math.random() * 20 - 10) + 'px';
+        p.style.animationDelay = (Math.random() * 4) + 's';
+        p.style.animationDuration = (3 + Math.random() * 3) + 's';
+        container.appendChild(p);
+    }
+}
+
+function initSqueegeeWipe() {
+    const squeegee = document.getElementById('squeegee');
+    const mist = document.querySelector('.login-bg-mist');
+    if (!squeegee || !mist) return;
+
+    // Wait a bit after load then start the wipe
+    setTimeout(() => {
+        squeegee.style.display = 'block';
+        performWipe(squeegee, mist);
     }, 1500);
+}
+
+function performWipe(squeegee, mist) {
+    let progress = 0;
+    const duration = 2500; // 2.5 seconds for a full wipe
+    const start = performance.now();
+
+    // Start position: top left
+    // End position: bottom right sweep
+    
+    function animate(time) {
+        let elapsed = time - start;
+        progress = Math.min(elapsed / duration, 1);
+
+        // Path of the squeegee: diagonal sweep
+        const x = progress * 120; // 0 to 120%
+        const y = progress * 100; // 0 to 100%
+        const angle = -35 + (progress * 10); // Slight rotation during sweep
+
+        squeegee.style.transform = `translate(${x}vw, ${y}vh) rotate(${angle}deg)`;
+
+        // Update the mask-image to "reveal" the background
+        // We use a radial gradient that expands or a linear one that moves
+        const maskX = progress * 100;
+        const maskY = progress * 100;
+        
+        // Complex mask: a "trail" left by the squeegee
+        const mask = `radial-gradient(circle at ${maskX}% ${maskY}%, transparent 0%, transparent ${20 + progress * 40}%, black ${40 + progress * 40}%)`;
+        // Better: linear wipe for "professional" look
+        const linearMask = `linear-gradient(${135}deg, transparent ${progress * 120}%, black ${progress * 120 + 10}%)`;
+        
+        mist.style.setProperty('--wipe-mask', linearMask);
+        mist.style.webkitMaskImage = linearMask;
+
+        if (progress < 1) {
+            requestAnimationFrame(animate);
+        } else {
+            // Wipe complete, maybe hide squeegee or move it off screen
+            setTimeout(() => {
+                squeegee.style.opacity = '0';
+                squeegee.style.transition = 'opacity 1s';
+            }, 500);
+        }
+    }
+
+    requestAnimationFrame(animate);
 }
 
 function initPasswordToggle() {
@@ -1793,6 +1881,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // Boot Premium Login animations
         setTimeout(() => {
             initLoginBubbles();
+            initFoamLayer();
+            initSqueegeeWipe();
             initPasswordToggle();
         }, 100);
     }
