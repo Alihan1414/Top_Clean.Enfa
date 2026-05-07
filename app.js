@@ -1742,7 +1742,8 @@ function spawnPremiumBubble() {
 
     // Click to pop!
     bubble.style.pointerEvents = 'auto';
-    bubble.addEventListener('mousedown', () => {
+    bubble.addEventListener('mousedown', (e) => {
+        createPopParticles(e.clientX, e.clientY);
         bubble.style.transform = 'scale(1.5)';
         bubble.style.opacity = '0';
         setTimeout(() => bubble.remove(), 200);
@@ -1794,54 +1795,125 @@ function initFoamLayer() {
     }
 }
 
-function initSqueegeeWipe() {
-    const squeegee = document.getElementById('squeegee');
-    const mist = document.querySelector('.login-bg-mist');
-    if (!squeegee || !mist) return;
+function createPopParticles(x, y) {
+    const container = document.getElementById('loginBubbles');
+    if (!container) return;
 
-    // Wait a bit after load then start the wipe
+    for (let i = 0; i < 8; i++) {
+        const p = document.createElement('div');
+        p.style.position = 'absolute';
+        p.style.left = x + 'px';
+        p.style.top = y + 'px';
+        p.style.width = '4px';
+        p.style.height = '4px';
+        p.style.background = 'rgba(255,255,255,0.8)';
+        p.style.borderRadius = '50%';
+        p.style.pointerEvents = 'none';
+        p.style.zIndex = '10';
+
+        const angle = Math.random() * Math.PI * 2;
+        const velocity = Math.random() * 5 + 2;
+        const vx = Math.cos(angle) * velocity;
+        const vy = Math.sin(angle) * velocity;
+
+        container.appendChild(p);
+
+        let op = 1;
+        const anim = setInterval(() => {
+            x += vx;
+            y += vy;
+            op -= 0.05;
+            p.style.left = x + 'px';
+            p.style.top = y + 'px';
+            p.style.opacity = op;
+            if (op <= 0) {
+                clearInterval(anim);
+                p.remove();
+            }
+        }, 16);
+    }
+}
+
+function initCondensation() {
+    const container = document.getElementById('glassDrops');
+    if (!container) return;
+
+    container.innerHTML = '';
+    const dropCount = 150;
+    for (let i = 0; i < dropCount; i++) {
+        const drop = document.createElement('div');
+        drop.className = 'glass-drop';
+        const size = Math.random() * 8 + 2;
+        drop.style.width = size + 'px';
+        drop.style.height = (size * (1 + Math.random())) + 'px';
+        drop.style.left = Math.random() * 100 + '%';
+        drop.style.top = Math.random() * 100 + '%';
+        drop.style.opacity = Math.random() * 0.5 + 0.2;
+        container.appendChild(drop);
+    }
+}
+
+function createWipeStreak(x, y, angle) {
+    const container = document.getElementById('loginPanel');
+    const streak = document.createElement('div');
+    streak.className = 'wipe-streak';
+    streak.style.left = x + 'vw';
+    streak.style.top = y + 'vh';
+    streak.style.width = '30vw';
+    streak.style.transform = `rotate(${angle}deg)`;
+    streak.style.opacity = '0.4';
+    
+    container.appendChild(streak);
+    
     setTimeout(() => {
-        squeegee.style.display = 'block';
-        performWipe(squeegee, mist);
-    }, 1500);
+        streak.style.transition = 'opacity 1s, filter 1s';
+        streak.style.opacity = '0';
+        streak.style.filter = 'blur(10px)';
+        setTimeout(() => streak.remove(), 1000);
+    }, 100);
 }
 
 function performWipe(squeegee, mist) {
     let progress = 0;
-    const duration = 2500; // 2.5 seconds for a full wipe
+    const duration = 2500;
     const start = performance.now();
-
-    // Start position: top left
-    // End position: bottom right sweep
     
+    // Clear existing drops near the wipe path
+    const drops = document.querySelectorAll('.glass-drop');
+
     function animate(time) {
         let elapsed = time - start;
         progress = Math.min(elapsed / duration, 1);
 
-        // Path of the squeegee: diagonal sweep
-        const x = progress * 120; // 0 to 120%
-        const y = progress * 100; // 0 to 100%
-        const angle = -35 + (progress * 10); // Slight rotation during sweep
+        const x = progress * 120; 
+        const y = progress * 100;
+        const angle = -35 + (progress * 15);
 
         squeegee.style.transform = `translate(${x}vw, ${y}vh) rotate(${angle}deg)`;
 
-        // Update the mask-image to "reveal" the background
-        // We use a radial gradient that expands or a linear one that moves
-        const maskX = progress * 100;
-        const maskY = progress * 100;
-        
-        // Complex mask: a "trail" left by the squeegee
-        const mask = `radial-gradient(circle at ${maskX}% ${maskY}%, transparent 0%, transparent ${20 + progress * 40}%, black ${40 + progress * 40}%)`;
-        // Better: linear wipe for "professional" look
-        const linearMask = `linear-gradient(${135}deg, transparent ${progress * 120}%, black ${progress * 120 + 10}%)`;
-        
-        mist.style.setProperty('--wipe-mask', linearMask);
+        // Cinematic Streak
+        if (Math.random() > 0.7) {
+            createWipeStreak(x, y, angle);
+        }
+
+        // Dynamic Reveal
+        const linearMask = `linear-gradient(${135}deg, transparent ${progress * 120}%, black ${progress * 120 + 5}%)`;
         mist.style.webkitMaskImage = linearMask;
+
+        // Clear droplets in the path
+        drops.forEach(drop => {
+            const dropX = parseFloat(drop.style.left);
+            const dropY = parseFloat(drop.style.top);
+            // Rough diagonal check
+            if (dropX + dropY < progress * 200) {
+                drop.style.opacity = '0';
+                drop.style.transition = 'opacity 0.5s';
+            }
+        });
 
         if (progress < 1) {
             requestAnimationFrame(animate);
         } else {
-            // Wipe complete, maybe hide squeegee or move it off screen
             setTimeout(() => {
                 squeegee.style.opacity = '0';
                 squeegee.style.transition = 'opacity 1s';
@@ -1882,6 +1954,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
             initLoginBubbles();
             initFoamLayer();
+            initCondensation();
             initSqueegeeWipe();
             initPasswordToggle();
         }, 100);
