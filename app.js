@@ -1705,6 +1705,78 @@ function setLoginBtnLoading(loading, success = false) {
     }
 }
 
+// ============================================================
+// LOGIN BUBBLE ANIMATION SYSTEM
+// ============================================================
+let bubbleInterval = null;
+
+function spawnPremiumBubble() {
+    const container = document.getElementById('loginBubbles');
+    if (!container) return;
+
+    const bubble = document.createElement('div');
+    bubble.classList.add('premium-bubble');
+
+    const size = Math.random() * 70 + 20;
+    bubble.style.width = size + 'px';
+    bubble.style.height = size + 'px';
+
+    bubble.style.left = Math.random() * 100 + '%';
+    bubble.style.top = Math.random() * 100 + '%';
+
+    const xMove = (Math.random() - 0.5) * 200;
+    const yMove = -(Math.random() * 300 + 100);
+    bubble.style.setProperty('--xMove', xMove + 'px');
+    bubble.style.setProperty('--yMove', yMove + 'px');
+
+    const duration = Math.random() * 8 + 6;
+    bubble.style.setProperty('--duration', duration + 's');
+    bubble.style.animationDelay = (Math.random() * 3) + 's';
+
+    container.appendChild(bubble);
+
+    setTimeout(() => {
+        if (bubble.parentNode) bubble.remove();
+    }, (duration + 3) * 1000);
+}
+
+function initLoginBubbles() {
+    const container = document.getElementById('loginBubbles');
+    if (!container) return;
+
+    container.innerHTML = '';
+    if (bubbleInterval) {
+        clearInterval(bubbleInterval);
+        bubbleInterval = null;
+    }
+
+    for (let i = 0; i < 15; i++) {
+        setTimeout(() => spawnPremiumBubble(), i * 300);
+    }
+
+    bubbleInterval = setInterval(() => {
+        if (document.getElementById('loginBubbles')) {
+            spawnPremiumBubble();
+        } else {
+            clearInterval(bubbleInterval);
+            bubbleInterval = null;
+        }
+    }, 1500);
+}
+
+function initPasswordToggle() {
+    const toggle = document.getElementById('togglePassword');
+    const passInput = document.getElementById('userPass');
+    if (!toggle || !passInput) return;
+
+    toggle.addEventListener('click', () => {
+        const isPassword = passInput.type === 'password';
+        passInput.type = isPassword ? 'text' : 'password';
+        toggle.setAttribute('data-lucide', isPassword ? 'eye-off' : 'eye');
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     // Theme Init
     if (localStorage.getItem('topclean_theme') === 'light') {
