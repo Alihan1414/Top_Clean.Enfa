@@ -1570,6 +1570,10 @@ function toggleTheme() {
         icon.setAttribute('data-lucide', isLight ? 'moon' : 'sun');
         if (typeof lucide !== 'undefined') lucide.createIcons();
     }
+
+    if (typeof ListeManager !== 'undefined' && ListeManager.renderLeadersUI) {
+        ListeManager.renderLeadersUI();
+    }
 }
 
 // --- PREMIUM LOGIN CINEMATIC ---
@@ -1986,11 +1990,8 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('logoutBtn')?.addEventListener('click', () => { 
         localStorage.removeItem('topclean_session'); 
         currentUser = null; 
-        showPanel("loginPanel");
-        setTimeout(() => {
-            initLoginBubbles();
-            initPasswordToggle();
-        }, 150);
+        // Force a hard reload to clear any memory/cache issues as requested
+        window.location.reload();
     });
     
     if (typeof lucide !== 'undefined') lucide.createIcons();
