@@ -94,7 +94,7 @@ const usersData = [
     { name: "Görevli", pass: "1234", kat: "Yatakhane Katı", rol: "gorevli" },
     { name: "Emra Karabalak", pass: "1234", kat: "Sosyal Alan Katı", rol: "gorevli" },
     { name: "İç Mesul", pass: "1111", kat: "", rol: "mufettis" },
-    { name: "İdareci", pass: "1111", kat: "", rol: "idareci" },
+    { name: "Yurt Mesulü", pass: "1111", kat: "", rol: "idareci" },
     { name: "Liste Sorumlusu", pass: "1111", kat: "", rol: "liste" }
 ];
 
@@ -1477,9 +1477,18 @@ function _routeUser() {
 const ArizaManager = {
     bildirimModaliAc: function() {
         const select = document.getElementById('arizaBolumSec');
-        if (!select || !currentUser.kat) return;
-        const bolumler = Object.keys(katlar[currentUser.kat] || {});
-        select.innerHTML = bolumler.map(b => `<option value="${b}">${b}</option>`).join('');
+        if (!select) return;
+        
+        let optionsHtml = '';
+        Object.keys(katlar).forEach(k => {
+            optionsHtml += `<optgroup label="${k}">`;
+            Object.keys(katlar[k]).forEach(b => {
+                optionsHtml += `<option value="${k}|${b}">${b}</option>`;
+            });
+            optionsHtml += `</optgroup>`;
+        });
+        select.innerHTML = optionsHtml;
+
         const modal = new bootstrap.Modal(document.getElementById('arizaModal'));
         modal.show();
     },
@@ -1487,7 +1496,16 @@ const ArizaManager = {
         const bolum = document.getElementById('arizaBolumSec').value;
         const detay = document.getElementById('arizaDetayText').value;
         if (!detay) return Swal.fire("Hata", "Lütfen arıza detayını yazın.", "error");
-        const yeniAriza = { kat: currentUser.kat, bolum: bolum, gorevli: currentUser.name, detay: detay, tarih: new Date().toISOString(), durum: "bekliyor" };
+        
+        let arizaKat = currentUser.kat || "Bilinmiyor";
+        let arizaBolum = bolum;
+        if (bolum && bolum.includes('|')) {
+            const parts = bolum.split('|');
+            arizaKat = parts[0];
+            arizaBolum = parts[1];
+        }
+
+        const yeniAriza = { id: Date.now().toString(), kat: arizaKat, bolum: arizaBolum, gorevli: currentUser.name, detay: detay, tarih: new Date().toISOString(), durum: "bekliyor" };
         saveAriza(yeniAriza);
         bootstrap.Modal.getInstance(document.getElementById('arizaModal')).hide();
         document.getElementById('arizaDetayText').value = "";
