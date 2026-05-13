@@ -155,11 +155,11 @@
         </div>
     </div>
 
-    <!-- TEMA DEĞİŞTİRME BUTONU -->
-    <button onclick="toggleTheme()"
-        class="btn btn-glass-emerald rounded-circle position-fixed d-flex align-items-center justify-content-center shadow-lg"
-        style="top: 20px; right: 20px; width: 45px; height: 45px; z-index: 9999;">
-        <i data-lucide="sun" id="themeIcon" size="20"></i>
+    <!-- TEMA DEĞİŞTİRME BUTONU (ELITE) -->
+    <button onclick="toggleTheme()" id="themeToggleButton"
+        class="btn btn-premium-theme rounded-circle position-fixed d-flex align-items-center justify-content-center shadow-lg"
+        style="top: 25px; right: 25px; width: 50px; height: 50px; z-index: 9999; background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px); color: #fff;">
+        <i data-lucide="sun" id="themeIcon" size="24"></i>
     </button>
 
     <div class="app-container">
@@ -219,16 +219,18 @@
                     <div class="glass-wipe-area">
                         <h1 class="glass-title">TopClean</h1>
                         <p class="glass-subtitle">
-                            sizinle 
+                            sizinle
                             <svg class="heart-svg" viewBox="0 0 24 24">
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                <path
+                                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                </path>
                             </svg>
                         </p>
                     </div>
-                <div class="squeegee-handle" id="squeegee">
-                    <div class="squeegee-head"></div>
-                    <div class="squeegee-shaft"></div>
-                </div>
+                    <div class="squeegee-handle" id="squeegee">
+                        <div class="squeegee-head"></div>
+                        <div class="squeegee-shaft"></div>
+                    </div>
                 </div>
 
                 <!-- MAIN LOGIN CARD -->
@@ -288,7 +290,7 @@
                 <!-- BOTTOM SLIDER (DECORATIVE) -->
                 <div class="bottom-slider">
                     <div class="slider-track">
-                        <span class="slider-text">Temizlemek için kaydır</span>
+                        <span class="slider-text"> kaydır</span>
                         <div class="slider-arrows">
                             <i data-lucide="chevrons-right"></i>
                         </div>
@@ -381,12 +383,12 @@
                 </div>
             </div>
 
-            <!-- İDARECİ PANELİ (COCKPIT) -->
+            <!-- YURT MESULÜ PANELİ (COCKPIT) -->
             <div id="idarecPanel" class="view-panel d-none flex-column w-100">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald px-3 rounded-pill">←
                         Geri</button>
-                    <h6 class="text-emerald fw-bold mb-0 x-small">İDARECİ KOKPİTİ</h6>
+                    <h6 class="text-emerald fw-bold mb-0 x-small">YURT MESULÜ KOKPİTİ</h6>
                     <div style="width:50px"></div>
                 </div>
                 <!-- 1. NABIZ & GENEL DURUM -->
@@ -817,7 +819,7 @@
                 <!-- Bu alan JS ile dinamik doldurulacak -->
             </div>
 
-            <script src="app.js?v=premium_final_v1"></script>
+            <script src="app.js?v=elite_final_v2"></script>
 </body>
 
 </html>
