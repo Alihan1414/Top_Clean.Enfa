@@ -18,9 +18,25 @@ try {
         auth = firebase.auth();
         
         // --- AUTH GUARD: PERMISSION_DENIED HATASINI ÖNLEMEK İÇİN ---
-        // Firebase kuralları 'auth != null' gerektiriyorsa anonim giriş yapmalıyız
-        auth.signInAnonymously().catch(err => {
+        auth.signInAnonymously().then(() => {
+            console.log("Firebase Auth: Anonim giriş başarılı.");
+        }).catch(err => {
             console.error("Firebase Auth Error:", err);
+            // Anonim giriş kapalıysa kullanıcıya uyarı verebiliriz (geliştirme aşamasında)
+            if (err.code === 'auth/operation-not-allowed') {
+                console.warn("Firebase Auth: Anonim giriş devre dışı. Lütfen Firebase Console -> Auth -> Sign-in Method kısmından aktif edin.");
+            }
+        });
+
+        auth.onAuthStateChanged(user => {
+            if (user) console.log("Firebase Auth: Aktif oturum UID:", user.uid);
+            else console.warn("Firebase Auth: Oturum kapalı.");
+        });
+
+        // Veritabanı bağlantı durumunu izle
+        db.ref('.info/connected').on('value', snap => {
+            if (snap.val() === true) console.log("Firebase DB: Bağlantı kuruldu.");
+            else console.warn("Firebase DB: Bağlantı kesildi.");
         });
     }
 } catch (e) { console.error("Firebase Init Error:", e); }
