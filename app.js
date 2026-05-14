@@ -16,6 +16,12 @@ try {
         firebase.initializeApp(firebaseConfig);
         db = firebase.database();
         auth = firebase.auth();
+        
+        // --- AUTH GUARD: PERMISSION_DENIED HATASINI ÖNLEMEK İÇİN ---
+        // Firebase kuralları 'auth != null' gerektiriyorsa anonim giriş yapmalıyız
+        auth.signInAnonymously().catch(err => {
+            console.error("Firebase Auth Error:", err);
+        });
     }
 } catch (e) { console.error("Firebase Init Error:", e); }
 
