@@ -1780,32 +1780,25 @@ function setLoginBtnLoading(loading, success = false) {
     const btn = document.getElementById('loginBtn');
     if (!btn) return;
     const spinner = btn.querySelector('.spinner');
+    const check = btn.querySelector('.success-check');
     const text = btn.querySelector('.btn-text');
-    const icon = btn.querySelector('i');
-
     if (loading) {
+        btn.classList.add('loading');
         btn.disabled = true;
         if (spinner) spinner.style.display = 'inline-block';
         if (text) text.textContent = 'GİRİŞ YAPILIYOR...';
-        if (icon) icon.style.display = 'none';
     } else if (success) {
         if (spinner) spinner.style.display = 'none';
+        if (check) check.style.display = 'inline';
         if (text) text.textContent = 'BAŞARILI!';
-        if (icon) {
-            icon.style.display = 'inline-block';
-            icon.setAttribute('data-lucide', 'check');
-            lucide.createIcons();
-        }
-        btn.style.background = 'linear-gradient(90deg, #10b981, #059669)';
+        btn.style.borderColor = '#00ff88';
+        btn.style.background = 'rgba(0,255,136,0.15)';
     } else {
+        btn.classList.remove('loading');
         btn.disabled = false;
         if (spinner) spinner.style.display = 'none';
-        if (text) text.textContent = 'Giriş Yap';
-        if (icon) {
-            icon.style.display = 'inline-block';
-            icon.setAttribute('data-lucide', 'arrow-right');
-            lucide.createIcons();
-        }
+        if (check) check.style.display = 'none';
+        if (text) text.textContent = 'GİRİŞ YAP';
     }
 }
 
@@ -2054,9 +2047,12 @@ document.addEventListener("DOMContentLoaded", () => {
         _routeUser(); 
     } else { 
         showPanel("loginPanel");
-        // Aero-Emerald v3 Init
+        // Boot Premium Login animations
         setTimeout(() => {
             initLoginBubbles();
+            initFoamLayer();
+            initCondensation();
+            initSqueegeeWipe();
             initPasswordToggle();
         }, 100);
     }
