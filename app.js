@@ -517,6 +517,26 @@ const ChatManager = {
         });
         
         input.value = "";
+    },
+    clear: function() {
+        Swal.fire({
+            title: 'Sohbeti Temizle?',
+            text: "Tüm mesajlar kalıcı olarak silinecek!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Evet, Sil!',
+            cancelButtonText: 'İptal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                db.ref('messages').remove().then(() => {
+                    Swal.fire('Silindi!', 'Sohbet geçmişi temizlendi.', 'success');
+                }).catch(err => {
+                    Swal.fire('Hata', 'Silme işlemi başarısız: ' + err.message, 'error');
+                });
+            }
+        });
     }
 };
 
