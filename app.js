@@ -412,32 +412,50 @@ const InventoryManager = {
 // --- CHAT SYSTEM ---
 const ChatManager = {
     isOpen: false,
+    isListening: false,
     toggle: function() {
         const overlay = document.getElementById('chatOverlay');
         if (!overlay) return;
         this.isOpen = !this.isOpen;
         overlay.style.left = this.isOpen ? '0' : '-100%';
-        if (this.isOpen) this.load();
+        if (this.isOpen) {
+            this.load();
+        }
     },
     load: function() {
-        if (!db) return;
-        db.ref('messages').limitToLast(30).on('value', snap => {
+        if (!db) {
+            console.error("ChatManager: Firebase database not initialized.");
+            return;
+        }
+        if (this.isListening) {
+            console.log("ChatManager: Already listening to messages.");
+            return;
+        }
+
+        console.log("ChatManager: Starting message listener...");
+        this.isListening = true;
+        
+        db.ref('messages').limitToLast(40).on('value', snap => {
             const container = document.getElementById('chatMessages');
             const emptyState = document.getElementById('chatEmptyState');
             if (!container) return;
             
-            // Mevcut mesajları temizle
-            const existingBubbles = container.querySelectorAll('.chat-bubble');
-            existingBubbles.forEach(b => b.remove());
+            // Clear existing bubbles safely
+            const bubbles = container.querySelectorAll('.chat-bubble');
+            bubbles.forEach(b => b.remove());
 
             const val = snap.val();
             if (!val) {
                 if (emptyState) emptyState.style.display = 'flex';
+                console.log("ChatManager: No messages found.");
                 return;
             }
             if (emptyState) emptyState.style.display = 'none';
 
-            Object.values(val).forEach(m => {
+            const messages = Object.values(val);
+            console.log(`ChatManager: Rendering ${messages.length} messages.`);
+            
+            messages.forEach(m => {
                 const isMine = m.sender === currentUser?.name;
                 const time = m.timestamp ? new Date(m.timestamp).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : "";
                 
@@ -450,17 +468,32 @@ const ChatManager = {
                 `;
                 container.appendChild(bubble);
             });
-            container.scrollTop = container.scrollHeight;
+            
+            // Scroll to bottom with a slight delay to ensure rendering is complete
+            setTimeout(() => {
+                container.scrollTop = container.scrollHeight;
+            }, 100);
+        }, error => {
+            console.error("ChatManager: Firebase error:", error);
+            this.isListening = false;
         });
     },
     send: function() {
         const input = document.getElementById('chatInput');
         if (!input || !input.value.trim() || !currentUser) return;
+        
+        const msgText = input.value.trim();
         db.ref('messages').push({ 
             sender: currentUser.name, 
-            text: input.value, 
+            text: msgText, 
             timestamp: new Date().toISOString() 
+        }).then(() => {
+            console.log("ChatManager: Message sent successfully.");
+        }).catch(err => {
+            console.error("ChatManager: Error sending message:", err);
+            Swal.fire("Hata", "Mesaj gönderilemedi: " + err.message, "error");
         });
+        
         input.value = "";
     }
 };
