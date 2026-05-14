@@ -197,81 +197,103 @@
 
         <main id="mainContainer" class="container py-4">
 
-            <!-- 1. LOGIN PANEL (AERO-EMERALD v4 - 1:1 MATCH) -->
+            <!-- 1. LOGIN PANEL (PREMIUM RE-DESIGN) -->
             <div id="loginPanel" class="view-panel active login-screen">
-                
-                <!-- BACKGROUND BUBBLES -->
-                <div class="login-bubbles" id="loginBubbles"></div>
 
-                <!-- LEFT SIDE: DECORATIVE (WIPE TEXT & SQUEEGEE) -->
-                <div class="login-decorative">
-                    <div class="wipe-brand-text">
-                        <h1>TopClean</h1>
-                        <p>sizinle <span style="font-family: Arial;">♥</span></p>
+                <!-- NEW BACKGROUND SYSTEM -->
+                <div class="login-bg-container">
+                    <!-- Clear background (what you see through the wiped area) -->
+                    <div class="login-bg-clear"></div>
+                    <!-- Misty background (the foggy glass) -->
+                    <div class="login-bg-mist"></div>
+                    <!-- Overlay for depth -->
+                    <div class="login-bg-overlay"></div>
+
+                    <div class="bubble-container" id="loginBubbles"></div>
+                    <div class="glass-drops" id="glassDrops"></div>
+                    <div class="foam-layer" id="foamLayer"></div>
+                </div>
+
+                <!-- HANDWRITTEN GLASS TEXT -->
+                <div class="glass-text-container">
+                    <div class="glass-wipe-area">
+                        <h1 class="glass-title">TopClean</h1>
+                        <p class="glass-subtitle">
+                            sizinle
+                            <svg class="heart-svg" viewBox="0 0 24 24">
+                                <path
+                                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                </path>
+                            </svg>
+                        </p>
                     </div>
-                    
-                    <img src="https://cdn-icons-png.flaticon.com/512/3233/3233481.png" class="squeegee-visual" alt="Squeegee" style="filter: invert(1) brightness(2);">
-                    
-                    <div class="wipe-hint-v4">
-                        <div class="bg-emerald rounded-circle animate-pulse" style="width:10px; height:10px;"></div>
-                        <span class="fw-bold">Temizlemek için kaydır</span>
-                        <i data-lucide="chevrons-right" class="animate-pulse"></i>
+                    <div class="squeegee-handle" id="squeegee">
+                        <div class="squeegee-head"></div>
+                        <div class="squeegee-shaft"></div>
                     </div>
                 </div>
 
-                <!-- RIGHT SIDE: LOGIN FORM AREA -->
-                <div class="login-form-area">
-                    <div class="login-card-v4">
-                        <!-- Logo & Brand -->
-                        <div class="text-center mb-5">
-                            <img src="assets/logo_enderun_white.png" class="login-v4-logo" alt="Logo">
-                            <h2 class="h5 fw-bold text-white mb-0" style="letter-spacing: 4px; font-family: 'Inter', sans-serif;">TOPCLEAN</h2>
-                            <div class="d-flex align-items-center justify-content-center gap-3 mt-2">
-                                <div style="height: 1px; width: 30px; background: rgba(255,255,255,0.2);"></div>
-                                <span class="x-small text-muted text-uppercase fw-bold" style="letter-spacing: 5px; font-size: 0.6rem;">sizinle</span>
-                                <div style="height: 1px; width: 30px; background: rgba(255,255,255,0.2);"></div>
+                <!-- MAIN LOGIN CARD -->
+                <div class="login-card-premium">
+                    <div class="login-card-content">
+                        <!-- Logo -->
+                        <div class="login-logo-wrap">
+                            <div class="logo-circle">
+                                <img src="icon-512.png" alt="TopClean Logo">
                             </div>
+                            <h2 class="brand-name">TOPCLEAN</h2>
+                            <div class="brand-tagline"><span></span> sizinle <span></span></div>
                         </div>
 
-                        <form id="loginForm">
-                            <div class="v4-group">
-                                <i data-lucide="user" class="v4-icon"></i>
-                                <select id="userSelect" class="v4-input" required>
+                        <!-- Form -->
+                        <form id="loginForm" class="mt-4">
+                            <div class="premium-input-group">
+                                <i data-lucide="user" class="input-icon"></i>
+                                <select id="userSelect" class="premium-input" required>
                                     <option value="" disabled selected>Kullanıcı Adı</option>
                                 </select>
                             </div>
 
-                            <div class="v4-group">
-                                <i data-lucide="lock" class="v4-icon"></i>
-                                <input type="password" id="userPass" class="v4-input" placeholder="Şifre" required>
-                                <i data-lucide="eye" id="togglePassword" class="v4-icon" style="left: auto; right: 20px; cursor: pointer; pointer-events: auto;"></i>
+                            <div class="premium-input-group mt-3">
+                                <i data-lucide="lock" class="input-icon"></i>
+                                <input type="password" id="userPass" class="premium-input" placeholder="Şifre" required>
+                                <i data-lucide="eye" id="togglePassword" class="eye-icon"></i>
                             </div>
 
-                            <div class="d-flex justify-content-between align-items-center mt-3 mb-4 px-1">
-                                <label class="d-flex align-items-center gap-2 text-white-50 small cursor-pointer">
-                                    <input type="checkbox" checked style="accent-color: #10b981; width: 16px; height: 16px;">
-                                    <span>Beni Hatırla</span>
+                            <div class="d-flex justify-content-between align-items-center mt-3 px-1">
+                                <label class="premium-checkbox">
+                                    <input type="checkbox">
+                                    <span class="checkmark"></span>
+                                    <span class="label-text">Beni Hatırla</span>
                                 </label>
-                                <a href="#" class="text-emerald small text-decoration-none fw-bold">Şifremi Unuttum?</a>
+                                <a href="#" class="forgot-link">Şifremi Unuttum?</a>
                             </div>
 
-                            <button type="submit" id="loginBtn" class="btn-v4-primary">
+                            <button type="submit" id="loginBtn" class="premium-login-btn mt-4">
                                 <span class="btn-text">Giriş Yap</span>
-                                <i data-lucide="arrow-right" size="20"></i>
-                                <div class="spinner" style="display: none; width: 22px; height: 22px; border: 3px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+                                <i data-lucide="arrow-right" class="btn-arrow" size="18"></i>
+                                <div class="spinner"></div>
                             </button>
 
-                            <div class="d-flex align-items-center my-4 opacity-25">
-                                <hr class="flex-grow-1 m-0">
-                                <span class="px-3 x-small fw-bold text-white">veya</span>
-                                <hr class="flex-grow-1 m-0">
+                            <div class="divider mt-4">
+                                <span>veya</span>
                             </div>
 
-                            <button type="button" class="btn-v4-outline">
-                                <i data-lucide="user-circle" size="20"></i>
+                            <button type="button" class="premium-guest-btn mt-3">
+                                <i data-lucide="user" class="btn-icon" size="18"></i>
                                 <span>Misafir Girişi</span>
                             </button>
                         </form>
+                    </div>
+                </div>
+
+                <!-- BOTTOM SLIDER (DECORATIVE) -->
+                <div class="bottom-slider">
+                    <div class="slider-track">
+                        <span class="slider-text"> kaydır</span>
+                        <div class="slider-arrows">
+                            <i data-lucide="chevrons-right"></i>
+                        </div>
                     </div>
                 </div>
             </div>
