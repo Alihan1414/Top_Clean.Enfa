@@ -83,6 +83,16 @@ body.light-mode .aurora-container {
     transform-style: preserve-3d;
     color: var(--text-main);
 }
+
+.modal-premium-glass {
+    background: linear-gradient(160deg, rgba(15, 15, 20, 0.95), rgba(5, 5, 10, 0.98)) !important;
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    border: 1px solid rgba(16, 185, 129, 0.15) !important;
+    border-radius: 28px !important;
+    box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.8) !important;
+}
+
 body:not(.light-mode) .glass-card {
     box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7), 
                 inset 0 1px 0 rgba(255, 255, 255, 0.08);
