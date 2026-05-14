@@ -197,92 +197,82 @@
 
         <main id="mainContainer" class="container py-4">
 
-            <!-- 1. LOGIN PANEL (AERO-EMERALD v3) -->
+            <!-- 1. LOGIN PANEL (AERO-EMERALD v4 - 1:1 MATCH) -->
             <div id="loginPanel" class="view-panel active login-screen">
                 
-                <!-- DYNAMIC BACKGROUND -->
+                <!-- BACKGROUND BUBBLES -->
                 <div class="login-bubbles" id="loginBubbles"></div>
-                
-                <!-- DECORATIVE LEAF -->
-                <div class="leaf-accent-wrap">
-                    <img src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=800" class="leaf-accent" alt="Leaf">
-                </div>
 
-                <!-- LEFT DECORATIVE AREA (WIPE & SQUEEGEE) -->
-                <div class="squeegee-area d-none d-lg-flex">
-                    <div class="wipe-text-box">
-                        <h1 class="wipe-text">TopClean</h1>
-                        <h1 class="wipe-text" style="font-size: 60px; margin-top: -30px;">sizinle <span style="font-family: Arial;">♥</span></h1>
+                <!-- LEFT SIDE: DECORATIVE (WIPE TEXT & SQUEEGEE) -->
+                <div class="login-decorative">
+                    <div class="wipe-brand-text">
+                        <h1>TopClean</h1>
+                        <p>sizinle <span style="font-family: Arial;">♥</span></p>
                     </div>
-                    <!-- Çekçek Görseli (Placeholder ama stili ayarlı) -->
-                    <img src="https://cdn-icons-png.flaticon.com/512/3233/3233481.png" class="squeegee-handle" alt="Squeegee" style="filter: invert(1) brightness(2); width: 220px; transform: rotate(-15deg);">
                     
-                    <div class="wipe-hint">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3233/3233481.png" class="squeegee-visual" alt="Squeegee" style="filter: invert(1) brightness(2);">
+                    
+                    <div class="wipe-hint-v4">
+                        <div class="bg-emerald rounded-circle animate-pulse" style="width:10px; height:10px;"></div>
                         <span class="fw-bold">Temizlemek için kaydır</span>
                         <i data-lucide="chevrons-right" class="animate-pulse"></i>
                     </div>
                 </div>
 
-                <!-- MAIN LOGIN CARD -->
-                <div class="login-card-v3">
-                    <!-- Logo Area -->
-                    <div class="text-center mb-4">
-                        <div class="d-inline-block p-3 rounded-circle mb-2" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2);">
-                            <img src="assets/logo_enderun_white.png" style="width: 60px; height: 60px;" alt="Logo">
+                <!-- RIGHT SIDE: LOGIN FORM AREA -->
+                <div class="login-form-area">
+                    <div class="login-card-v4">
+                        <!-- Logo & Brand -->
+                        <div class="text-center mb-5">
+                            <img src="assets/logo_enderun_white.png" class="login-v4-logo" alt="Logo">
+                            <h2 class="h5 fw-bold text-white mb-0" style="letter-spacing: 4px; font-family: 'Inter', sans-serif;">TOPCLEAN</h2>
+                            <div class="d-flex align-items-center justify-content-center gap-3 mt-2">
+                                <div style="height: 1px; width: 30px; background: rgba(255,255,255,0.2);"></div>
+                                <span class="x-small text-muted text-uppercase fw-bold" style="letter-spacing: 5px; font-size: 0.6rem;">sizinle</span>
+                                <div style="height: 1px; width: 30px; background: rgba(255,255,255,0.2);"></div>
+                            </div>
                         </div>
-                        <h2 class="h4 fw-bold text-white mb-0" style="letter-spacing: 2px;">TOPCLEAN</h2>
-                        <div class="d-flex align-items-center justify-content-center gap-2 mt-1">
-                            <div style="height: 1px; width: 20px; background: rgba(255,255,255,0.2);"></div>
-                            <span class="x-small text-muted text-uppercase fw-bold" style="letter-spacing: 3px;">sizinle</span>
-                            <div style="height: 1px; width: 20px; background: rgba(255,255,255,0.2);"></div>
-                        </div>
+
+                        <form id="loginForm">
+                            <div class="v4-group">
+                                <i data-lucide="user" class="v4-icon"></i>
+                                <select id="userSelect" class="v4-input" required>
+                                    <option value="" disabled selected>Kullanıcı Adı</option>
+                                </select>
+                            </div>
+
+                            <div class="v4-group">
+                                <i data-lucide="lock" class="v4-icon"></i>
+                                <input type="password" id="userPass" class="v4-input" placeholder="Şifre" required>
+                                <i data-lucide="eye" id="togglePassword" class="v4-icon" style="left: auto; right: 20px; cursor: pointer; pointer-events: auto;"></i>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-3 mb-4 px-1">
+                                <label class="d-flex align-items-center gap-2 text-white-50 small cursor-pointer">
+                                    <input type="checkbox" checked style="accent-color: #10b981; width: 16px; height: 16px;">
+                                    <span>Beni Hatırla</span>
+                                </label>
+                                <a href="#" class="text-emerald small text-decoration-none fw-bold">Şifremi Unuttum?</a>
+                            </div>
+
+                            <button type="submit" id="loginBtn" class="btn-v4-primary">
+                                <span class="btn-text">Giriş Yap</span>
+                                <i data-lucide="arrow-right" size="20"></i>
+                                <div class="spinner" style="display: none; width: 22px; height: 22px; border: 3px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+                            </button>
+
+                            <div class="d-flex align-items-center my-4 opacity-25">
+                                <hr class="flex-grow-1 m-0">
+                                <span class="px-3 x-small fw-bold text-white">veya</span>
+                                <hr class="flex-grow-1 m-0">
+                            </div>
+
+                            <button type="button" class="btn-v4-outline">
+                                <i data-lucide="user-circle" size="20"></i>
+                                <span>Misafir Girişi</span>
+                            </button>
+                        </form>
                     </div>
-                    
-                    <form id="loginForm">
-                        <!-- User Selection -->
-                        <div class="v3-input-group">
-                            <i data-lucide="user" class="v3-icon"></i>
-                            <select id="userSelect" class="v3-input" required>
-                                <option value="" disabled selected>Kullanıcı Adı</option>
-                            </select>
-                        </div>
-
-                        <!-- Password Input -->
-                        <div class="v3-input-group">
-                            <i data-lucide="lock" class="v3-icon"></i>
-                            <input type="password" id="userPass" class="v3-input" placeholder="Şifre" required>
-                            <i data-lucide="eye" id="togglePassword" class="v3-icon" style="left: auto; right: 18px; cursor: pointer; pointer-events: auto;"></i>
-                        </div>
-
-                        <!-- Extra Options -->
-                        <div class="login-options-v3">
-                            <label class="login-remember-v3">
-                                <input type="checkbox" checked>
-                                <span>Beni Hatırla</span>
-                            </label>
-                            <a href="#" class="login-forgot-v3">Şifremi Unuttum?</a>
-                        </div>
-
-                        <!-- Login Button -->
-                        <button type="submit" id="loginBtn" class="btn-v3-primary">
-                            <span class="btn-text">Giriş Yap</span>
-                            <i data-lucide="arrow-right" size="20"></i>
-                            <div class="spinner" style="display: none; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
-                        </button>
-
-                        <!-- Divider -->
-                        <div class="d-flex align-items-center my-4 opacity-25">
-                            <hr class="flex-grow-1 m-0">
-                            <span class="px-3 x-small fw-bold">veya</span>
-                            <hr class="flex-grow-1 m-0">
-                        </div>
-
-                        <!-- Guest Button -->
-                        <button type="button" class="btn-v3-outline">
-                            <i data-lucide="user-circle" size="18"></i>
-                            <span>Misafir Girişi</span>
-                        </button>
-                    </form>
                 </div>
             </div>
 
