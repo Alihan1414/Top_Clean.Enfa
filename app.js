@@ -1648,13 +1648,12 @@ const ArizaManager = {
 };
 
 function syncFromCloud() {
-    if (!db) return;
+    if (!db || !currentInstitutionId) return;
     
-    // Raporları dinle
-    db.ref('reports').on('value', snap => {
+    // Raporları kurum bazlı dinle
+    getRef('reports').on('value', snap => {
         if (snap.val()) {
             allReports = Object.values(snap.val());
-            // Eğer idareci veya müfettiş panelindeysek paneli tazele
             if (currentUser) {
                 if (currentUser.rol === 'idareci') IdarecManager.renderCockpit();
                 if (currentUser.rol === 'mufettis') MufettisFocus.renderStream();
@@ -1663,8 +1662,8 @@ function syncFromCloud() {
         }
     });
 
-    // Arızaları dinle
-    db.ref('arizalar').on('value', snap => {
+    // Arızaları kurum bazlı dinle
+    getRef('arizalar').on('value', snap => {
         if (snap.val()) {
             allArizalar = Object.values(snap.val());
             const arizaPanel = document.getElementById('arizaYonetimPanel');
@@ -1673,13 +1672,12 @@ function syncFromCloud() {
         }
     });
 
-    // Envanteri dinle
-    db.ref('inventory').on('value', snap => {
+    // Envanteri kurum bazlı dinle
+    getRef('inventory').on('value', snap => {
         if (snap.val()) {
             allInventory = Object.values(snap.val());
             const invPanel = document.getElementById('inventoryPanel');
             if (invPanel && !invPanel.classList.contains('d-none')) InventoryManager.render();
-            if (currentUser && currentUser.rol === 'idareci') IdarecManager.renderSkor(); // Skoru tazele
         }
     });
 }
@@ -1983,6 +1981,19 @@ function initCondensation() {
     }
 }
 
+function initSqueegeeWipe() {
+    const squeegee = document.getElementById('squeegee');
+    const mist = document.querySelector('.login-bg-mist');
+    if (!squeegee || !mist) return;
+
+    squeegee.style.opacity = '1';
+    squeegee.style.transition = 'opacity 1s';
+
+    setTimeout(() => {
+        performWipe(squeegee, mist);
+    }, 800);
+}
+
 function createWipeStreak(x, y, angle) {
     const container = document.getElementById('loginPanel');
     const streak = document.createElement('div');
@@ -2068,19 +2079,28 @@ function initPasswordToggle() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Theme Init
+    // Tema başlangıcı
     if (localStorage.getItem('topclean_theme') === 'light') {
         document.body.classList.add('light-mode');
     }
 
-    populateUserSelect();
-    const s = localStorage.getItem('topclean_session');
-    if (s) { 
-        currentUser = JSON.parse(s); 
-        _routeUser(); 
-    } else { 
-        showPanel("loginPanel");
-        // Boot Premium Login animations
+    // Oturum ve kurum kontrolü
+    const savedSession = localStorage.getItem('topclean_session');
+    const savedInst = localStorage.getItem('topclean_inst_id');
+
+    if (savedSession && savedInst) {
+        // Önceki oturum varsa — kurumu yükle ve yönlendir
+        currentUser = JSON.parse(savedSession);
+        const instInput = document.getElementById('instCode');
+        if (instInput) instInput.value = savedInst;
+        
+        populateUserSelect(savedInst).then(() => {
+            syncFromCloud();
+            _routeUser();
+        });
+    } else {
+        // Yeni oturum — login ekranını göster
+        showPanel('loginPanel');
         setTimeout(() => {
             initLoginBubbles();
             initFoamLayer();
@@ -2089,37 +2109,37 @@ document.addEventListener("DOMContentLoaded", () => {
             initPasswordToggle();
         }, 100);
     }
-    
-    syncFromCloud();
 
-    // ---- LOGIN FORM: New .login-btn submit handler ----
+    // Kurum kodu alanı blur olunca kullanıcı listesini yükle
+    const instInput = document.getElementById('instCode');
+    if (instInput) {
+        instInput.addEventListener('blur', () => {
+            const val = instInput.value.trim();
+            if (val) populateUserSelect(val);
+        });
+    }
+
+    // Login formu submit
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             setLoginBtnLoading(true);
-            // Small artificial delay for the cyberpunk feel
             await new Promise(r => setTimeout(r, 600));
-            const result = handleLogin(e);
-            // If handleLogin returns false (bad credentials), stop loader
-            // handleLogin calls Swal internally and returns nothing on success
-            if (result === false) {
-                setLoginBtnLoading(false);
-            } else {
-                setLoginBtnLoading(false, true);
-                // Give success animation a moment before routing
-                setTimeout(() => {}, 500);
-            }
+            await handleLogin(e);
+            setLoginBtnLoading(false);
         });
     }
 
-    document.getElementById('logoutBtn')?.addEventListener('click', () => { 
-        localStorage.removeItem('topclean_session'); 
-        currentUser = null; 
-        // Force a hard reload to clear any memory/cache issues as requested
+    // Çıkış butonu
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
+        localStorage.removeItem('topclean_session');
+        localStorage.removeItem('topclean_inst_id');
+        currentUser = null;
+        currentInstitutionId = null;
         window.location.reload();
     });
-    
+
     if (typeof lucide !== 'undefined') lucide.createIcons();
     updateSyncStatus();
 });
