@@ -1684,7 +1684,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function _routeUser() {
     if (!currentUser) { showPanel("loginPanel"); return; }
-    document.getElementById("headerName").innerText = currentUser.name;
+    const headerNameEl = document.getElementById("headerName");
+    if (headerNameEl) headerNameEl.innerText = currentUser.name;
     panelHistory = [];
 
     if (currentUser.rol === "superadmin") {
