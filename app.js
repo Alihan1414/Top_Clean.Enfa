@@ -1483,9 +1483,9 @@ const KriterManager = {
         const container = document.getElementById('kriterListesi');
         if(container) {
             container.innerHTML = list.map((kriter, idx) => `
-                <div class="form-check custom-checkbox bg-slate-glass p-3 rounded-4 d-flex align-items-center">
-                    <input class="form-check-input ms-1 me-3 bg-dark border-secondary" type="checkbox" id="kriter_${idx}" onchange="KriterManager.guncelleSayac()" style="transform: scale(1.3);">
-                    <label class="form-check-label text-white small w-100" for="kriter_${idx}">${kriter}</label>
+                <div class="form-check bg-slate-glass p-3 rounded-4 d-flex align-items-center mb-2" style="position:relative; z-index:10; cursor:pointer;" onclick="document.getElementById('kriter_${idx}').click()">
+                    <input class="form-check-input ms-1 me-3 bg-dark border-secondary" type="checkbox" id="kriter_${idx}" onchange="KriterManager.guncelleSayac(); event.stopPropagation();" style="transform: scale(1.5); cursor:pointer; pointer-events:auto;">
+                    <label class="form-check-label text-white small w-100" for="kriter_${idx}" style="cursor:pointer;">${kriter}</label>
                 </div>
             `).join('');
             this.guncelleSayac();
@@ -1501,11 +1501,8 @@ const KriterManager = {
         const total = (katlar[this.kat][this.bolum] || []).length;
         const checked = document.querySelectorAll('#kriterListesi .form-check-input:checked').length;
         
-        if(total > 0 && checked < total) {
-            Swal.fire("Eksik Görev", "Lütfen tüm temizlik kriterlerini işaretleyin.", "warning");
-            return;
-        }
-
+        // Removed validation to allow partial submission
+        
         // Kriter listesini topla
         const kriterler = [];
         document.querySelectorAll('#kriterListesi .form-check-input').forEach((cb, i) => {
