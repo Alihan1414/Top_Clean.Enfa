@@ -1700,24 +1700,93 @@ body.light-mode #themeToggleButton {
     box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
 }
 
+/* --- RESPONSIVE OPTIMIZATIONS (MOBILE FIRST FOCUS) --- */
 @media (max-width: 768px) {
-    .glass-text-container {
-        display: none;
-    }
+    .glass-text-container { display: none; }
+    
     .login-card-premium {
-        position: relative;
-        right: auto;
-        top: auto;
-        transform: none;
-        margin: 20px auto;
-        max-width: 95%;
+        position: relative; right: auto; top: auto;
+        transform: none; margin: 20px auto;
+        width: 95%; max-width: 400px;
+        padding: 20px;
     }
-    .bottom-slider {
-        left: 50%;
-        transform: translateX(-50%);
-        width: 80%;
+    
+    .cockpit-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
     }
-    .slider-track {
-        justify-content: center;
+
+    .room-matrix { grid-template-columns: repeat(4, 1fr); }
+
+    .mobile-nav {
+        bottom: 15px;
+        height: 65px;
+        width: 95%;
     }
+
+    .nav-item { gap: 2px; padding: 5px; font-size: 0.6rem; }
+    .nav-item i { width: 20px !important; height: 20px !important; }
+
+    /* Modal Adjustments */
+    .modal-dialog { margin: 10px; }
+    .modal-content { border-radius: 20px !important; }
+
+    /* Header adjustments */
+    header .container { padding: 10px 15px; }
+    .glass-title { font-size: 1.2rem; }
+    
+    /* Stats grid */
+    .stats-mini-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .cockpit-grid { grid-template-columns: 1fr; }
+    .stats-mini-grid { grid-template-columns: 1fr; }
+    .btn-emerald { width: 100%; }
+    
+    .glass-card { border-radius: 20px; }
+}
+
+/* --- PREMIUM ACTIVE EFFECTS & STATES --- */
+.active-pulse {
+    animation: activePulse 2s infinite;
+}
+
+@keyframes activePulse {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* Hover & Active Feedback for Cards */
+.glass-card:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+}
+
+/* Smooth Transitions for All Interactivity */
+a, button, .nav-item, .glass-card, .room-pixel {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom Highlight for Selection */
+::selection {
+    background: rgba(16, 185, 129, 0.3);
+    color: #fff;
+}
+
+/* Scrollbar styling for a cleaner look on mobile */
+body::-webkit-scrollbar {
+    width: 6px;
+}
+body::-webkit-scrollbar-thumb {
+    background: rgba(16, 185, 129, 0.2);
+    border-radius: 10px;
+}
+body::-webkit-scrollbar-track {
+    background: transparent;
 }
