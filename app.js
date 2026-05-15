@@ -1795,7 +1795,8 @@ function initAeroBackground() {
     if (!particlesEl || !dataLinesEl) return;
 
     // -- PARTICLES --
-    for (let i = 0; i < 35; i++) {
+    const particleCount = window.innerWidth < 768 ? 12 : 35;
+    for (let i = 0; i < particleCount; i++) {
         const p = document.createElement('div');
         p.className = 'particle';
         const size = 1 + Math.random() * 3;
@@ -1930,7 +1931,8 @@ function initLoginBubbles() {
     if (bubbleInterval) clearInterval(bubbleInterval);
 
     // Initial burst
-    for (let i = 0; i < 20; i++) {
+    const burstCount = window.innerWidth < 768 ? 8 : 20;
+    for (let i = 0; i < burstCount; i++) {
         setTimeout(() => spawnPremiumBubble(), Math.random() * 5000);
     }
 
@@ -1940,7 +1942,7 @@ function initLoginBubbles() {
         } else {
             clearInterval(bubbleInterval);
         }
-    }, 1200);
+    }, window.innerWidth < 768 ? 2500 : 1200);
 }
 
 function initFoamLayer() {
@@ -2007,7 +2009,7 @@ function initCondensation() {
     if (!container) return;
 
     container.innerHTML = '';
-    const dropCount = 150;
+    const dropCount = window.innerWidth < 768 ? 40 : 150;
     for (let i = 0; i < dropCount; i++) {
         const drop = document.createElement('div');
         drop.className = 'glass-drop';
