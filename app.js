@@ -42,8 +42,14 @@ async function loadInstitutionContext(instId) {
             }
             
             // Populate Global Katlar & Users
-            if (config.floors) katlar = config.floors;
-            if (config.users) usersData = config.users;
+            currentInstitutionId = instId;
+            currentConfig = config;
+            katlar = config.floors || {};
+            usersData = config.users || [];
+            
+            // Verileri temizle ve yeni kurumun verilerini yükle
+            loadScopedData(instId);
+            syncFromCloud(); // Real-time bağlantıları başlat
             
             return true;
         }
@@ -87,26 +93,24 @@ try {
 // --- DYNAMIC DATA INITIALIZATION ---
 let katlar = currentConfig?.floors || {};
 let usersData = currentConfig?.users || [];
-
 let currentUser = null;
+
+// Global veri dizileri (Kurum bazlı yüklenecek)
 let allReports = [];
-try { allReports = JSON.parse(localStorage.getItem('topclean_reports')) || []; } catch(e) { allReports = []; }
-
 let allArizalar = [];
-try { allArizalar = JSON.parse(localStorage.getItem('topclean_arizalar')) || []; } catch(e) { allArizalar = []; }
-
-let talebeData = [];
-try { 
-    const savedTalebe = localStorage.getItem('topclean_talebe');
-    if (savedTalebe) talebeData = JSON.parse(savedTalebe);
-} catch(e) {}
-
 let allInventory = [];
-try { 
-    const saved = localStorage.getItem('topclean_inventory');
-    allInventory = (saved && saved !== "undefined") ? JSON.parse(saved) : []; 
-    if (!Array.isArray(allInventory)) allInventory = [];
-} catch(e) { allInventory = []; }
+let talebeData = [];
+
+function loadScopedData(instId) {
+    if (!instId) return;
+    try { allReports = JSON.parse(localStorage.getItem(`topclean_reports_${instId}`)) || []; } catch(e) { allReports = []; }
+    try { allArizalar = JSON.parse(localStorage.getItem(`topclean_arizalar_${instId}`)) || []; } catch(e) { allArizalar = []; }
+    try { allInventory = JSON.parse(localStorage.getItem(`topclean_inventory_${instId}`)) || []; } catch(e) { allInventory = []; }
+    try { talebeData = JSON.parse(localStorage.getItem(`topclean_talebe_${instId}`)) || []; } catch(e) { talebeData = []; }
+}
+
+// İlk açılışta eğer kurum varsa verileri yükle
+if (currentInstitutionId) loadScopedData(currentInstitutionId);
 
 // --- CORE UTILS ---
 function todayISO() { return new Date().toISOString().split('T')[0]; }
@@ -135,14 +139,14 @@ function saveData(item) {
         // Mevcut kaydı güncelle
         const originalId = data[idx].id;
         data[idx] = { ...data[idx], ...item, id: originalId };
-        localStorage.setItem('topclean_reports', JSON.stringify(data));
+        localStorage.setItem(`topclean_reports_${currentInstitutionId}`, JSON.stringify(data));
         const ref = getRef('reports/' + originalId);
         if (ref) ref.set(data[idx]);
     } else {
         // Tamamen yeni kayıt
         if (!item.id) item.id = new Date().getTime().toString();
         data.push(item);
-        localStorage.setItem('topclean_reports', JSON.stringify(data));
+        localStorage.setItem(`topclean_reports_${currentInstitutionId}`, JSON.stringify(data));
         const ref = getRef('reports/' + item.id);
         if (ref) ref.set(item);
     }
@@ -154,7 +158,7 @@ function saveAriza(item) {
     const idx = allArizalar.findIndex(a => a.id === item.id);
     if (idx !== -1) allArizalar[idx] = item;
     else allArizalar.push(item);
-    localStorage.setItem('topclean_arizalar', JSON.stringify(allArizalar));
+    localStorage.setItem(`topclean_arizalar_${currentInstitutionId}`, JSON.stringify(allArizalar));
     const ref = getRef('arizalar/' + item.id);
     if (ref) ref.set(item);
     
@@ -169,7 +173,7 @@ function saveInventory(item) {
     const idx = allInventory.findIndex(i => i.id === item.id);
     if (idx !== -1) allInventory[idx] = item;
     else allInventory.push(item);
-    localStorage.setItem('topclean_inventory', JSON.stringify(allInventory));
+    localStorage.setItem(`topclean_inventory_${currentInstitutionId}`, JSON.stringify(allInventory));
     const ref = getRef('inventory/' + item.id);
     if (ref) ref.set(item);
     
@@ -374,7 +378,7 @@ const InventoryManager = {
         }).then(r => {
             if(r.isConfirmed) {
                 allInventory = allInventory.filter(i => i.id !== id);
-                localStorage.setItem('topclean_inventory', JSON.stringify(allInventory));
+                localStorage.setItem(`topclean_inventory_${currentInstitutionId}`, JSON.stringify(allInventory));
                 const ref = getRef('inventory/' + id);
                 if (ref) ref.remove();
                 this.render();
@@ -965,14 +969,14 @@ const ListeManager = {
     },
 
     restoreInputs: function() {
-        const saved = JSON.parse(localStorage.getItem('topclean_raw_lists') || '{}');
+        const saved = JSON.parse(localStorage.getItem(`topclean_raw_lists_${currentInstitutionId}`) || '{}');
         if (saved.astim) document.getElementById('listAstim').value = saved.astim;
         if (saved.alerjik) document.getElementById('listAlerjik').value = saved.alerjik;
         if (saved.saglikli) document.getElementById('listSaglikli').value = saved.saglikli;
         if (saved.diger) document.getElementById('listDiger').value = saved.diger;
         
-        this.assignments = JSON.parse(localStorage.getItem('topclean_assignments') || '[]');
-        this.floorLeaders = JSON.parse(localStorage.getItem('topclean_floor_leaders') || '{}');
+        this.assignments = JSON.parse(localStorage.getItem(`topclean_assignments_${currentInstitutionId}`) || '[]');
+        this.floorLeaders = JSON.parse(localStorage.getItem(`topclean_floor_leaders_${currentInstitutionId}`) || '{}');
         
         if (this.assignments.length > 0) {
             this.renderFinalList();
@@ -988,7 +992,7 @@ const ListeManager = {
             saglikli: document.getElementById('listSaglikli').value,
             diger: document.getElementById('listDiger').value
         };
-        localStorage.setItem('topclean_raw_lists', JSON.stringify(lists));
+        localStorage.setItem(`topclean_raw_lists_${currentInstitutionId}`, JSON.stringify(lists));
     },
 
     renderLeadersUI: function() {
@@ -1023,7 +1027,7 @@ const ListeManager = {
     saveLeader: function(floor, field, value) {
         if (!this.floorLeaders[floor]) this.floorLeaders[floor] = { hoca: '', baskan: '' };
         this.floorLeaders[floor][field] = value;
-        localStorage.setItem('topclean_floor_leaders', JSON.stringify(this.floorLeaders));
+        localStorage.setItem(`topclean_floor_leaders_${currentInstitutionId}`, JSON.stringify(this.floorLeaders));
     },
 
     parseList: function(text) {
@@ -1076,7 +1080,7 @@ const ListeManager = {
             this.assignments.push({ ...room, students: assigned });
         });
 
-        localStorage.setItem('topclean_assignments', JSON.stringify(this.assignments));
+        localStorage.setItem(`topclean_assignments_${currentInstitutionId}`, JSON.stringify(this.assignments));
         this.renderFinalList();
         this.renderLeadersUI();
         this.showStep(2);
@@ -1158,7 +1162,7 @@ const ListeManager = {
         }
 
         if (found) {
-            localStorage.setItem('topclean_assignments', JSON.stringify(this.assignments));
+            localStorage.setItem(`topclean_assignments_${currentInstitutionId}`, JSON.stringify(this.assignments));
             this.renderFinalList();
             Swal.fire("Eklendi", `${name} uygun boş bir bölgeye atandı.`, "success");
         }
@@ -1691,33 +1695,30 @@ function syncFromCloud() {
     
     // Raporları kurum bazlı dinle
     getRef('reports').on('value', snap => {
-        if (snap.val()) {
-            allReports = Object.values(snap.val());
-            if (currentUser) {
-                if (currentUser.rol === 'idareci') IdarecManager.renderCockpit();
-                if (currentUser.rol === 'mufettis') MufettisFocus.renderStream();
-                if (currentUser.rol === 'gorevli') loadGorevliPanel(currentUser.kat);
-            }
+        allReports = snap.val() ? Object.values(snap.val()) : [];
+        localStorage.setItem(`topclean_reports_${currentInstitutionId}`, JSON.stringify(allReports));
+        if (currentUser) {
+            if (currentUser.rol === 'idareci') IdarecManager.renderCockpit();
+            if (currentUser.rol === 'mufettis') MufettisFocus.renderStream();
+            if (currentUser.rol === 'gorevli') loadGorevliPanel(currentUser.kat);
         }
     });
 
     // Arızaları kurum bazlı dinle
     getRef('arizalar').on('value', snap => {
-        if (snap.val()) {
-            allArizalar = Object.values(snap.val());
-            const arizaPanel = document.getElementById('arizaYonetimPanel');
-            if (arizaPanel && !arizaPanel.classList.contains('d-none')) ArizaManager.renderYonetim();
-            if (currentUser && currentUser.rol === 'idareci') IdarecManager.renderAriza();
-        }
+        allArizalar = snap.val() ? Object.values(snap.val()) : [];
+        localStorage.setItem(`topclean_arizalar_${currentInstitutionId}`, JSON.stringify(allArizalar));
+        const arizaPanel = document.getElementById('arizaYonetimPanel');
+        if (arizaPanel && !arizaPanel.classList.contains('d-none')) ArizaManager.renderYonetim();
+        if (currentUser && currentUser.rol === 'idareci') IdarecManager.renderAriza();
     });
 
     // Envanteri kurum bazlı dinle
     getRef('inventory').on('value', snap => {
-        if (snap.val()) {
-            allInventory = Object.values(snap.val());
-            const invPanel = document.getElementById('inventoryPanel');
-            if (invPanel && !invPanel.classList.contains('d-none')) InventoryManager.render();
-        }
+        allInventory = snap.val() ? Object.values(snap.val()) : [];
+        localStorage.setItem(`topclean_inventory_${currentInstitutionId}`, JSON.stringify(allInventory));
+        const invPanel = document.getElementById('inventoryPanel');
+        if (invPanel && !invPanel.classList.contains('d-none')) InventoryManager.render();
     });
 }
 
