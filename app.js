@@ -1505,7 +1505,13 @@ async function populateUserSelect(instId) {
     if (success) {
         usersData = currentConfig.users || [];
         katlar = currentConfig.floors || {};
-        sel.innerHTML = '<option value="" disabled selected>Kullanıcı Seçin</option>' + usersData.map(u => `<option value="${u.name}">${u.name}</option>`).join('');
+        
+        let options = '<option value="" disabled selected>Kullanıcı Seçin</option>';
+        if (instId.toUpperCase() === "MASTER") {
+            options += '<option value="SUPERADMIN">SÜPER ADMİN</option>';
+        }
+        options += usersData.map(u => `<option value="${u.name}">${u.name}</option>`).join('');
+        sel.innerHTML = options;
         return true;
     } else {
         sel.innerHTML = '<option value="" disabled selected>Kurum Bulunamadı</option>';
@@ -1515,12 +1521,21 @@ async function populateUserSelect(instId) {
 
 async function handleLogin(e) {
     if (e) e.preventDefault();
-    const instId = document.getElementById('instCode').value.trim();
+    const instId = document.getElementById('instCode').value.trim().toUpperCase();
     const name = document.getElementById('userSelect').value;
     const pass = document.getElementById('userPass').value;
 
     if (!instId) return Swal.fire("Hata", "Lütfen Kurum Kodu girin!", "error");
     
+    // --- MASTER LOGIN (SÜPER ADMİN) ---
+    if (instId === "MASTER" && name === "SUPERADMIN" && pass === "MASTER123") {
+        currentUser = { name: "Süper Admin", rol: "superadmin" };
+        localStorage.setItem('topclean_session', JSON.stringify(currentUser));
+        localStorage.setItem('topclean_inst_id', "MASTER");
+        _routeUser();
+        return;
+    }
+
     // Eğer kurum henüz yüklenmediyse yükle
     if (currentInstitutionId !== instId) {
         const loaded = await populateUserSelect(instId);
@@ -1534,6 +1549,12 @@ async function handleLogin(e) {
         _routeUser(); 
     }
     else Swal.fire("Hata", "Hatalı şifre!", "error");
+}
+
+function handleLogout() {
+    localStorage.removeItem('topclean_session');
+    localStorage.removeItem('topclean_inst_id');
+    window.location.reload();
 }
 
 // Kurum kodu değiştikçe kullanıcı listesini tazele
@@ -1568,6 +1589,13 @@ function _routeUser() {
     if (!currentUser) { showPanel("loginPanel"); return; }
     document.getElementById("headerName").innerText = currentUser.name;
     panelHistory = [];
+
+    if (currentUser.rol === "superadmin") {
+        showPanel("superAdminPanel");
+        SuperAdminManager.load();
+        return;
+    }
+
     if (currentUser.rol === "idareci") { showPanel("idarecPanel"); IdarecManager.renderCockpit(); }
     else if (currentUser.rol === "mufettis") { showPanel("adminPanel"); MufettisFocus.renderStream(); }
     else if (currentUser.rol === "liste") { showPanel("listePanel"); ListeManager.load(); }
@@ -2435,6 +2463,104 @@ const KurumYonetimManager = {
             console.error('Kayıt Hatası:', e);
             Swal.fire('Hata', 'Kayıt sırasında bir sorun oluştu: ' + e.message, 'error');
         }
+    }
+};
+
+// --- SÜPER ADMİN YÖNETİCİSİ ---
+const SuperAdminManager = {
+    allInstitutions: {},
+
+    load: function() {
+        if (!db) return;
+        db.ref('institutions').on('value', snap => {
+            this.allInstitutions = snap.val() || {};
+            this.render();
+        });
+    },
+
+    render: function() {
+        const container = document.getElementById('superInstitutionList');
+        if (!container) return;
+
+        const keys = Object.keys(this.allInstitutions);
+        
+        // Stats
+        document.getElementById('stat-total-inst').innerText = keys.length;
+        
+        let totalUsers = 0;
+        let totalReports = 0;
+        keys.forEach(k => {
+            const inst = this.allInstitutions[k];
+            if (inst.config && inst.config.users) totalUsers += inst.config.users.length;
+            if (inst.reports) totalReports += Object.keys(inst.reports).length;
+        });
+        document.getElementById('stat-total-users').innerText = totalUsers;
+        document.getElementById('stat-total-reports').innerText = totalReports;
+
+        if (keys.length === 0) {
+            container.innerHTML = '<div class="text-center py-5 text-muted">Henüz hiç kurum oluşturulmamış.</div>';
+            return;
+        }
+
+        container.innerHTML = keys.map(k => {
+            const inst = this.allInstitutions[k];
+            const name = inst.config?.branding?.name || k;
+            const logo = inst.config?.branding?.logo || 'icon-512.png';
+            const userCount = inst.config?.users?.length || 0;
+
+            return `
+                <div class="glass-card p-3 d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-3">
+                        <img src="${logo}" style="width:40px; height:40px; border-radius:10px; object-fit:cover;">
+                        <div>
+                            <div class="fw-bold text-white mb-0">${name}</div>
+                            <div class="x-small text-emerald fw-bold">${k} <span class="text-muted fw-normal">| ${userCount} Personel</span></div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button onclick="SuperAdminManager.kurumSil('${k}')" class="btn btn-sm btn-glass-danger rounded-pill px-3">Kaldır</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    },
+
+    yeniKurumModal: function() {
+        const modal = new bootstrap.Modal(document.getElementById('superNewInstModal'));
+        document.getElementById('sInstCode').value = '';
+        document.getElementById('sInstName').value = '';
+        document.getElementById('sInstLogo').value = '';
+        modal.show();
+    },
+
+    kurumOlustur: async function() {
+        const code = document.getElementById('sInstCode').value.trim().toUpperCase();
+        const name = document.getElementById('sInstName').value.trim();
+        const logo = document.getElementById('sInstLogo').value.trim();
+
+        if (!code || !name) return Swal.fire("Hata", "Kurum kodu ve adı zorunludur!", "error");
+        if (this.allInstitutions[code]) return Swal.fire("Hata", "Bu kurum kodu zaten kullanımda!", "error");
+
+        await MigrationHelper.setupNewInstitution(code, name, logo);
+        bootstrap.Modal.getInstance(document.getElementById('superNewInstModal'))?.hide();
+    },
+
+    kurumSil: function(code) {
+        Swal.fire({
+            title: 'Kurumu Kaldır?',
+            text: `"${code}" kodlu kurum ve TÜM VERİLERİ (raporlar, mesajlar vb.) kalıcı olarak silinecek!`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            confirmButtonText: 'EVET, HER ŞEYİ SİL',
+            cancelButtonText: 'Vazgeç'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                db.ref(`institutions/${code}`).remove().then(() => {
+                    Swal.fire('Silindi', 'Kurum başarıyla kaldırıldı.', 'success');
+                });
+            }
+        });
     }
 };
 
