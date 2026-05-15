@@ -2013,7 +2013,7 @@ function initLoginBubbles() {
     if (bubbleInterval) clearInterval(bubbleInterval);
 
     // Initial burst
-    const burstCount = window.innerWidth < 768 ? 8 : 20;
+    const burstCount = window.innerWidth < 768 ? 3 : 10;
     for (let i = 0; i < burstCount; i++) {
         setTimeout(() => spawnPremiumBubble(), Math.random() * 5000);
     }
@@ -2024,7 +2024,7 @@ function initLoginBubbles() {
         } else {
             clearInterval(bubbleInterval);
         }
-    }, window.innerWidth < 768 ? 2500 : 1200);
+    }, window.innerWidth < 768 ? 4000 : 2000);
 }
 
 function initFoamLayer() {
@@ -2032,7 +2032,7 @@ function initFoamLayer() {
     if (!container) return;
     
     container.innerHTML = '';
-    const particleCount = 20;
+    const particleCount = window.innerWidth < 768 ? 5 : 10;
     for (let i = 0; i < particleCount; i++) {
         const p = document.createElement('div');
         p.className = 'foam-particle';
@@ -2091,16 +2091,16 @@ function initCondensation() {
     if (!container) return;
 
     container.innerHTML = '';
-    const dropCount = window.innerWidth < 768 ? 40 : 150;
+    const dropCount = window.innerWidth < 768 ? 10 : 30;
     for (let i = 0; i < dropCount; i++) {
         const drop = document.createElement('div');
         drop.className = 'glass-drop';
-        const size = Math.random() * 8 + 2;
+        const size = Math.random() * 6 + 2;
         drop.style.width = size + 'px';
         drop.style.height = (size * (1 + Math.random())) + 'px';
         drop.style.left = Math.random() * 100 + '%';
         drop.style.top = Math.random() * 100 + '%';
-        drop.style.opacity = Math.random() * 0.5 + 0.2;
+        drop.style.opacity = Math.random() * 0.3 + 0.1;
         container.appendChild(drop);
     }
 }
@@ -2441,6 +2441,7 @@ const KurumYonetimManager = {
             if (r.isConfirmed) {
                 delete this.localFloors[katAd];
                 this.renderKatlar();
+                this.kaydet(true);
             }
         });
     },
@@ -2468,6 +2469,7 @@ const KurumYonetimManager = {
     odaSil: function(katAd, odaAd) {
         delete this.localFloors[katAd][odaAd];
         this.renderKatlar();
+        this.kaydet(true);
     },
 
     personelEkleModal: function() {
@@ -2532,6 +2534,7 @@ const KurumYonetimManager = {
             if (r.isConfirmed) {
                 this.localUsers.splice(idx, 1);
                 this.renderPersonel();
+                this.kaydet(true);
             }
         });
     },
@@ -2549,7 +2552,7 @@ const KurumYonetimManager = {
         }
     },
 
-    kaydet: async function() {
+    kaydet: async function(sessiz = false) {
         if (!db || !currentInstitutionId) return Swal.fire('Hata', 'Kurum bağlantısı yok!', 'error');
 
         // Marka bilgilerini al
@@ -2586,10 +2589,14 @@ const KurumYonetimManager = {
                 if (currentUser.rol === 'mufettis') MufettisFocus.renderStream();
             }
 
-            Swal.fire({ icon: 'success', title: 'Kaydedildi!', text: 'Kurum ayarları Firebase\'e kaydedildi.', timer: 2000, showConfirmButton: false });
+            if (!sessiz) {
+                Swal.fire({ icon: 'success', title: 'Kaydedildi!', text: 'Kurum ayarları Firebase\'e kaydedildi.', timer: 2000, showConfirmButton: false });
+            }
         } catch(e) {
             console.error('Kayıt Hatası:', e);
-            Swal.fire('Hata', 'Kayıt sırasında bir sorun oluştu: ' + e.message, 'error');
+            if (!sessiz) {
+                Swal.fire('Hata', 'Kayıt sırasında bir sorun oluştu: ' + e.message, 'error');
+            }
         }
     }
 };
