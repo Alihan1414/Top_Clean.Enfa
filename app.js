@@ -2161,6 +2161,283 @@ function updateSyncStatus() {
     }
 }
 
+// --- KURUM YÖNETİM YÖNETİCİSİ ---
+const KurumYonetimManager = {
+    // Yerel düzenleme için geçici versiyon (kaydet butonu Firebase'e yazar)
+    localFloors: {},
+    localUsers: [],
+    localBranding: { name: '', logo: '' },
+
+    acPanel: function() {
+        showPanel('kurumYonetimPanel');
+        this.yukle();
+    },
+
+    yukle: function() {
+        // Mevcut config'den yerel kopyayı al
+        this.localFloors = JSON.parse(JSON.stringify(katlar || {}));
+        this.localUsers = JSON.parse(JSON.stringify(usersData || []));
+        this.localBranding = {
+            name: currentConfig?.branding?.name || '',
+            logo: currentConfig?.branding?.logo || ''
+        };
+
+        // Marka alanlarını doldur
+        const markaAd = document.getElementById('markaAd');
+        const markaLogo = document.getElementById('markaLogo');
+        if (markaAd) markaAd.value = this.localBranding.name;
+        if (markaLogo) markaLogo.value = this.localBranding.logo;
+
+        this.renderKatlar();
+        this.renderPersonel();
+        this.sekme('katlar');
+    },
+
+    sekme: function(ad) {
+        ['katlar', 'personel', 'marka'].forEach(s => {
+            const btn = document.getElementById('sekme' + s.charAt(0).toUpperCase() + s.slice(1));
+            const icerik = document.getElementById('sekme' + s.charAt(0).toUpperCase() + s.slice(1) + 'Icerik');
+            if (btn) btn.className = s === ad
+                ? 'btn btn-emerald btn-sm rounded-pill px-4 fw-bold'
+                : 'btn btn-glass-emerald btn-sm rounded-pill px-4';
+            if (icerik) icerik.classList.toggle('d-none', s !== ad);
+        });
+    },
+
+    renderKatlar: function() {
+        const container = document.getElementById('katlarListesi');
+        if (!container) return;
+
+        const floors = this.localFloors;
+        if (Object.keys(floors).length === 0) {
+            container.innerHTML = `
+                <div class="glass-card p-4 text-center border-dashed" style="border: 2px dashed rgba(16,185,129,0.3); border-radius:16px;">
+                    <div style="font-size:2.5rem;">🏢</div>
+                    <div class="text-white fw-bold mt-2">Henüz kat eklenmemiş</div>
+                    <p class="text-muted small">Yukarıdaki "+ Yeni Kat" butonuna basarak başlayın.</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = Object.keys(floors).map(katAd => {
+            const odalar = floors[katAd];
+            const odaListesi = Object.keys(odalar).map(odaAd => `
+                <div class="d-flex align-items-center justify-content-between p-2 rounded-3" style="background:rgba(255,255,255,0.04);">
+                    <span class="small text-white">🚪 ${odaAd}</span>
+                    <div class="d-flex gap-1">
+                        <span class="x-small text-muted">${(odalar[odaAd] || []).length} kriter</span>
+                        <button onclick="KurumYonetimManager.odaSil('${katAd}','${odaAd}')" 
+                            class="btn btn-sm p-0 px-2" style="color:#ef4444; font-size:0.7rem;">✕</button>
+                    </div>
+                </div>
+            `).join('');
+
+            return `
+                <div class="glass-card p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-bold text-white">${katAd}</div>
+                            <div class="x-small text-muted">${Object.keys(odalar).length} oda</div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button onclick="KurumYonetimManager.odaEkleModal('${katAd}')" 
+                                class="btn btn-sm btn-glass-emerald rounded-pill px-3">+ Oda</button>
+                            <button onclick="KurumYonetimManager.katSil('${katAd}')" 
+                                class="btn btn-sm btn-glass-danger rounded-pill px-2">🗑</button>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column gap-1">${odaListesi || '<div class="x-small text-muted ps-1">Oda yok — "+ Oda" butonuyla ekleyin</div>'}</div>
+                </div>`;
+        }).join('');
+    },
+
+    renderPersonel: function() {
+        const container = document.getElementById('personelListesi');
+        if (!container) return;
+
+        const rolRenk = { idareci: '#10b981', mufettis: '#3b82f6', gorevli: '#f59e0b', liste: '#a78bfa' };
+        const rolAd = { idareci: 'Yurt Mesulü', mufettis: 'İç Mesul', gorevli: 'Görevli', liste: 'Liste Sorumlusu' };
+
+        if (this.localUsers.length === 0) {
+            container.innerHTML = `<div class="text-center py-4 text-muted small">Henüz personel eklenmemiş.</div>`;
+            return;
+        }
+
+        container.innerHTML = this.localUsers.map((u, i) => `
+            <div class="glass-card bg-slate-glass p-3 d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-3">
+                    <div style="width:36px; height:36px; border-radius:50%; background:${rolRenk[u.rol] || '#666'}22; border:2px solid ${rolRenk[u.rol] || '#666'}; display:flex; align-items:center; justify-content:center; font-size:1rem;">
+                        ${u.rol === 'idareci' ? '👑' : u.rol === 'mufettis' ? '🔍' : u.rol === 'liste' ? '📋' : '🧹'}
+                    </div>
+                    <div>
+                        <div class="fw-bold small text-white">${u.name}</div>
+                        <div class="x-small" style="color:${rolRenk[u.rol] || '#aaa'};">${rolAd[u.rol] || u.rol}${u.kat ? ' • ' + u.kat : ''}</div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="x-small text-muted" style="font-family:monospace;">🔑 ${u.pass}</span>
+                    ${u.rol !== 'idareci' ? `<button onclick="KurumYonetimManager.personelSil(${i})" class="btn btn-sm btn-glass-danger rounded-pill px-2" style="font-size:0.65rem;">Sil</button>` : ''}
+                </div>
+            </div>
+        `).join('');
+    },
+
+    katEkleModal: function() {
+        const el = document.getElementById('katEkleModal');
+        document.getElementById('katEkleAd').value = '';
+        if (el) new bootstrap.Modal(el).show();
+    },
+
+    katKaydet: function() {
+        const ad = document.getElementById('katEkleAd').value.trim();
+        if (!ad) return Swal.fire('Hata', 'Kat adı boş olamaz!', 'error');
+        if (this.localFloors[ad]) return Swal.fire('Hata', 'Bu kat zaten var!', 'error');
+        this.localFloors[ad] = {};
+        bootstrap.Modal.getInstance(document.getElementById('katEkleModal'))?.hide();
+        this.renderKatlar();
+    },
+
+    katSil: function(katAd) {
+        Swal.fire({
+            title: `"${katAd}" silinsin mi?`,
+            text: 'Bu kattaki tüm odalar da silinecek!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Evet, Sil',
+            cancelButtonText: 'İptal',
+            confirmButtonColor: '#ef4444'
+        }).then(r => {
+            if (r.isConfirmed) {
+                delete this.localFloors[katAd];
+                this.renderKatlar();
+            }
+        });
+    },
+
+    odaEkleModal: function(katAd) {
+        document.getElementById('odaEkleKatAdi').value = katAd;
+        document.getElementById('odaEkleAd').value = '';
+        document.getElementById('odaEkleKriterler').value = '';
+        new bootstrap.Modal(document.getElementById('odaEkleModal')).show();
+    },
+
+    odaKaydet: function() {
+        const katAd = document.getElementById('odaEkleKatAdi').value;
+        const odaAd = document.getElementById('odaEkleAd').value.trim();
+        const kriterlerRaw = document.getElementById('odaEkleKriterler').value;
+        if (!odaAd) return Swal.fire('Hata', 'Oda adı boş olamaz!', 'error');
+        const kriterler = kriterlerRaw.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+        if (kriterler.length === 0) return Swal.fire('Hata', 'En az bir temizlik kriteri girin!', 'error');
+        this.localFloors[katAd][odaAd] = kriterler;
+        bootstrap.Modal.getInstance(document.getElementById('odaEkleModal'))?.hide();
+        this.renderKatlar();
+        Swal.fire({ icon: 'success', title: 'Eklendi', text: `${odaAd} odası eklendi.`, timer: 1500, showConfirmButton: false });
+    },
+
+    odaSil: function(katAd, odaAd) {
+        delete this.localFloors[katAd][odaAd];
+        this.renderKatlar();
+    },
+
+    personelEkleModal: function() {
+        // Sorumlu kat seçeneği doldur
+        const katSel = document.getElementById('pKat');
+        if (katSel) {
+            katSel.innerHTML = '<option value="">Kat Seçin...</option>' +
+                Object.keys(this.localFloors).map(k => `<option value="${k}">${k}</option>`).join('');
+        }
+        // Rol değişince kat seçimini göster/gizle
+        const rolSel = document.getElementById('pRol');
+        const katWrap = document.getElementById('pKatWrap');
+        if (rolSel && katWrap) {
+            rolSel.onchange = () => {
+                katWrap.style.display = rolSel.value === 'gorevli' ? 'block' : 'none';
+            };
+            katWrap.style.display = 'block';
+        }
+        document.getElementById('pAd').value = '';
+        document.getElementById('pSifre').value = '1234';
+        new bootstrap.Modal(document.getElementById('personelEkleModal')).show();
+    },
+
+    personelKaydet: function() {
+        const ad = document.getElementById('pAd').value.trim();
+        const sifre = document.getElementById('pSifre').value.trim();
+        const rol = document.getElementById('pRol').value;
+        const kat = document.getElementById('pKat').value;
+
+        if (!ad) return Swal.fire('Hata', 'Ad Soyad boş olamaz!', 'error');
+        if (!sifre) return Swal.fire('Hata', 'Şifre boş olamaz!', 'error');
+        if (rol === 'gorevli' && !kat) return Swal.fire('Hata', 'Görevli için kat seçin!', 'error');
+        if (this.localUsers.find(u => u.name === ad)) return Swal.fire('Hata', 'Bu isimde kullanıcı zaten var!', 'error');
+
+        this.localUsers.push({ name: ad, pass: sifre, kat: rol === 'gorevli' ? kat : '', rol });
+        bootstrap.Modal.getInstance(document.getElementById('personelEkleModal'))?.hide();
+        this.renderPersonel();
+        Swal.fire({ icon: 'success', title: 'Eklendi', text: `${ad} personele eklendi.`, timer: 1500, showConfirmButton: false });
+    },
+
+    personelSil: function(idx) {
+        const u = this.localUsers[idx];
+        Swal.fire({
+            title: `"${u.name}" silinsin mi?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Evet, Sil',
+            cancelButtonText: 'İptal',
+            confirmButtonColor: '#ef4444'
+        }).then(r => {
+            if (r.isConfirmed) {
+                this.localUsers.splice(idx, 1);
+                this.renderPersonel();
+            }
+        });
+    },
+
+    logoOnizle: function() {
+        const url = document.getElementById('markaLogo').value.trim();
+        if (url) document.getElementById('markaLogoOnizleme').src = url;
+    },
+
+    kaydet: async function() {
+        if (!db || !currentInstitutionId) return Swal.fire('Hata', 'Kurum bağlantısı yok!', 'error');
+
+        // Marka bilgilerini al
+        const markaAd = document.getElementById('markaAd')?.value.trim();
+        const markaLogo = document.getElementById('markaLogo')?.value.trim();
+        if (markaAd) this.localBranding.name = markaAd;
+        if (markaLogo) this.localBranding.logo = markaLogo;
+
+        const config = {
+            branding: this.localBranding,
+            floors: this.localFloors,
+            users: this.localUsers
+        };
+
+        try {
+            await db.ref(`institutions/${currentInstitutionId}/config`).set(config);
+            // Global değişkenleri güncelle
+            currentConfig = config;
+            katlar = this.localFloors;
+            usersData = this.localUsers;
+
+            // Branding güncelle
+            if (this.localBranding.name) {
+                document.querySelectorAll('.brand-name, .glass-title').forEach(el => el.innerText = this.localBranding.name);
+                document.title = `${this.localBranding.name} - Yönetim`;
+            }
+            if (this.localBranding.logo) {
+                document.querySelectorAll('.logo-circle img').forEach(el => el.src = this.localBranding.logo);
+            }
+
+            Swal.fire({ icon: 'success', title: 'Kaydedildi!', text: 'Kurum ayarları Firebase\'e kaydedildi.', timer: 2000, showConfirmButton: false });
+        } catch(e) {
+            console.error('Kayıt Hatası:', e);
+            Swal.fire('Hata', 'Kayıt sırasında bir sorun oluştu: ' + e.message, 'error');
+        }
+    }
+};
+
 // --- MIGRATION & SETUP HELPER ---
 // Bu nesne sadece ilk kurulumda veya yeni kurum eklerken konsoldan kullanılabilir.
 const MigrationHelper = {
