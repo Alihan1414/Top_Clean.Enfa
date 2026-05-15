@@ -409,6 +409,11 @@ const InventoryManager = {
 const ChatManager = {
     isOpen: false,
     isListening: false,
+    isCritical: false,
+    pinDays: 0,
+    mediaData: null,
+    mediaType: null,
+
     toggle: function() {
         const overlay = document.getElementById('chatOverlay');
         if (!overlay) return;
@@ -418,104 +423,183 @@ const ChatManager = {
             this.load();
         }
     },
-    load: function() {
-        if (!db) {
-            console.error("ChatManager: Firebase database not initialized.");
-            return;
-        }
-        if (this.isListening) {
-            console.log("ChatManager: Already listening to messages.");
-            return;
-        }
 
-        console.log("ChatManager: Starting message listener...");
+    toggleCritical: function() {
+        if (!this.isCritical) {
+            Swal.fire({
+                title: '📌 Kritik Not Ayarla',
+                text: 'Bu mesaj kaç gün boyunca sabitlensin?',
+                input: 'number',
+                inputAttributes: { min: 1, max: 30 },
+                inputValue: 1,
+                showCancelButton: true,
+                confirmButtonText: 'Sabitle',
+                cancelButtonText: 'İptal'
+            }).then(res => {
+                if (res.isConfirmed) {
+                    this.isCritical = true;
+                    this.pinDays = parseInt(res.value) || 1;
+                    document.getElementById('criticalToggleBtn').classList.add('active-pulse');
+                    document.getElementById('criticalToggleBtn').style.background = 'rgba(220, 38, 38, 0.4)';
+                }
+            });
+        } else {
+            this.isCritical = false;
+            this.pinDays = 0;
+            document.getElementById('criticalToggleBtn').classList.remove('active-pulse');
+            document.getElementById('criticalToggleBtn').style.background = 'transparent';
+        }
+    },
+
+    handleMediaSelect: function(input) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.mediaData = e.target.result;
+                this.mediaType = file.type.startsWith('image') ? 'image' : 'video';
+                
+                const preview = document.getElementById('chatMediaPreview');
+                const img = document.getElementById('mediaPreviewImg');
+                const vid = document.getElementById('mediaPreviewVid');
+                
+                preview.classList.remove('d-none');
+                if (this.mediaType === 'image') {
+                    img.src = this.mediaData; img.style.display = 'block';
+                    vid.style.display = 'none';
+                } else {
+                    vid.src = this.mediaData; vid.style.display = 'block';
+                    img.style.display = 'none';
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    },
+
+    clearMedia: function() {
+        this.mediaData = null;
+        this.mediaType = null;
+        document.getElementById('chatMediaPreview').classList.add('d-none');
+        document.getElementById('chatMediaInput').value = '';
+    },
+
+    load: function() {
+        if (!db) return;
+        if (this.isListening) return;
+
         this.isListening = true;
-        
-        db.ref(`institutions/${currentInstitutionId}/messages`).limitToLast(40).on('value', snap => {
+        db.ref(`institutions/${currentInstitutionId}/messages`).limitToLast(50).on('value', snap => {
             const container = document.getElementById('chatMessages');
-            const emptyState = document.getElementById('chatEmptyState');
+            const pinnedSection = document.getElementById('pinnedSection');
+            const pinnedNotes = document.getElementById('pinnedNotes');
+            const pinnedMeta = document.getElementById('pinnedMeta');
             if (!container) return;
             
-            // Clear existing bubbles safely
-            const bubbles = container.querySelectorAll('.chat-bubble');
-            bubbles.forEach(b => b.remove());
-
             const val = snap.val();
+            container.querySelectorAll('.chat-bubble').forEach(b => b.remove());
+            
             if (!val) {
-                if (emptyState) emptyState.style.display = 'flex';
-                console.log("ChatManager: No messages found.");
+                document.getElementById('chatEmptyState').style.display = 'flex';
+                pinnedSection.classList.add('d-none');
                 return;
             }
-            if (emptyState) emptyState.style.display = 'none';
+            document.getElementById('chatEmptyState').style.display = 'none';
 
-            const messages = Object.values(val);
-            console.log(`ChatManager: Rendering ${messages.length} messages.`);
+            const messages = Object.entries(val).map(([id, m]) => ({ id, ...m }));
+            const now = new Date().getTime();
+
+            // Handle Pinned Messages
+            const activePins = messages.filter(m => m.isCritical && m.pinUntil && m.pinUntil > now);
+            if (activePins.length > 0) {
+                const latestPin = activePins[activePins.length - 1];
+                pinnedSection.classList.remove('d-none');
+                pinnedNotes.innerText = latestPin.text;
+                pinnedMeta.innerText = `Gönderen: ${latestPin.sender} | Bitiş: ${new Date(latestPin.pinUntil).toLocaleDateString()}`;
+            } else {
+                pinnedSection.classList.add('d-none');
+            }
             
             messages.forEach(m => {
                 const isMine = m.sender === currentUser?.name;
                 const time = m.timestamp ? new Date(m.timestamp).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : "";
                 
                 const bubble = document.createElement('div');
-                bubble.className = `chat-bubble ${isMine ? 'mine' : 'other'}`;
+                bubble.className = `chat-bubble ${isMine ? 'mine' : 'other'} ${m.isCritical ? 'critical-bubble' : ''}`;
+                
+                let mediaHtml = '';
+                if (m.media) {
+                    if (m.mediaType === 'image') mediaHtml = `<img src="${m.media}" class="chat-media-img" onclick="ChatManager.expandMedia('${m.media}', 'image')">`;
+                    else mediaHtml = `<video src="${m.media}" class="chat-media-vid" controls></video>`;
+                }
+
                 bubble.innerHTML = `
-                    ${!isMine ? `<div class="chat-sender">${m.sender}</div>` : ''}
-                    <div class="chat-text">${m.text}</div>
-                    <div class="chat-time">${time}</div>
+                    <div class="d-flex justify-content-between align-items-start">
+                        ${!isMine ? `<div class="chat-sender">${m.sender}</div>` : '<div></div>'}
+                        ${isMine ? `<button onclick="ChatManager.deleteMessage('${m.id}')" class="btn-chat-delete">✕</button>` : ''}
+                    </div>
+                    ${mediaHtml}
+                    <div class="chat-text">${m.text || ''}</div>
+                    <div class="chat-time">${time} ${m.isCritical ? '📌' : ''}</div>
                 `;
                 container.appendChild(bubble);
             });
             
-            // Scroll to bottom with a slight delay to ensure rendering is complete
-            setTimeout(() => {
-                container.scrollTop = container.scrollHeight;
-            }, 100);
-        }, error => {
-            console.error("ChatManager: Firebase error:", error);
-            this.isListening = false;
+            setTimeout(() => { container.scrollTop = container.scrollHeight; }, 100);
         });
     },
+
     send: function() {
         const input = document.getElementById('chatInput');
-        if (!input || !input.value.trim() || !currentUser) return;
+        if ((!input.value.trim() && !this.mediaData) || !currentUser) return;
         
         const msgText = input.value.trim();
+        const pinUntil = this.isCritical ? new Date().getTime() + (this.pinDays * 24 * 60 * 60 * 1000) : null;
+
         const ref = getRef('messages');
         if (ref) {
             ref.push({ 
                 sender: currentUser.name, 
                 text: msgText, 
+                isCritical: this.isCritical,
+                pinUntil: pinUntil,
+                media: this.mediaData,
+                mediaType: this.mediaType,
                 timestamp: new Date().toISOString() 
             }).then(() => {
-                console.log("ChatManager: Message sent successfully.");
-            }).catch(err => {
-                console.error("ChatManager: Error sending message:", err);
-                Swal.fire("Hata", "Mesaj gönderilemedi: " + err.message, "error");
+                this.isCritical = false;
+                this.pinDays = 0;
+                this.clearMedia();
+                document.getElementById('criticalToggleBtn').classList.remove('active-pulse');
+                document.getElementById('criticalToggleBtn').style.background = 'transparent';
+                if (window.lucide) lucide.createIcons();
             });
         }
-        
         input.value = "";
     },
-    clear: function() {
+
+    deleteMessage: function(id) {
         Swal.fire({
-            title: 'Sohbeti Temizle?',
-            text: "Tüm mesajlar kalıcı olarak silinecek!",
+            title: 'Mesaj Silinsin mi?',
+            text: 'Bu işlem geri alınamaz.',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#ef4444',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Evet, Sil!',
-            cancelButtonText: 'İptal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const ref = getRef('messages');
-                if (ref) {
-                    ref.remove().then(() => {
-                        Swal.fire('Silindi!', 'Sohbet geçmişi temizlendi.', 'success');
-                    }).catch(err => {
-                        Swal.fire('Hata', 'Silme işlemi başarısız: ' + err.message, 'error');
-                    });
-                }
+            confirmButtonText: 'Evet, Sil',
+            cancelButtonText: 'İptal',
+            confirmButtonColor: '#ef4444'
+        }).then(res => {
+            if (res.isConfirmed) {
+                db.ref(`institutions/${currentInstitutionId}/messages/${id}`).remove();
             }
+        });
+    },
+
+    expandMedia: function(src, type) {
+        Swal.fire({
+            imageUrl: src,
+            imageAlt: 'Media',
+            showConfirmButton: false,
+            background: 'transparent',
+            backdrop: 'rgba(0,0,0,0.9)'
         });
     }
 };
