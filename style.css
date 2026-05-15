@@ -1921,3 +1921,9 @@ body::-webkit-scrollbar-track {
     color: #ef4444;
 }
 
+/* Fix for Select Menu Options on White Backgrounds */
+select option {
+    background-color: #0f172a; /* Dark slate */
+    color: #ffffff;
+}
+
