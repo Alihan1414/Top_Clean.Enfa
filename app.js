@@ -1501,15 +1501,22 @@ async function populateUserSelect(instId) {
     const sel = document.getElementById('userSelect');
     if (!sel) return;
     
+    instId = instId.toUpperCase();
+
+    // --- MASTER LOGIN OVERRIDE ---
+    if (instId === "MASTER") {
+        sel.innerHTML = '<option value="" disabled selected>Kullanıcı Seçin</option>' +
+                      '<option value="SUPERADMIN">SÜPER ADMİN</option>';
+        currentInstitutionId = "MASTER";
+        return true;
+    }
+
     const success = await loadInstitutionContext(instId);
     if (success) {
         usersData = currentConfig.users || [];
         katlar = currentConfig.floors || {};
         
         let options = '<option value="" disabled selected>Kullanıcı Seçin</option>';
-        if (instId.toUpperCase() === "MASTER") {
-            options += '<option value="SUPERADMIN">SÜPER ADMİN</option>';
-        }
         options += usersData.map(u => `<option value="${u.name}">${u.name}</option>`).join('');
         sel.innerHTML = options;
         return true;
