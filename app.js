@@ -1651,33 +1651,7 @@ function handleLogout() {
     window.location.reload();
 }
 
-// Kurum kodu değiştikçe kullanıcı listesini tazele
-document.addEventListener('DOMContentLoaded', () => {
-    const instInput = document.getElementById('instCode');
-    if (instInput) {
-        instInput.addEventListener('blur', () => {
-            const val = instInput.value.trim();
-            if (val) populateUserSelect(val);
-        });
-    }
 
-    // Formu bağla
-    const form = document.getElementById('loginForm');
-    if (form) form.onsubmit = handleLogin;
-
-    // Oturum kontrolü
-    const savedSession = localStorage.getItem('topclean_session');
-    const savedInst = localStorage.getItem('topclean_inst_id');
-    if (savedSession && savedInst) {
-        currentUser = JSON.parse(savedSession);
-        document.getElementById('instCode').value = savedInst;
-        populateUserSelect(savedInst).then(() => {
-             _routeUser();
-        });
-    } else {
-        showPanel('loginPanel');
-    }
-});
 
 function _routeUser() {
     if (!currentUser) { showPanel("loginPanel"); return; }
