@@ -11,6 +11,50 @@ const firebaseConfig = {
 
 let db = null;
 let auth = null;
+let currentInstitutionId = localStorage.getItem('topclean_inst_id') || null;
+let currentConfig = null; // Will store katlar, branding, etc.
+
+// --- MULTI-TENANCY HELPERS ---
+function getRef(path) {
+    if (!currentInstitutionId) return null;
+    return db.ref(`institutions/${currentInstitutionId}/${path}`);
+}
+
+async function loadInstitutionContext(instId) {
+    if (!db) return false;
+    try {
+        const snap = await db.ref(`institutions/${instId}/config`).once('value');
+        const config = snap.val();
+        if (config) {
+            currentInstitutionId = instId;
+            currentConfig = config;
+            localStorage.setItem('topclean_inst_id', instId);
+            
+            // Update Branding
+            if (config.branding) {
+                if (config.branding.name) {
+                    document.querySelectorAll('.brand-name, .glass-title').forEach(el => el.innerText = config.branding.name);
+                    document.title = `${config.branding.name} - Yönetim`;
+                }
+                if (config.branding.logo) {
+                    document.querySelectorAll('img[alt*="Logo"], .logo-circle img').forEach(el => el.src = config.branding.logo);
+                }
+            }
+            
+            // Populate Global Katlar (if provided by DB)
+            if (config.floors) {
+                // We use currentConfig.floors instead of the global 'katlar' constant
+            }
+            
+            return true;
+        }
+        return false;
+    } catch (e) {
+        console.error("Context Load Error:", e);
+        return false;
+    }
+}
+
 try {
     if (typeof firebase !== 'undefined') {
         firebase.initializeApp(firebaseConfig);
@@ -41,84 +85,13 @@ try {
     }
 } catch (e) { console.error("Firebase Init Error:", e); }
 
-const katlar = {
-    "Bodrum Kat": {
-        "-1 Merdiven": ["Zemin süpürülmüş ve temiz", "Korkuluklar silinmiş ve tozsuz", "Çöp kutuları boşaltılmış", "Etraf düzenli", "Lekeler silinmiş"],
-        "Koridor": ["Zemin temiz", "Camlar silinmiş", "Çöp yok", "Koku yok", "Etraf Düzenli"],
-        "Mescit": ["Etraf Süpürülmüş", "Kürsü Düzenli", "Koku yok", "Halılar temizlenmiş", "Camlar temiz"],
-        "Kütüphane": ["Zemin temiz", "Kitaplar düzenli", "Masalar temiz", "Çöp yok", "Rafların tozu alınmış"],
-        "Wc": ["Zemin temiz", "Lavabolar temiz", "Koku yok", "Kağıt var", "Sabun var"],
-        "Muhasebe Odası": ["Masa düzenli", "Zemin temiz", "Koku yok", "Toz alınmış", "Çöp kutusu boş"],
-        "Çalışma Odası": ["Zemin temiz", "Masalar düzenli", "Toz alınmış", "Çöp yok", "Koku yok"],
-        "Donanım": ["Zemin temiz", "Cihazlar düzenli", "Kablo karmaşası yok", "Toz alınmış", "Çöp kutusu boş"]
-    },
-    "Zemin Kat": {
-        "0 Merdiven": ["Zemin süpürülmüş ve temiz", "Korkuluklar silinmiş ve tozsuz", "Çöp kutuları boşaltılmış", "Etraf düzenli", "Lekeler silinmiş"],
-        "Koridor": ["Zemin temiz", "Camlar silinmiş", "Çöp yok", "Koku yok", "Ayna Silinmiş"],
-        "Çalışma Odası": ["Masa düzenli", "Zemin temiz", "Toz alınmış", "Çöp yok", "Koku yok"],
-        "Toplantı Odası": ["Masalar düzenli", "Zemin temiz", "Sandalyeler dizili", "Toz alınmış", "Çöp yok"],
-        "Çayhane": ["Zemin temiz", "Masalar silinmiş", "Çöp yok", "Koku yok", "Çay Demlikleri Temiz"],
-        "Wc 1": ["Lavabolar temiz", "Zemin temiz", "Sabun var", "Kağıt var", "Koku yok"],
-        "Wc 2": ["Lavabolar temiz", "Zemin temiz", "Sabun var", "Kağıt var", "Koku yok"],
-        "İdareci Odası": ["Masa düzenli", "Zemin temiz", "Koku yok", "Koltuklar Temiz", "Çöp kutusu boş"]
-    },
-    "Akademik Kat": {
-        "1 Merdiven": ["Zemin süpürülmüş ve temiz", "Korkuluklar silinmiş ve tozsuz", "Çöp kutuları boşaltılmış", "Etraf düzenli", "Lekeler silinmiş"],
-        "Koridor": ["Zemin temiz", "Camlar silinmiş", "Çöp yok", "Koku yok", "Paspas atılmış"],
-        "Hocaların Odası": ["Masa düzenli", "Zemin temiz", "Koku yok", "Eşyalar düzenlenmiş", "Çöp kutusu boş"],
-        "Lab": ["Zemin temiz", "Cihazlar düzenli", "Masalar silinmiş", "Toz alınmış", "Çöp yok"],
-        "Etüt 1": ["Masa temiz", "Zemin temiz", "Toz alınmış", "Çöp yok", "Koku yok"],
-        "Etüt 2": ["Masa temiz", "Zemin temiz", "Toz alınmış", "Çöp yok", "Koku yok"],
-        "Etüt 3": ["Masa temiz", "Zemin temiz", "Toz alınmış", "Çöp yok", "Koku yok"],
-        "Etüt 4": ["Masa temiz", "Zemin temiz", "Toz alınmış", "Çöp yok", "Koku yok"],
-        "Talebe Çayhanesi": ["Zemin temiz", "Masalar silinmiş", "Çöp yok", "Koku yok", "Tezgah temiz"],
-        "Wc": ["Zemin temiz", "Lavabolar temiz", "Sabun var", "Kağıt var", "Koku yok"]
-    },
-    "Ara Kat": {
-        "2 Merdiven": ["Zemin süpürülmüş ve temiz", "Korkuluklar silinmiş ve tozsuz", "Çöp kutuları boşaltılmış", "Etraf düzenli", "Lekeler silinmiş"],
-        "Koridor": ["Zemin temiz", "Camlar silinmiş", "Çöp yok", "Koku yok", "Paspas atılmış"],
-        "Hoca Çalışma Odası": ["Masa düzenli", "Zemin temiz", "Toz alınmış", "Çöp yok", "Koku yok"],
-        "Misafir Yatakhanesi": ["Yataklar düzenli", "Zemin temiz", "Toz alınmış", "Çöp yok", "Koku yok"],
-        "Yatakhane 1": ["Yatak düzenli", "Zemin temiz", "Çöp yok", "Koku yok", "Süpürülmüş ve paspas atılmış"],
-        "Yatakhane 2": ["Yatak düzenli", "Zemin temiz", "Çöp yok", "Koku yok", "Süpürülmüş ve paspas atılmış"],
-        "Yatakhane 3": ["Yatak düzenli", "Zemin temiz", "Çöp yok", "Koku yok", "Süpürülmüş ve paspas atılmış"],
-        "Tüzder": ["Zemin temiz", "Masalar düzenli", "Toz alınmış", "Eşyalar yerinde", "Çöp yok"],
-        "Etüt": ["Masa temiz", "Zemin temiz", "Toz alınmış", "Çöp yok", "Koku yok"],
-        "Robotik": ["Zemin temiz", "Eşyalar düzenli", "Cihazlar korunmuş", "Toz alınmış", "Çöp yok"],
-        "Temizlik Deposu": ["Raflar düzenli", "Zemin temiz", "Kimyasallar kapalı", "Etraf derli toplu", "Çöp yok"],
-        "Wc": ["Zemin temiz", "Lavabolar temiz", "Sabun var", "Kağıt var", "Koku yok"]
-    },
-    "Yatakhane Katı": {
-        "3 Merdiven": ["Zemin süpürülmüş ve temiz", "Korkuluklar silinmiş ve tozsuz", "Çöp kutuları boşaltılmış", "Etraf düzenli", "Lekeler silinmiş"],
-        "Koridor": ["Zemin temiz", "Camlar silinmiş", "Çöp yok", "Koku yok", "Paspas atılmış"],
-        "Misafir Yatakhanesi": ["Yataklar düzenli", "Zemin temiz", "Toz alınmış", "Çöp yok", "Koku yok"],
-        "Yatakhane 1": ["Yatak düzenli", "Zemin temiz", "Çöp yok", "Koku yok", "Süpürülmüş ve paspas atılmış"],
-        "Yatakhane 2": ["Yatak düzenli", "Zemin temiz", "Çöp yok", "Koku yok", "Süpürülmüş ve paspas atılmış"],
-        "Yatakhane 3": ["Yatak düzenli", "Zemin temiz", "Çöp yok", "Koku yok", "Süpürülmüş ve paspas atılmış"],
-        "Yatakhane 4": ["Yatak düzenli", "Zemin temiz", "Çöp yok", "Koku yok", "Süpürülmüş ve paspas atılmış"],
-        "Yatakhane 6": ["Yatak düzenli", "Zemin temiz", "Çöp yok", "Koku yok", "Süpürülmüş ve paspas atılmış"],
-        "Wc": ["Zemin temiz", "Lavabolar temiz", "Sabun var", "Kağıt var", "Koku yok"]
-    },
-    "Sosyal Alan Katı": {
-        "4 Merdiven": ["Zemin süpürülmüş ve temiz", "Korkuluklar silinmiş ve tozsuz", "Çöp kutuları boşaltılmış", "Etraf düzenli", "Lekeler silinmiş"],
-        "Koridor": ["Zemin temiz", "Camlar silinmiş", "Çöp yok", "Koku yok", "Paspas atılmış"],
-        "Sanat Odası": ["Zemin temiz", "Masalar silinmiş", "Malzemeler düzenli", "Toz alınmış", "Koku yok"],
-        "Kantin": ["Zemin temiz", "Masalar temiz", "Çöp yok", "Eşyalar düzenli", "Hijyen kontrol"],
-        "Teras": ["Zemin temiz", "Çöp yok", "Korkuluklar silinmiş", "Bitki düzenli", "Yer yıkandı"]
-    }
+// --- DYNAMIC DATA INITIALIZATION ---
+let katlar = currentConfig?.floors || {
+    // FALLBACK (Default for new institutions or if DB is empty)
+    "Zemin Kat": { "Koridor": ["Temiz"] }
 };
 
-const usersData = [
-    { name: "Abdülkadir Uysal", pass: "1234", kat: "Bodrum Kat", rol: "gorevli" },
-    { name: "Mehmet Ali Zabun", pass: "1234", kat: "Zemin Kat", rol: "gorevli" },
-    { name: "Oğuz Erol", pass: "1234", kat: "Akademik Kat", rol: "gorevli" },
-    { name: "Burakhan Karaoğlan", pass: "1234", kat: "Ara Kat", rol: "gorevli", depo: true },
-    { name: "Görevli", pass: "1234", kat: "Yatakhane Katı", rol: "gorevli" },
-    { name: "Emra Karabalak", pass: "1234", kat: "Sosyal Alan Katı", rol: "gorevli" },
-    { name: "İç Mesul", pass: "1111", kat: "", rol: "mufettis" },
-    { name: "Yurt Mesulü", pass: "1111", kat: "", rol: "idareci" },
-    { name: "Liste Sorumlusu", pass: "1111", kat: "", rol: "liste" }
-];
+let usersData = currentConfig?.users || [];
 
 let currentUser = null;
 let allReports = [];
@@ -127,10 +100,7 @@ try { allReports = JSON.parse(localStorage.getItem('topclean_reports')) || []; }
 let allArizalar = [];
 try { allArizalar = JSON.parse(localStorage.getItem('topclean_arizalar')) || []; } catch(e) { allArizalar = []; }
 
-let talebeData = [
-    { name: "Ahmet Y.", saglik: "Alerjik Astım" },
-    { name: "Mehmet K.", saglik: "Sağlıklı" }
-];
+let talebeData = [];
 try { 
     const savedTalebe = localStorage.getItem('topclean_talebe');
     if (savedTalebe) talebeData = JSON.parse(savedTalebe);
@@ -171,13 +141,15 @@ function saveData(item) {
         const originalId = data[idx].id;
         data[idx] = { ...data[idx], ...item, id: originalId };
         localStorage.setItem('topclean_reports', JSON.stringify(data));
-        if (db) db.ref('reports/' + originalId).set(data[idx]);
+        const ref = getRef('reports/' + originalId);
+        if (ref) ref.set(data[idx]);
     } else {
         // Tamamen yeni kayıt
         if (!item.id) item.id = new Date().getTime().toString();
         data.push(item);
         localStorage.setItem('topclean_reports', JSON.stringify(data));
-        if (db) db.ref('reports/' + item.id).set(item);
+        const ref = getRef('reports/' + item.id);
+        if (ref) ref.set(item);
     }
 }
 
@@ -188,7 +160,8 @@ function saveAriza(item) {
     if (idx !== -1) allArizalar[idx] = item;
     else allArizalar.push(item);
     localStorage.setItem('topclean_arizalar', JSON.stringify(allArizalar));
-    if (db) db.ref('arizalar/' + item.id).set(item);
+    const ref = getRef('arizalar/' + item.id);
+    if (ref) ref.set(item);
     
     // Bildirim: Yeni Arıza
     if (isNew) {
@@ -202,7 +175,8 @@ function saveInventory(item) {
     if (idx !== -1) allInventory[idx] = item;
     else allInventory.push(item);
     localStorage.setItem('topclean_inventory', JSON.stringify(allInventory));
-    if (db) db.ref('inventory/' + item.id).set(item);
+    const ref = getRef('inventory/' + item.id);
+    if (ref) ref.set(item);
     
     // Bildirim: Kritik Stok Kontrolü
     if (item.stock <= (item.threshold || 0)) {
@@ -406,7 +380,8 @@ const InventoryManager = {
             if(r.isConfirmed) {
                 allInventory = allInventory.filter(i => i.id !== id);
                 localStorage.setItem('topclean_inventory', JSON.stringify(allInventory));
-                if(window.db) db.ref('inventory/' + id).remove();
+                const ref = getRef('inventory/' + id);
+                if (ref) ref.remove();
                 this.render();
             }
         });
@@ -457,7 +432,7 @@ const ChatManager = {
         console.log("ChatManager: Starting message listener...");
         this.isListening = true;
         
-        db.ref('messages').limitToLast(40).on('value', snap => {
+        db.ref(`institutions/${currentInstitutionId}/messages`).limitToLast(40).on('value', snap => {
             const container = document.getElementById('chatMessages');
             const emptyState = document.getElementById('chatEmptyState');
             if (!container) return;
@@ -505,16 +480,19 @@ const ChatManager = {
         if (!input || !input.value.trim() || !currentUser) return;
         
         const msgText = input.value.trim();
-        db.ref('messages').push({ 
-            sender: currentUser.name, 
-            text: msgText, 
-            timestamp: new Date().toISOString() 
-        }).then(() => {
-            console.log("ChatManager: Message sent successfully.");
-        }).catch(err => {
-            console.error("ChatManager: Error sending message:", err);
-            Swal.fire("Hata", "Mesaj gönderilemedi: " + err.message, "error");
-        });
+        const ref = getRef('messages');
+        if (ref) {
+            ref.push({ 
+                sender: currentUser.name, 
+                text: msgText, 
+                timestamp: new Date().toISOString() 
+            }).then(() => {
+                console.log("ChatManager: Message sent successfully.");
+            }).catch(err => {
+                console.error("ChatManager: Error sending message:", err);
+                Swal.fire("Hata", "Mesaj gönderilemedi: " + err.message, "error");
+            });
+        }
         
         input.value = "";
     },
@@ -530,11 +508,14 @@ const ChatManager = {
             cancelButtonText: 'İptal'
         }).then((result) => {
             if (result.isConfirmed) {
-                db.ref('messages').remove().then(() => {
-                    Swal.fire('Silindi!', 'Sohbet geçmişi temizlendi.', 'success');
-                }).catch(err => {
-                    Swal.fire('Hata', 'Silme işlemi başarısız: ' + err.message, 'error');
-                });
+                const ref = getRef('messages');
+                if (ref) {
+                    ref.remove().then(() => {
+                        Swal.fire('Silindi!', 'Sohbet geçmişi temizlendi.', 'success');
+                    }).catch(err => {
+                        Swal.fire('Hata', 'Silme işlemi başarısız: ' + err.message, 'error');
+                    });
+                }
             }
         });
     }
@@ -1516,20 +1497,72 @@ function handleBack() {
     }
 }
 
-function populateUserSelect() {
+async function populateUserSelect(instId) {
     const sel = document.getElementById('userSelect');
     if (!sel) return;
-    sel.innerHTML = '<option value="" disabled selected>Kullanıcı Seçin</option>' + usersData.map(u => `<option value="${u.name}">${u.name}</option>`).join('');
+    
+    const success = await loadInstitutionContext(instId);
+    if (success) {
+        usersData = currentConfig.users || [];
+        katlar = currentConfig.floors || {};
+        sel.innerHTML = '<option value="" disabled selected>Kullanıcı Seçin</option>' + usersData.map(u => `<option value="${u.name}">${u.name}</option>`).join('');
+        return true;
+    } else {
+        sel.innerHTML = '<option value="" disabled selected>Kurum Bulunamadı</option>';
+        return false;
+    }
 }
 
-function handleLogin(e) {
+async function handleLogin(e) {
     if (e) e.preventDefault();
+    const instId = document.getElementById('instCode').value.trim();
     const name = document.getElementById('userSelect').value;
     const pass = document.getElementById('userPass').value;
+
+    if (!instId) return Swal.fire("Hata", "Lütfen Kurum Kodu girin!", "error");
+    
+    // Eğer kurum henüz yüklenmediyse yükle
+    if (currentInstitutionId !== instId) {
+        const loaded = await populateUserSelect(instId);
+        if (!loaded) return Swal.fire("Hata", "Geçersiz Kurum Kodu!", "error");
+    }
+
     const user = usersData.find(u => u.name === name && u.pass === pass);
-    if (user) { currentUser = user; localStorage.setItem('topclean_session', JSON.stringify(user)); _routeUser(); }
+    if (user) { 
+        currentUser = user; 
+        localStorage.setItem('topclean_session', JSON.stringify(user)); 
+        _routeUser(); 
+    }
     else Swal.fire("Hata", "Hatalı şifre!", "error");
 }
+
+// Kurum kodu değiştikçe kullanıcı listesini tazele
+document.addEventListener('DOMContentLoaded', () => {
+    const instInput = document.getElementById('instCode');
+    if (instInput) {
+        instInput.addEventListener('blur', () => {
+            const val = instInput.value.trim();
+            if (val) populateUserSelect(val);
+        });
+    }
+
+    // Formu bağla
+    const form = document.getElementById('loginForm');
+    if (form) form.onsubmit = handleLogin;
+
+    // Oturum kontrolü
+    const savedSession = localStorage.getItem('topclean_session');
+    const savedInst = localStorage.getItem('topclean_inst_id');
+    if (savedSession && savedInst) {
+        currentUser = JSON.parse(savedSession);
+        document.getElementById('instCode').value = savedInst;
+        populateUserSelect(savedInst).then(() => {
+             _routeUser();
+        });
+    } else {
+        showPanel('loginPanel');
+    }
+});
 
 function _routeUser() {
     if (!currentUser) { showPanel("loginPanel"); return; }
@@ -2107,3 +2140,45 @@ function updateSyncStatus() {
         indicator.title = "İnternet Yok - Veriler Cihazda Tutuluyor";
     }
 }
+
+// --- MIGRATION & SETUP HELPER ---
+// Bu nesne sadece ilk kurulumda veya yeni kurum eklerken konsoldan kullanılabilir.
+const MigrationHelper = {
+    setupNewInstitution: async function(instId, name, logo) {
+        if (!db) return console.error("DB bağlantısı yok.");
+        
+        const config = {
+            branding: {
+                name: name || "TopClean",
+                logo: logo || "icon-512.png"
+            },
+            floors: {
+                "Bodrum Kat": {
+                    "-1 Merdiven": ["Zemin süpürülmüş ve temiz", "Korkuluklar silinmiş ve tozsuz", "Çöp kutuları boşaltılmış", "Etraf düzenli", "Lekeler silinmiş"],
+                    "Koridor": ["Zemin temiz", "Camlar silinmiş", "Çöp yok", "Koku yok", "Etraf Düzenli"],
+                    "Wc": ["Zemin temiz", "Lavabolar temiz", "Koku yok", "Kağıt var", "Sabun var"]
+                },
+                "Zemin Kat": {
+                    "Koridor": ["Zemin temiz", "Camlar silinmiş", "Çöp yok", "Koku yok", "Ayna Silinmiş"],
+                    "İdareci Odası": ["Masa düzenli", "Zemin temiz", "Koku yok", "Koltuklar Temiz", "Çöp kutusu boş"]
+                }
+            },
+            users: [
+                { name: "Yurt Mesulü", pass: "1111", kat: "", rol: "idareci" },
+                { name: "Müfettiş", pass: "1111", kat: "", rol: "mufettis" },
+                { name: "Görevli", pass: "1234", kat: "Zemin Kat", rol: "gorevli" }
+            ]
+        };
+        
+        try {
+            await db.ref(`institutions/${instId}/config`).set(config);
+            console.log(`✅ ${instId} kurumu başarıyla oluşturuldu!`);
+            Swal.fire("Başarılı", `${instId} kurumu oluşturuldu. Giriş yapabilirsiniz.`, "success");
+        } catch (e) {
+            console.error("Setup Error:", e);
+        }
+    }
+};
+
+// Global erişim için
+window.MigrationHelper = MigrationHelper;
