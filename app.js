@@ -2518,6 +2518,7 @@ const KurumYonetimManager = {
         });
         bootstrap.Modal.getInstance(document.getElementById('personelEkleModal'))?.hide();
         this.renderPersonel();
+        this.kaydet(true);
         Swal.fire({ icon: 'success', title: 'Eklendi', text: `${ad} personele eklendi.`, timer: 1500, showConfirmButton: false });
     },
 
