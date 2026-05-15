@@ -271,22 +271,12 @@
                                     <span class="checkmark"></span>
                                     <span class="label-text">Beni Hatırla</span>
                                 </label>
-                                <a href="#" class="forgot-link">Şifremi Unuttum?</a>
                             </div>
 
                             <button type="submit" id="loginBtn" class="premium-login-btn mt-4">
                                 <span class="btn-text">Giriş Yap</span>
                                 <i data-lucide="arrow-right" class="btn-arrow" size="18"></i>
                                 <div class="spinner"></div>
-                            </button>
-
-                            <div class="divider mt-4">
-                                <span>veya</span>
-                            </div>
-
-                            <button type="button" class="premium-guest-btn mt-3">
-                                <i data-lucide="user" class="btn-icon" size="18"></i>
-                                <span>Misafir Girişi</span>
                             </button>
                         </form>
                     </div>
@@ -612,9 +602,12 @@
 
             <!-- MÜFETTİŞ PANELİ (CANLI DENETİM AKIŞI) -->
             <div id="adminPanel" class="view-panel d-none flex-column w-100">
-                <div class="d-flex justify-content-start mb-3">
-                    <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald px-3 rounded-pill">← Paneli
-                        Kapat</button>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald px-3 rounded-pill">← Geri</button>
+                    <button onclick="KurumYonetimManager.acPanel()" class="btn btn-sm px-3 rounded-pill fw-bold"
+                        style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); color:#10b981; font-size:0.65rem;">
+                        ⚙️ Kurum Ayarları
+                    </button>
                 </div>
                 <!-- BINA ONAY ÖZETİ -->
                 <div class="glass-card banner-card p-4 mb-4 text-center shadow-lg">
@@ -716,8 +709,16 @@
                         <input type="text" id="sInstName" class="form-control bg-dark-glass text-white border-0 rounded-4 py-3" placeholder="Örn: Enderun Erkek Yurdu">
                     </div>
                     <div class="mb-3">
-                        <label class="x-small text-emerald fw-bold mb-2">LOGO URL</label>
-                        <input type="text" id="sInstLogo" class="form-control bg-dark-glass text-white border-0 rounded-4 py-3" placeholder="assets/logo_enderun.png">
+                        <label class="x-small text-emerald fw-bold mb-2">KURUM LOGOSU</label>
+                        <div class="d-flex align-items-center gap-3 p-3 rounded-4 bg-dark-glass border border-secondary border-opacity-10">
+                            <img id="sInstLogoOnizleme" src="icon-512.png" alt="Logo"
+                                style="width:56px; height:56px; border-radius:10px; object-fit:cover; border:1px solid rgba(255,255,255,0.1);">
+                            <div class="flex-grow-1">
+                                <button onclick="document.getElementById('sLogoInput').click()" class="btn btn-sm btn-glass-emerald w-100 py-2 rounded-pill fw-bold">🖼 SEÇ</button>
+                                <input type="file" id="sLogoInput" accept="image/*" style="display:none;" onchange="SuperAdminManager.logoSecildi(this)">
+                                <input type="hidden" id="sInstLogo">
+                            </div>
+                        </div>
                     </div>
                     <div class="alert alert-info bg-info bg-opacity-10 border-info border-opacity-25 text-info x-small mb-4">
                         Yeni kurum oluşturulduğunda varsayılan bir <b>Yurt Mesulü</b> hesabı (şifre: 1111) otomatik eklenir.
@@ -782,14 +783,17 @@
                         placeholder="Örn: Enderun Erkek Yurdu">
                 </div>
                 <div>
-                    <label class="x-small text-emerald fw-bold mb-2">LOGO URL</label>
-                    <input type="text" id="markaLogo" class="form-control bg-dark-glass text-white border-0 rounded-4 py-3"
-                        placeholder="Örn: assets/logo_enderun.png">
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <img id="markaLogoOnizleme" src="icon-512.png" alt="Logo"
-                        style="width:56px; height:56px; border-radius:12px; object-fit:cover; border:2px solid rgba(16,185,129,0.4);">
-                    <button onclick="KurumYonetimManager.logoOnizle()" class="btn btn-glass-emerald btn-sm rounded-pill px-3">Önizle</button>
+                    <label class="x-small text-emerald fw-bold mb-2">KURUM LOGOSU</label>
+                    <div class="d-flex align-items-center gap-3 p-3 rounded-4 bg-dark-glass border border-secondary border-opacity-10">
+                        <img id="markaLogoOnizleme" src="icon-512.png" alt="Logo"
+                            style="width:64px; height:64px; border-radius:12px; object-fit:cover; border:2px solid rgba(16,185,129,0.4);">
+                        <div class="flex-grow-1">
+                            <button onclick="document.getElementById('logoInput').click()" class="btn btn-sm btn-glass-emerald w-100 py-2 rounded-pill fw-bold">🖼 GÖRSEL SEÇ</button>
+                            <input type="file" id="logoInput" accept="image/*" style="display:none;" onchange="KurumYonetimManager.logoSecildi(this)">
+                            <input type="hidden" id="markaLogo">
+                            <div class="x-small text-muted mt-2">Önerilen: 512x512 PNG</div>
+                        </div>
+                    </div>
                 </div>
                 <button onclick="KurumYonetimManager.kaydet()" class="btn btn-emerald w-100 py-3 rounded-pill fw-bold shadow-success">💾 MARKALAMAYI KAYDET</button>
             </div>
@@ -875,6 +879,21 @@ Koku yok"></textarea>
                         <select id="pKat" class="form-select bg-dark-glass text-white border-0 rounded-4 py-3">
                             <!-- Katlar JS ile dolar -->
                         </select>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-12">
+                            <label class="x-small text-emerald fw-bold mb-2">ÖZEL YETKİLER</label>
+                            <div class="d-flex gap-3 p-3 rounded-4 bg-dark-glass border border-secondary border-opacity-10">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="pIsAriza">
+                                    <label class="form-check-label x-small text-white" for="pIsAriza">🛠 Arıza Sorumlusu</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="pIsDepo">
+                                    <label class="form-check-label x-small text-white" for="pIsDepo">📦 Depo Sorumlusu</label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <button onclick="KurumYonetimManager.personelKaydet()" class="btn btn-emerald w-100 py-3 rounded-pill fw-bold shadow-success">PERSONEL EKLE</button>
                 </div>
