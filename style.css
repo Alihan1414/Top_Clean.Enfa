@@ -101,6 +101,43 @@ body:not(.light-mode) .glass-card {
                 inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
+/* --- SWEETALERT CUSTOM THEME (PREMIUM COMPACT) --- */
+.swal2-popup.swal2-modal {
+    background: rgba(10, 15, 25, 0.98) !important;
+    backdrop-filter: blur(30px) !important;
+    border: 1px solid rgba(16, 185, 129, 0.3) !important;
+    border-radius: 28px !important;
+    color: #fff !important;
+    padding: 1.2rem !important;
+    width: 290px !important; /* Compact width */
+    box-shadow: 0 0 50px rgba(16,185,129,0.15) !important;
+}
+.swal2-title {
+    color: #fff !important;
+    font-size: 1rem !important;
+    margin-bottom: 0.5rem !important;
+}
+.swal2-html-container {
+    color: #94a3b8 !important;
+    font-size: 0.75rem !important;
+}
+.swal2-confirm {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    border-radius: 50px !important;
+    padding: 8px 20px !important;
+    font-size: 0.75rem !important;
+}
+.swal2-cancel {
+    background: rgba(255,255,255,0.05) !important;
+    border-radius: 50px !important;
+    padding: 8px 20px !important;
+    font-size: 0.75rem !important;
+}
+.swal2-icon {
+    transform: scale(0.6) !important;
+    margin: 10px auto !important;
+}
+
 /* Liquid Neon Border Effect */
 .glass-card::after {
     content: ''; position: absolute; inset: -2px; border-radius: 30px;
@@ -1707,53 +1744,57 @@ body.light-mode #themeToggleButton {
 @media (max-width: 768px) {
     .glass-text-container { display: none; }
     
+    .view-panel { padding-bottom: 120px !important; }
+
     .login-card-premium {
         position: relative; right: auto; top: auto;
-        transform: none; margin: 10px auto;
-        width: 92%; max-width: 380px;
-        padding: 24px;
+        transform: none; margin: 5px auto;
+        width: 94%; max-width: 360px;
+        padding: 28px;
     }
 
     .glass-card { 
-        backdrop-filter: blur(10px) saturate(140%); 
-        border-radius: 20px;
-        padding: 16px !important;
+        backdrop-filter: blur(15px) saturate(140%); 
+        border-radius: 24px;
+        padding: 24px !important; /* Wider padding for premium feel */
+        margin-bottom: 24px !important; 
+        box-shadow: 0 15px 35px rgba(0,0,0,0.4);
     }
     
     .cockpit-grid {
         grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 12px;
+        gap: 20px; /* Maximum breathing room */
     }
 
     .room-matrix { 
-        grid-template-columns: repeat(5, 1fr); 
-        gap: 4px !important;
+        grid-template-columns: repeat(6, 1fr); 
+        gap: 8px !important;
     }
 
     .mobile-nav {
-        bottom: 12px;
-        height: 60px;
-        width: 92%;
-        border-radius: 30px;
-        padding: 0 15px;
+        bottom: 20px;
+        height: 64px;
+        width: 90%;
+        left: 5%;
+        border-radius: 32px;
+        padding: 0 25px;
+        border: 1px solid rgba(16,185,129,0.2);
     }
 
-    .nav-item { gap: 1px; font-size: 0.55rem; }
-    .nav-item i { width: 18px !important; height: 18px !important; }
+    .nav-item { gap: 4px; font-size: 0.65rem; font-weight: 600; opacity: 0.6; }
+    .nav-item.active { opacity: 1; color: var(--emerald-primary); }
+    .nav-item i { width: 22px !important; height: 22px !important; margin-bottom: 2px; }
 
-    .btn-sm { padding: 8px 16px !important; font-size: 0.75rem !important; min-height: 38px; }
-    .btn-lg, .btn-emerald { min-height: 48px; }
-
-    /* Performance optimization: reduce animations */
-    .premium-bubble, .particle { opacity: 0.4; }
-    
-    .glass-title { font-size: 1.1rem; }
-    
-    .stats-mini-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
+    .btn-sm { padding: 12px 24px !important; font-size: 0.75rem !important; border-radius: 14px !important; }
+    .btn-emerald, .btn-glass-emerald { 
+        min-height: 52px; 
+        border-radius: 16px !important;
+        font-weight: 800;
     }
+
+    /* Typography Polish */
+    h2, .h4 { font-size: clamp(1.2rem, 5vw, 1.5rem) !important; }
+    h6.x-small { letter-spacing: 2px !important; font-size: 0.6rem !important; }
 }
 
 @media (max-width: 480px) {
@@ -1801,3 +1842,82 @@ body::-webkit-scrollbar-thumb {
 body::-webkit-scrollbar-track {
     background: transparent;
 }
+
+/* --- CHAT SYSTEM (WHATSAPP PREMIUM STYLE) --- */
+.chat-bubble {
+    max-width: 80%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    position: relative;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    word-wrap: break-word;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.chat-bubble.other {
+    align-self: flex-start;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #e9edef;
+    border-top-left-radius: 4px;
+}
+
+.chat-bubble.mine {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #064e3b, #042f2e);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: #e9edef;
+    border-top-right-radius: 4px;
+}
+
+.critical-bubble {
+    border: 1px solid rgba(239, 68, 68, 0.5) !important;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(153, 27, 27, 0.3)) !important;
+}
+
+.chat-sender {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #34d399;
+    margin-bottom: 4px;
+}
+
+.chat-time {
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.5);
+    text-align: right;
+    margin-top: 4px;
+    margin-bottom: -4px;
+}
+
+.chat-media-img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.chat-media-vid {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.btn-chat-delete {
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.3);
+    font-size: 0.8rem;
+    padding: 0 5px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.btn-chat-delete:hover {
+    color: #ef4444;
+}
+
