@@ -163,34 +163,22 @@
     </button>
 
     <div class="app-container">
-        <header id="app-header" class="d-none">
-            <div class="header-content container d-flex justify-content-between align-items-center py-3">
-                <div class="d-flex align-items-center gap-2">
-                    <!-- GERİ TUŞU -->
-                    <button id="backBtn" onclick="handleBack()"
-                        class="btn d-flex align-items-center gap-1 rounded-3 px-3 py-2 me-1"
-                        style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); font-size:0.8rem; color:#ccc;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="15 18 9 12 15 6" />
-                        </svg>
-                        <span class="d-none d-sm-inline">Geri</span>
-                    </button>
-                    <img src="assets/logo_enderun_white.png" style="width:30px; height:30px; border-radius:8px;"
-                        alt="L">
-                    <h1 class="h5 fw-bold text-gradient mb-0">TopClean</h1>
-                </div>
+        <header id="app-header" class="fixed-top d-none">
+            <div class="header-glass container py-3 d-flex justify-content-between align-items-center mt-2 px-4 shadow-lg" style="border-radius:24px; background:rgba(10,15,25,0.7); backdrop-filter:blur(20px); border:1px solid rgba(16,185,129,0.15);">
                 <div class="d-flex align-items-center gap-3">
-                    <div id="syncStatusIndicator" class="d-flex align-items-center gap-2 me-3" style="min-width:120px;">
-                        <!-- JS ile dolar -->
+                    <img src="assets/logo_enderun_white.png" style="width:38px; height:38px; border-radius:10px; box-shadow: 0 0 20px rgba(16,185,129,0.3);" alt="L">
+                    <div>
+                        <h1 class="h5 fw-900 text-white mb-0" style="letter-spacing:1px; font-family:'Orbitron', sans-serif; font-size:1.1rem;">TopClean</h1>
+                        <div id="syncStatusIndicator" class="d-flex align-items-center gap-1"></div>
                     </div>
-                    <div class="d-flex flex-column text-end d-none d-md-flex">
-                        <span id="headerName" class="fw-bold text-white small m-0">-</span>
-                        <span class="x-small text-emerald">Aktif Oturum</span>
-                    </div>
-                    <img src="assets/logo_enderun.png" class="avatar-glow" alt="User"
-                        style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
-                    <button id="logoutBtn" class="btn btn-sm btn-outline-light rounded-pill px-3 ms-2">Çıkış</button>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button onclick="toggleTheme()" id="themeToggleButton" class="btn btn-premium-circle" title="Tema">
+                        <i id="themeIcon" data-lucide="sun"></i>
+                    </button>
+                    <button onclick="handleLogout()" class="btn btn-premium-circle-danger" title="Çıkış">
+                        <i data-lucide="log-out"></i>
+                    </button>
                 </div>
             </div>
         </header>
@@ -234,14 +222,14 @@
                 </div>
 
                 <!-- MAIN LOGIN CARD -->
-                <div class="login-card-premium">
-                    <div class="login-card-content">
+                <div class="login-card-premium mt-5">
+                    <div class="login-card-content p-4">
                         <!-- Logo -->
-                        <div class="login-logo-wrap">
-                            <div class="logo-circle">
+                        <div class="login-logo-wrap mb-4">
+                            <div class="logo-circle avatar-glow" style="width:64px; height:64px;">
                                 <img src="icon-512.png" alt="TopClean Logo">
                             </div>
-                            <h2 class="brand-name">TOPCLEAN</h2>
+                            <h2 class="brand-name mt-3">TOPCLEAN</h2>
                             <div class="brand-tagline"><span></span> sizinle <span></span></div>
                         </div>
 
@@ -948,19 +936,22 @@ Koku yok"></textarea>
             </div>
         </div>
 
-        <!-- KRİTİK NOT -->
-        <div class="px-4 py-3" style="background: rgba(220,38,38,0.08); border-bottom: 1px solid rgba(220,38,38,0.2);">
-            <div class="d-flex align-items-start gap-2">
-                <span style="font-size:1rem;">📌</span>
-                <div>
-                    <div class="badge bg-danger rounded-pill mb-1" style="font-size:0.6rem;">Kritik Not</div>
-                    <div id="pinnedNotes" class="text-danger fw-bold" style="font-size:0.75rem;">Bugün 2. Katın suyu 14:00'e kadar kesik olacak.</div>
+        <!-- KRİTİK NOT (PINNED SECTION) -->
+        <div id="pinnedSection" class="px-4 py-3 d-none" style="background: rgba(220,38,38,0.12); border-bottom: 1px solid rgba(220,38,38,0.2); position: relative;">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-start gap-2">
+                    <span style="font-size:1.1rem; animation: pulse 2s infinite;">📌</span>
+                    <div>
+                        <div class="badge bg-danger rounded-pill mb-1" style="font-size:0.6rem; letter-spacing:1px;">KRİTİK DUYURU</div>
+                        <div id="pinnedNotes" class="text-white fw-bold" style="font-size:0.8rem; line-height:1.2;"></div>
+                        <div id="pinnedMeta" class="x-small text-muted mt-1" style="font-size:0.65rem;"></div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- MESAJLAR -->
-        <div id="chatMessages" class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3" style="position:relative;">
+        <div id="chatMessages" class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3" style="position:relative; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-opacity: 0.05;">
             <div id="chatEmptyState" class="d-flex flex-column align-items-center justify-content-center h-100 text-center" style="opacity:0.5; display:none;">
                 <div class="h1">💬</div>
                 <div class="small text-white">Henüz mesaj yok...</div>
@@ -968,15 +959,31 @@ Koku yok"></textarea>
             <!-- Mesajlar buraya gelecek -->
         </div>
 
-        <!-- INPUT ALANI -->
-        <div class="chat-input-area p-3 d-flex gap-2 align-items-center" style="background:#202c33; border-top: 1px solid rgba(255,255,255,0.05);">
-            <input type="text" id="chatInput" placeholder="Mesaj yazın..." class="form-control" style="background:#2a3942 !important; border:none !important; color:#e9edef !important; border-radius:24px !important; padding:10px 20px !important; flex-grow:1;" onkeydown="if(event.key==='Enter') ChatManager.send()">
-            <button onclick="ChatManager.send()" class="btn btn-success rounded-circle d-flex align-items-center justify-content-center p-0" style="width:42px; height:42px; background:#00a884; border:none;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:2px;">
-                    <line x1="22" y1="2" x2="11" y2="13"></line>
-                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                </svg>
-            </button>
+        <!-- INPUT ALANI (PREMIUM) -->
+        <div class="chat-input-area p-3 d-flex flex-column gap-2" style="background:#0b141a; border-top: 1px solid rgba(255,255,255,0.1);">
+            <div id="chatMediaPreview" class="d-none p-2 rounded-3 mb-2 position-relative" style="background: rgba(255,255,255,0.05);">
+                <img id="mediaPreviewImg" src="" style="max-height:100px; border-radius:8px; display:none;">
+                <video id="mediaPreviewVid" src="" style="max-height:100px; border-radius:8px; display:none;" muted></video>
+                <button onclick="ChatManager.clearMedia()" class="btn btn-sm btn-danger rounded-circle position-absolute" style="top:-5px; right:-5px; width:24px; height:24px; padding:0;">✕</button>
+            </div>
+            
+            <div class="d-flex gap-2 align-items-center">
+                <div class="d-flex gap-1">
+                    <button onclick="document.getElementById('chatMediaInput').click()" class="btn btn-glass-emerald p-0 d-flex align-items-center justify-content-center rounded-circle" style="width:40px; height:40px;">
+                        <i data-lucide="paperclip" style="width:18px;"></i>
+                    </button>
+                    <button id="criticalToggleBtn" onclick="ChatManager.toggleCritical()" class="btn btn-glass-danger p-0 d-flex align-items-center justify-content-center rounded-circle" style="width:40px; height:40px; border: 1px solid transparent;">
+                        <i data-lucide="pin" style="width:18px;"></i>
+                    </button>
+                </div>
+                
+                <input type="text" id="chatInput" placeholder="Mesaj yazın..." class="form-control" style="background:#2a3942 !important; border:none !important; color:#fff !important; border-radius:24px !important; padding:10px 20px !important; flex-grow:1;" onkeydown="if(event.key==='Enter') ChatManager.send()">
+                
+                <button onclick="ChatManager.send()" class="btn btn-emerald rounded-circle d-flex align-items-center justify-content-center p-0" style="width:42px; height:42px; background:#00a884; border:none; box-shadow: 0 4px 15px rgba(0,168,132,0.3);">
+                    <i data-lucide="send" style="width:20px; color:white; margin-left:2px;"></i>
+                </button>
+            </div>
+            <input type="file" id="chatMediaInput" accept="image/*,video/*" class="d-none" onchange="ChatManager.handleMediaSelect(this)">
         </div>
     </div>
 
