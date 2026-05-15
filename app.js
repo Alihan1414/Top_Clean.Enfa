@@ -41,10 +41,9 @@ async function loadInstitutionContext(instId) {
                 }
             }
             
-            // Populate Global Katlar (if provided by DB)
-            if (config.floors) {
-                // We use currentConfig.floors instead of the global 'katlar' constant
-            }
+            // Populate Global Katlar & Users
+            if (config.floors) katlar = config.floors;
+            if (config.users) usersData = config.users;
             
             return true;
         }
@@ -86,11 +85,7 @@ try {
 } catch (e) { console.error("Firebase Init Error:", e); }
 
 // --- DYNAMIC DATA INITIALIZATION ---
-let katlar = currentConfig?.floors || {
-    // FALLBACK (Default for new institutions or if DB is empty)
-    "Zemin Kat": { "Koridor": ["Temiz"] }
-};
-
+let katlar = currentConfig?.floors || {};
 let usersData = currentConfig?.users || [];
 
 let currentUser = null;
@@ -276,9 +271,9 @@ const InventoryManager = {
         if (!container) return;
         
         const btnWrap = document.getElementById('inventoryAddBtnWrap');
-        const isBurak = currentUser && currentUser.name === "Burakhan Karaoğlan";
+        const isDepoSec = currentUser && currentUser.isDepo;
         
-        if (btnWrap) btnWrap.classList.toggle('d-none', !isBurak);
+        if (btnWrap) btnWrap.classList.toggle('d-none', !isDepoSec);
         if (!Array.isArray(allInventory)) allInventory = [];
         
         container.innerHTML = allInventory.map(i => {
@@ -304,7 +299,7 @@ const InventoryManager = {
                                 <span class="x-small text-muted">Eşik: ${threshold}</span>
                             </div>
                         </div>
-                        ${isBurak ? `
+                        ${isDepoSec ? `
                         <div class="d-flex flex-column gap-2">
                             <button onclick="InventoryManager.editModal('${i.id}')" class="btn btn-sm btn-glass-emerald p-1 px-2" title="Eşik Ayarla"><i data-lucide="bell" style="width:14px;"></i></button>
                             <button onclick="InventoryManager.deleteItem('${i.id}')" class="btn btn-sm btn-glass-danger p-1 px-2" title="Sil"><i data-lucide="trash-2" style="width:14px;"></i></button>
@@ -1474,6 +1469,13 @@ function showPanel(id, pushToHistory = true) {
                 panelHistory.push(id);
             }
         }
+        
+        // Mobile Nav Aktif Durumu Güncelle
+        document.querySelectorAll('.nav-item').forEach(item => {
+            const onclickVal = item.getAttribute('onclick') || "";
+            if (onclickVal.includes(id)) item.classList.add('active');
+            else item.classList.remove('active');
+        });
     }
     const header = document.getElementById('app-header');
     if (header) header.classList.toggle('d-none', id === 'loginPanel');
@@ -1609,11 +1611,13 @@ function _routeUser() {
     else if (currentUser.rol === "gorevli") { 
         showPanel("gorevliPanel"); 
         loadGorevliPanel(currentUser.kat);
-        const emraBtn = document.getElementById('emraHocaArizaBtn');
-        if (emraBtn) emraBtn.classList.toggle('d-none', currentUser.name !== "Emra Karabalak");
+        
+        // Özel butonlar (Dinamik yetkilere göre)
+        const arizaBtn = document.getElementById('emraHocaArizaBtn');
+        if (arizaBtn) arizaBtn.classList.toggle('d-none', !currentUser.isAriza);
         
         const depoBtn = document.getElementById('burakHocaDepoBtn');
-        if (depoBtn) depoBtn.classList.toggle('d-none', currentUser.name !== "Burakhan Karaoğlan");
+        if (depoBtn) depoBtn.classList.toggle('d-none', !currentUser.isDepo);
     }
 }
 
@@ -2220,8 +2224,11 @@ const KurumYonetimManager = {
         // Marka alanlarını doldur
         const markaAd = document.getElementById('markaAd');
         const markaLogo = document.getElementById('markaLogo');
+        const preview = document.getElementById('markaLogoOnizleme');
+        
         if (markaAd) markaAd.value = this.localBranding.name;
         if (markaLogo) markaLogo.value = this.localBranding.logo;
+        if (preview && this.localBranding.logo) preview.src = this.localBranding.logo;
 
         this.renderKatlar();
         this.renderPersonel();
@@ -2307,6 +2314,10 @@ const KurumYonetimManager = {
                     <div>
                         <div class="fw-bold small text-white">${u.name}</div>
                         <div class="x-small" style="color:${rolRenk[u.rol] || '#aaa'};">${rolAd[u.rol] || u.rol}${u.kat ? ' • ' + u.kat : ''}</div>
+                        <div class="d-flex gap-1 mt-1">
+                            ${u.isAriza ? '<span class="badge bg-danger p-0 px-1" style="font-size:0.5rem;">🛠 ARIZA</span>' : ''}
+                            ${u.isDepo ? '<span class="badge bg-info p-0 px-1" style="font-size:0.5rem;">📦 DEPO</span>' : ''}
+                        </div>
                     </div>
                 </div>
                 <div class="d-flex align-items-center gap-2">
@@ -2392,6 +2403,8 @@ const KurumYonetimManager = {
         }
         document.getElementById('pAd').value = '';
         document.getElementById('pSifre').value = '1234';
+        document.getElementById('pIsAriza').checked = false;
+        document.getElementById('pIsDepo').checked = false;
         new bootstrap.Modal(document.getElementById('personelEkleModal')).show();
     },
 
@@ -2400,13 +2413,22 @@ const KurumYonetimManager = {
         const sifre = document.getElementById('pSifre').value.trim();
         const rol = document.getElementById('pRol').value;
         const kat = document.getElementById('pKat').value;
+        const isAriza = document.getElementById('pIsAriza').checked;
+        const isDepo = document.getElementById('pIsDepo').checked;
 
         if (!ad) return Swal.fire('Hata', 'Ad Soyad boş olamaz!', 'error');
         if (!sifre) return Swal.fire('Hata', 'Şifre boş olamaz!', 'error');
         if (rol === 'gorevli' && !kat) return Swal.fire('Hata', 'Görevli için kat seçin!', 'error');
         if (this.localUsers.find(u => u.name === ad)) return Swal.fire('Hata', 'Bu isimde kullanıcı zaten var!', 'error');
 
-        this.localUsers.push({ name: ad, pass: sifre, kat: rol === 'gorevli' ? kat : '', rol });
+        this.localUsers.push({ 
+            name: ad, 
+            pass: sifre, 
+            kat: rol === 'gorevli' ? kat : '', 
+            rol,
+            isAriza: isAriza,
+            isDepo: isDepo
+        });
         bootstrap.Modal.getInstance(document.getElementById('personelEkleModal'))?.hide();
         this.renderPersonel();
         Swal.fire({ icon: 'success', title: 'Eklendi', text: `${ad} personele eklendi.`, timer: 1500, showConfirmButton: false });
@@ -2429,9 +2451,17 @@ const KurumYonetimManager = {
         });
     },
 
-    logoOnizle: function() {
-        const url = document.getElementById('markaLogo').value.trim();
-        if (url) document.getElementById('markaLogoOnizleme').src = url;
+    logoSecildi: function(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const base64 = e.target.result;
+                document.getElementById('markaLogoOnizleme').src = base64;
+                document.getElementById('markaLogo').value = base64;
+                this.localBranding.logo = base64;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
     },
 
     kaydet: async function() {
@@ -2465,6 +2495,12 @@ const KurumYonetimManager = {
                 document.querySelectorAll('.logo-circle img').forEach(el => el.src = this.localBranding.logo);
             }
 
+            // UI Tazele
+            if (currentUser) {
+                if (currentUser.rol === 'idareci') IdarecManager.renderCockpit();
+                if (currentUser.rol === 'mufettis') MufettisFocus.renderStream();
+            }
+
             Swal.fire({ icon: 'success', title: 'Kaydedildi!', text: 'Kurum ayarları Firebase\'e kaydedildi.', timer: 2000, showConfirmButton: false });
         } catch(e) {
             console.error('Kayıt Hatası:', e);
@@ -2476,6 +2512,17 @@ const KurumYonetimManager = {
 // --- SÜPER ADMİN YÖNETİCİSİ ---
 const SuperAdminManager = {
     allInstitutions: {},
+    logoSecildi: function(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const base64 = e.target.result;
+                document.getElementById('sInstLogoOnizleme').src = base64;
+                document.getElementById('sInstLogo').value = base64;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    },
 
     load: function() {
         if (!db) return;
@@ -2582,26 +2629,21 @@ const MigrationHelper = {
                 name: name || "TopClean",
                 logo: logo || "icon-512.png"
             },
-            floors: {
-                "Bodrum Kat": {
-                    "-1 Merdiven": ["Zemin süpürülmüş ve temiz", "Korkuluklar silinmiş ve tozsuz", "Çöp kutuları boşaltılmış", "Etraf düzenli", "Lekeler silinmiş"],
-                    "Koridor": ["Zemin temiz", "Camlar silinmiş", "Çöp yok", "Koku yok", "Etraf Düzenli"],
-                    "Wc": ["Zemin temiz", "Lavabolar temiz", "Koku yok", "Kağıt var", "Sabun var"]
-                },
-                "Zemin Kat": {
-                    "Koridor": ["Zemin temiz", "Camlar silinmiş", "Çöp yok", "Koku yok", "Ayna Silinmiş"],
-                    "İdareci Odası": ["Masa düzenli", "Zemin temiz", "Koku yok", "Koltuklar Temiz", "Çöp kutusu boş"]
-                }
-            },
+            floors: {},
             users: [
-                { name: "Yurt Mesulü", pass: "1111", kat: "", rol: "idareci" },
-                { name: "Müfettiş", pass: "1111", kat: "", rol: "mufettis" },
-                { name: "Görevli", pass: "1234", kat: "Zemin Kat", rol: "gorevli" }
+                { name: "Yurt Mesulü", pass: "1111", kat: "", rol: "idareci" }
             ]
         };
         
         try {
-            await db.ref(`institutions/${instId}/config`).set(config);
+            // Temiz bir başlangıç için diğer verileri de sıfırlayalım (opsiyonel ama garanti)
+            await db.ref(`institutions/${instId}`).set({
+                config: config,
+                reports: {},
+                arizalar: {},
+                inventory: {},
+                messages: {}
+            });
             console.log(`✅ ${instId} kurumu başarıyla oluşturuldu!`);
             Swal.fire("Başarılı", `${instId} kurumu oluşturuldu. Giriş yapabilirsiniz.`, "success");
         } catch (e) {
