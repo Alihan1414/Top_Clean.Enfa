@@ -271,15 +271,7 @@
                     </div>
                 </div>
 
-                <!-- BOTTOM SLIDER (DECORATIVE) -->
-                <div class="bottom-slider">
-                    <div class="slider-track">
-                        <span class="slider-text"> kaydır</span>
-                        <div class="slider-arrows">
-                            <i data-lucide="chevrons-right"></i>
-                        </div>
-                    </div>
-                </div>
+
             </div>
 
             <!-- LİSTE SORUMLUSU PANELİ (AKILLI SİSTEM v2) -->
@@ -497,29 +489,33 @@
                             <p class="x-small text-muted mb-0 text-uppercase fw-bold">Görevli Paneli</p>
                             <h2 class="h5 fw-bold text-white mb-0" id="gorevliHocaIsim">-</h2>
                         </div>
-                        <div class="ms-auto text-end d-flex flex-column gap-2">
+                        <div class="ms-auto text-end">
                             <div class="d-flex align-items-center gap-2 justify-content-end">
                                 <div id="gorevliTamamSayi" class="h4 fw-bold text-white mb-0">0/0</div>
                                 <div class="x-small text-emerald fw-bold">BİTEN</div>
                             </div>
-                            <div class="d-flex gap-2 justify-content-end pb-2" style="overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch;">
-                                <!-- Emra hocaya özel buton -->
-                                <button id="emraHocaArizaBtn"
-                                    onclick="showPanel('arizaYonetimPanel'); ArizaManager.renderYonetim();"
-                                    class="btn btn-sm btn-glass-emerald rounded-pill px-3 py-1 fw-bold flex-shrink-0 d-none"
-                                    style="font-size:0.65rem;">⚙️ ARIZA YÖNETİMİ</button>
-                                <!-- Burak hocaya özel buton -->
-                                <button id="burakHocaDepoBtn" onclick="InventoryManager.ac()"
-                                    class="btn btn-sm btn-glass-emerald rounded-pill px-3 py-1 fw-bold flex-shrink-0 d-none"
-                                    style="font-size:0.65rem;">📦 DEPO YÖNETİMİ</button>
-                                <button onclick="ArizaManager.bildirimModaliAc()"
-                                    class="btn btn-sm btn-glass-danger rounded-pill px-3 py-1 fw-bold flex-shrink-0"
-                                    style="font-size:0.65rem; letter-spacing:0.5px;">⚠️ ARIZA BİLDİR</button>
-                                <button onclick="InventoryManager.useModal()"
-                                    class="btn btn-sm btn-glass-emerald rounded-pill px-3 py-1 fw-bold flex-shrink-0"
-                                    style="font-size:0.65rem; letter-spacing:0.5px;">🧼 MALZEME KULLAN</button>
-                            </div>
                         </div>
+                    </div>
+                    
+                    <!-- Action Buttons - Full Width Scrollable -->
+                    <div class="d-flex gap-2 pb-2 mb-3" style="overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none;">
+                        <style>#gorevliPanelActionBtns::-webkit-scrollbar { display: none; }</style>
+                        <!-- Emra hocaya özel buton -->
+                        <button id="emraHocaArizaBtn"
+                            onclick="showPanel('arizaYonetimPanel'); ArizaManager.renderYonetim();"
+                            class="btn btn-sm btn-glass-emerald rounded-pill px-3 py-2 fw-bold flex-shrink-0 d-none"
+                            style="font-size:0.7rem;">⚙️ ARIZA YÖNETİMİ</button>
+                        <!-- Burak hocaya özel buton -->
+                        <button id="burakHocaDepoBtn" onclick="InventoryManager.ac()"
+                            class="btn btn-sm btn-glass-emerald rounded-pill px-3 py-2 fw-bold flex-shrink-0 d-none"
+                            style="font-size:0.7rem;">📦 DEPO YÖNETİMİ</button>
+                        <button onclick="ArizaManager.bildirimModaliAc()"
+                            class="btn btn-sm btn-glass-danger rounded-pill px-3 py-2 fw-bold flex-shrink-0"
+                            style="font-size:0.7rem; letter-spacing:0.5px;">⚠️ ARIZA BİLDİR</button>
+                        <button onclick="InventoryManager.useModal()"
+                            class="btn btn-sm btn-glass-emerald rounded-pill px-3 py-2 fw-bold flex-shrink-0"
+                            style="font-size:0.7rem; letter-spacing:0.5px;">🧼 MALZEME KULLAN</button>
+                    </div>
                     </div>
                     <div style="height:6px; background:rgba(255,255,255,0.06); border-radius:10px; overflow:hidden;">
                         <div id="gorevliProgressBar"
@@ -1119,7 +1115,7 @@ Koku yok"></textarea>
         <!-- Bu alan JS ile dinamik doldurulacak -->
     </div>
 
-    <script src="app.js?v=elite_final_v5"></script>
+    <script src="app.js?v=elite_final_v6"></script>
 </body>
 
 </html>
