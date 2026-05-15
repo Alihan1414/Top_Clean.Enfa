@@ -1,22 +1,25 @@
 :root {
     --emerald-primary: #10b981;
     --emerald-light: #34d399;
-    --emerald-neon: #059669;
+    --emerald-deep: #064e3b;
+    --emerald-neon: #10b981;
     --bg-main: #ffffff;
     --bg-surface: #f8fafc;
-    --glass-bg: linear-gradient(160deg, rgba(255,255,255,0.9), rgba(245,245,250,0.95));
+    --glass-bg: linear-gradient(160deg, rgba(255,255,255,0.8), rgba(245,245,250,0.9));
     --glass-border: rgba(0, 0, 0, 0.05);
     --text-main: #0f172a;
     --text-sub: #64748b;
+    --accent-glow: rgba(16, 185, 129, 0.3);
 }
 
 body:not(.light-mode) {
-    --bg-main: #050505;
+    --bg-main: #020617; /* Deep Navy Black */
     --bg-surface: #0a0a0a;
-    --glass-bg: linear-gradient(160deg, rgba(20,20,25,0.7), rgba(5,5,10,0.8));
-    --glass-border: rgba(255, 255, 255, 0.03);
-    --text-main: #ffffff;
-    --text-sub: #888888;
+    --glass-bg: linear-gradient(160deg, rgba(30,41,59,0.5), rgba(15,23,42,0.7));
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --text-main: #f8fafc;
+    --text-sub: #94a3b8;
+    --accent-glow: rgba(16, 185, 129, 0.4);
 }
 
 body.light-mode {
@@ -72,16 +75,16 @@ body.light-mode .aurora-container {
 /* --- HOLOGRAPHIC GLASS CARDS (PRO-LEVEL) --- */
 .glass-card {
     background: var(--glass-bg);
-    backdrop-filter: blur(50px) saturate(200%);
-    -webkit-backdrop-filter: blur(50px) saturate(200%);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
     border: 1px solid var(--glass-border);
-    box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.2), 
-                inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    border-radius: 28px;
-    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    border-radius: 24px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-    transform-style: preserve-3d;
     color: var(--text-main);
+    overflow: hidden;
 }
 
 .modal-premium-glass {
@@ -1706,49 +1709,57 @@ body.light-mode #themeToggleButton {
     
     .login-card-premium {
         position: relative; right: auto; top: auto;
-        transform: none; margin: 20px auto;
-        width: 95%; max-width: 400px;
-        padding: 20px;
+        transform: none; margin: 10px auto;
+        width: 92%; max-width: 380px;
+        padding: 24px;
+    }
+
+    .glass-card { 
+        backdrop-filter: blur(10px) saturate(140%); 
+        border-radius: 20px;
+        padding: 16px !important;
     }
     
     .cockpit-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px;
     }
 
-    .room-matrix { grid-template-columns: repeat(4, 1fr); }
+    .room-matrix { 
+        grid-template-columns: repeat(5, 1fr); 
+        gap: 4px !important;
+    }
 
     .mobile-nav {
-        bottom: 15px;
-        height: 65px;
-        width: 95%;
+        bottom: 12px;
+        height: 60px;
+        width: 92%;
+        border-radius: 30px;
+        padding: 0 15px;
     }
 
-    .nav-item { gap: 2px; padding: 5px; font-size: 0.6rem; }
-    .nav-item i { width: 20px !important; height: 20px !important; }
+    .nav-item { gap: 1px; font-size: 0.55rem; }
+    .nav-item i { width: 18px !important; height: 18px !important; }
 
-    /* Modal Adjustments */
-    .modal-dialog { margin: 10px; }
-    .modal-content { border-radius: 20px !important; }
+    .btn-sm { padding: 8px 16px !important; font-size: 0.75rem !important; min-height: 38px; }
+    .btn-lg, .btn-emerald { min-height: 48px; }
 
-    /* Header adjustments */
-    header .container { padding: 10px 15px; }
-    .glass-title { font-size: 1.2rem; }
+    /* Performance optimization: reduce animations */
+    .premium-bubble, .particle { opacity: 0.4; }
     
-    /* Stats grid */
+    .glass-title { font-size: 1.1rem; }
+    
     .stats-mini-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
     }
 }
 
 @media (max-width: 480px) {
     .cockpit-grid { grid-template-columns: 1fr; }
+    .room-matrix { grid-template-columns: repeat(6, 1fr); }
     .stats-mini-grid { grid-template-columns: 1fr; }
-    .btn-emerald { width: 100%; }
-    
-    .glass-card { border-radius: 20px; }
 }
 
 /* --- PREMIUM ACTIVE EFFECTS & STATES --- */
