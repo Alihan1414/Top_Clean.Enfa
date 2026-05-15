@@ -155,20 +155,20 @@
         </div>
     </div>
 
-    <!-- TEMA DEĞİŞTİRME BUTONU (ELITE) -->
-    <button onclick="toggleTheme()" id="themeToggleButton"
-        class="btn btn-premium-theme rounded-circle position-fixed d-flex align-items-center justify-content-center shadow-lg"
-        style="top: 25px; right: 25px; width: 50px; height: 50px; z-index: 9999; background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px); color: #fff;">
-        <i data-lucide="sun" id="themeIcon" size="24"></i>
-    </button>
+
 
     <div class="app-container">
         <header id="app-header" class="fixed-top d-none">
-            <div class="header-glass container py-3 d-flex justify-content-between align-items-center mt-2 px-4 shadow-lg" style="border-radius:24px; background:rgba(10,15,25,0.7); backdrop-filter:blur(20px); border:1px solid rgba(16,185,129,0.15);">
+            <div class="header-glass container py-3 d-flex justify-content-between align-items-center mt-2 px-4 shadow-lg"
+                style="border-radius:24px; background:rgba(10,15,25,0.7); backdrop-filter:blur(20px); border:1px solid rgba(16,185,129,0.15);">
                 <div class="d-flex align-items-center gap-3">
-                    <img src="assets/logo_enderun_white.png" style="width:38px; height:38px; border-radius:10px; box-shadow: 0 0 20px rgba(16,185,129,0.3);" alt="L">
+                    <img src="assets/logo_enderun_white.png"
+                        style="width:38px; height:38px; border-radius:10px; box-shadow: 0 0 20px rgba(16,185,129,0.3);"
+                        alt="L">
                     <div>
-                        <h1 class="h5 fw-900 text-white mb-0" style="letter-spacing:1px; font-family:'Orbitron', sans-serif; font-size:1.1rem;">TopClean</h1>
+                        <h1 class="h5 fw-900 text-white mb-0"
+                            style="letter-spacing:1px; font-family:'Orbitron', sans-serif; font-size:1.1rem;">TopClean
+                        </h1>
                         <div id="syncStatusIndicator" class="d-flex align-items-center gap-1"></div>
                     </div>
                 </div>
@@ -183,7 +183,7 @@
             </div>
         </header>
 
-        <main id="mainContainer" class="container py-4">
+        <main id="mainContainer" class="container py-4" style="padding-top: 100px !important;">
 
             <!-- 1. LOGIN PANEL (PREMIUM RE-DESIGN) -->
             <div id="loginPanel" class="view-panel active login-screen">
@@ -237,7 +237,8 @@
                         <form id="loginForm" class="mt-4">
                             <div class="premium-input-group mb-3">
                                 <i data-lucide="building" class="input-icon"></i>
-                                <input type="text" id="instCode" class="premium-input" placeholder="Kurum Kodu" required>
+                                <input type="text" id="instCode" class="premium-input" placeholder="Kurum Kodu"
+                                    required>
                             </div>
 
                             <div class="premium-input-group">
@@ -440,8 +441,9 @@
                         Malzemeler</button>
                     <button onclick="IdarecManager.switchSubTab('personel')"
                         class="btn btn-glass-emerald btn-sm rounded-pill px-3">👥 Personel</button>
-                    <button onclick="KurumYonetimManager.acPanel()"
-                        class="btn btn-sm rounded-pill px-3" style="background:rgba(16,185,129,0.2); border:1px solid rgba(16,185,129,0.5); color:#10b981; white-space:nowrap;">⚙️ Kurum Kur</button>
+                    <button onclick="KurumYonetimManager.acPanel()" class="btn btn-sm rounded-pill px-3"
+                        style="background:rgba(16,185,129,0.2); border:1px solid rgba(16,185,129,0.5); color:#10b981; white-space:nowrap;">⚙️
+                        Kurum Kur</button>
                 </div>
             </div>
 
@@ -578,12 +580,14 @@
                     <input type="file" id="gorevliFoto" capture="environment" accept="image/*" class="d-none">
 
                     <textarea id="gorevliNot"
-                        class="form-control bg-slate-glass text-white border-secondary mb-4 rounded-4 p-3 shadow-none" rows="3"
-                        placeholder="Vardiya notu veya sorun bildirin..."></textarea>
+                        class="form-control bg-slate-glass text-white border-secondary mb-4 rounded-4 p-3 shadow-none"
+                        rows="3" placeholder="Vardiya notu veya sorun bildirin..."></textarea>
 
                     <button onclick="KriterManager.veriyiKaydet()"
-                        class="btn btn-emerald w-100 py-3 fw-bold rounded-pill mb-3 shadow-success">RAPORU GÖNDER</button>
-                    <button onclick="_routeUser()" class="btn btn-outline-light w-100 py-2 fw-bold rounded-pill">İPTAL ET VE
+                        class="btn btn-emerald w-100 py-3 fw-bold rounded-pill mb-3 shadow-success">RAPORU
+                        GÖNDER</button>
+                    <button onclick="_routeUser()" class="btn btn-outline-light w-100 py-2 fw-bold rounded-pill">İPTAL
+                        ET VE
                         GERİ DÖN</button>
                 </div>
             </div>
@@ -591,7 +595,8 @@
             <!-- MÜFETTİŞ PANELİ (CANLI DENETİM AKIŞI) -->
             <div id="adminPanel" class="view-panel d-none flex-column w-100">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald px-3 rounded-pill">← Geri</button>
+                    <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald px-3 rounded-pill">←
+                        Geri</button>
                     <button onclick="KurumYonetimManager.acPanel()" class="btn btn-sm px-3 rounded-pill fw-bold"
                         style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); color:#10b981; font-size:0.65rem;">
                         ⚙️ Kurum Ayarları
@@ -621,10 +626,12 @@
             <div id="inventoryPanel" class="view-panel d-none flex-column w-100">
                 <div class="glass-card banner-card p-4 mb-4 text-center shadow-lg">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <button onclick="handleBack()" class="btn btn-sm btn-glass-emerald rounded-pill px-3">← Geri</button>
+                        <button onclick="handleBack()" class="btn btn-sm btn-glass-emerald rounded-pill px-3">←
+                            Geri</button>
                         <h2 class="h4 fw-bold text-white mb-0">Depo & Envanter</h2>
                         <div id="inventoryAddBtnWrap" class="d-none">
-                            <button onclick="InventoryManager.addItemModal()" class="btn btn-sm btn-emerald px-3 rounded-pill">+ Yeni Ekle</button>
+                            <button onclick="InventoryManager.addItemModal()"
+                                class="btn btn-sm btn-emerald px-3 rounded-pill">+ Yeni Ekle</button>
                         </div>
                     </div>
                     <p class="x-small text-muted mb-0">Temizlik malzemeleri ve stok durumu</p>
@@ -671,7 +678,8 @@
 
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase">Kurum Listesi</h6>
-            <button onclick="SuperAdminManager.yeniKurumModal()" class="btn btn-sm btn-warning rounded-pill px-3 fw-bold">+ Yeni Kurum Ekle</button>
+            <button onclick="SuperAdminManager.yeniKurumModal()"
+                class="btn btn-sm btn-warning rounded-pill px-3 fw-bold">+ Yeni Kurum Ekle</button>
         </div>
 
         <div id="superInstitutionList" class="d-flex flex-column gap-3 pb-5">
@@ -690,28 +698,39 @@
                 <div class="modal-body p-4">
                     <div class="mb-3">
                         <label class="x-small text-emerald fw-bold mb-2">KURUM KODU (ID)</label>
-                        <input type="text" id="sInstCode" class="form-control bg-dark-glass text-white border-0 rounded-4 py-3" placeholder="Örn: ENDERUN">
+                        <input type="text" id="sInstCode"
+                            class="form-control bg-dark-glass text-white border-0 rounded-4 py-3"
+                            placeholder="Örn: ENDERUN">
                     </div>
                     <div class="mb-3">
                         <label class="x-small text-emerald fw-bold mb-2">KURUM ADI</label>
-                        <input type="text" id="sInstName" class="form-control bg-dark-glass text-white border-0 rounded-4 py-3" placeholder="Örn: Enderun Erkek Yurdu">
+                        <input type="text" id="sInstName"
+                            class="form-control bg-dark-glass text-white border-0 rounded-4 py-3"
+                            placeholder="Örn: Enderun Erkek Yurdu">
                     </div>
                     <div class="mb-3">
                         <label class="x-small text-emerald fw-bold mb-2">KURUM LOGOSU</label>
-                        <div class="d-flex align-items-center gap-3 p-3 rounded-4 bg-dark-glass border border-secondary border-opacity-10">
+                        <div
+                            class="d-flex align-items-center gap-3 p-3 rounded-4 bg-dark-glass border border-secondary border-opacity-10">
                             <img id="sInstLogoOnizleme" src="icon-512.png" alt="Logo"
                                 style="width:56px; height:56px; border-radius:10px; object-fit:cover; border:1px solid rgba(255,255,255,0.1);">
                             <div class="flex-grow-1">
-                                <button onclick="document.getElementById('sLogoInput').click()" class="btn btn-sm btn-glass-emerald w-100 py-2 rounded-pill fw-bold">🖼 SEÇ</button>
-                                <input type="file" id="sLogoInput" accept="image/*" style="display:none;" onchange="SuperAdminManager.logoSecildi(this)">
+                                <button onclick="document.getElementById('sLogoInput').click()"
+                                    class="btn btn-sm btn-glass-emerald w-100 py-2 rounded-pill fw-bold">🖼 SEÇ</button>
+                                <input type="file" id="sLogoInput" accept="image/*" style="display:none;"
+                                    onchange="SuperAdminManager.logoSecildi(this)">
                                 <input type="hidden" id="sInstLogo">
                             </div>
                         </div>
                     </div>
-                    <div class="alert alert-info bg-info bg-opacity-10 border-info border-opacity-25 text-info x-small mb-4">
-                        Yeni kurum oluşturulduğunda varsayılan bir <b>Yurt Mesulü</b> hesabı (şifre: 1111) otomatik eklenir.
+                    <div
+                        class="alert alert-info bg-info bg-opacity-10 border-info border-opacity-25 text-info x-small mb-4">
+                        Yeni kurum oluşturulduğunda varsayılan bir <b>Yurt Mesulü</b> hesabı (şifre: 1111) otomatik
+                        eklenir.
                     </div>
-                    <button onclick="SuperAdminManager.kurumOlustur()" class="btn btn-warning w-100 py-3 rounded-pill fw-bold shadow-warning">KURUMU OLUŞTUR VE YAYINLA</button>
+                    <button onclick="SuperAdminManager.kurumOlustur()"
+                        class="btn btn-warning w-100 py-3 rounded-pill fw-bold shadow-warning">KURUMU OLUŞTUR VE
+                        YAYINLA</button>
                 </div>
             </div>
         </div>
@@ -723,9 +742,11 @@
         <!-- BAŞLIK -->
         <div class="glass-card banner-card p-4 mb-4 text-center shadow-lg">
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <button onclick="showPanel('idarecPanel')" class="btn btn-sm btn-glass-emerald rounded-pill px-3">← Geri</button>
+                <button onclick="showPanel('idarecPanel')" class="btn btn-sm btn-glass-emerald rounded-pill px-3">←
+                    Geri</button>
                 <h2 class="h4 fw-bold text-white mb-0">⚙️ Kurum Yönetimi</h2>
-                <button onclick="KurumYonetimManager.kaydet()" class="btn btn-sm btn-emerald rounded-pill px-3 fw-bold">💾 Kaydet</button>
+                <button onclick="KurumYonetimManager.kaydet()"
+                    class="btn btn-sm btn-emerald rounded-pill px-3 fw-bold">💾 Kaydet</button>
             </div>
             <p class="x-small text-muted mb-0">Kurumunuzun kat, oda ve personel yapısını buradan yönetin</p>
         </div>
@@ -744,7 +765,8 @@
         <div id="sekmeKatlarIcerik">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase">Kat Listesi</h6>
-                <button onclick="KurumYonetimManager.katEkleModal()" class="btn btn-sm btn-emerald rounded-pill px-3">+ Yeni Kat</button>
+                <button onclick="KurumYonetimManager.katEkleModal()" class="btn btn-sm btn-emerald rounded-pill px-3">+
+                    Yeni Kat</button>
             </div>
             <div id="katlarListesi" class="d-flex flex-column gap-3 pb-5">
                 <!-- Katlar JS ile dolar -->
@@ -755,7 +777,8 @@
         <div id="sekmePersonelIcerik" class="d-none">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase">Personel Listesi</h6>
-                <button onclick="KurumYonetimManager.personelEkleModal()" class="btn btn-sm btn-emerald rounded-pill px-3">+ Personel Ekle</button>
+                <button onclick="KurumYonetimManager.personelEkleModal()"
+                    class="btn btn-sm btn-emerald rounded-pill px-3">+ Personel Ekle</button>
             </div>
             <div id="personelListesi" class="d-flex flex-column gap-2 pb-5">
                 <!-- Personel JS ile dolar -->
@@ -767,23 +790,30 @@
             <div class="glass-card p-4 d-flex flex-column gap-3">
                 <div>
                     <label class="x-small text-emerald fw-bold mb-2">KURUM ADI</label>
-                    <input type="text" id="markaAd" class="form-control bg-dark-glass text-white border-0 rounded-4 py-3"
+                    <input type="text" id="markaAd"
+                        class="form-control bg-dark-glass text-white border-0 rounded-4 py-3"
                         placeholder="Örn: Enderun Erkek Yurdu">
                 </div>
                 <div>
                     <label class="x-small text-emerald fw-bold mb-2">KURUM LOGOSU</label>
-                    <div class="d-flex align-items-center gap-3 p-3 rounded-4 bg-dark-glass border border-secondary border-opacity-10">
+                    <div
+                        class="d-flex align-items-center gap-3 p-3 rounded-4 bg-dark-glass border border-secondary border-opacity-10">
                         <img id="markaLogoOnizleme" src="icon-512.png" alt="Logo"
                             style="width:64px; height:64px; border-radius:12px; object-fit:cover; border:2px solid rgba(16,185,129,0.4);">
                         <div class="flex-grow-1">
-                            <button onclick="document.getElementById('logoInput').click()" class="btn btn-sm btn-glass-emerald w-100 py-2 rounded-pill fw-bold">🖼 GÖRSEL SEÇ</button>
-                            <input type="file" id="logoInput" accept="image/*" style="display:none;" onchange="KurumYonetimManager.logoSecildi(this)">
+                            <button onclick="document.getElementById('logoInput').click()"
+                                class="btn btn-sm btn-glass-emerald w-100 py-2 rounded-pill fw-bold">🖼 GÖRSEL
+                                SEÇ</button>
+                            <input type="file" id="logoInput" accept="image/*" style="display:none;"
+                                onchange="KurumYonetimManager.logoSecildi(this)">
                             <input type="hidden" id="markaLogo">
                             <div class="x-small text-muted mt-2">Önerilen: 512x512 PNG</div>
                         </div>
                     </div>
                 </div>
-                <button onclick="KurumYonetimManager.kaydet()" class="btn btn-emerald w-100 py-3 rounded-pill fw-bold shadow-success">💾 MARKALAMAYI KAYDET</button>
+                <button onclick="KurumYonetimManager.kaydet()"
+                    class="btn btn-emerald w-100 py-3 rounded-pill fw-bold shadow-success">💾 MARKALAMAYI
+                    KAYDET</button>
             </div>
         </div>
     </div>
@@ -800,17 +830,21 @@
                     <input type="hidden" id="odaEkleKatAdi">
                     <div class="mb-3">
                         <label class="x-small text-emerald fw-bold mb-2">ODA ADI</label>
-                        <input type="text" id="odaEkleAd" class="form-control bg-dark-glass text-white border-0 rounded-4 py-3" placeholder="Örn: WC, Koridor, Yatakhane 1">
+                        <input type="text" id="odaEkleAd"
+                            class="form-control bg-dark-glass text-white border-0 rounded-4 py-3"
+                            placeholder="Örn: WC, Koridor, Yatakhane 1">
                     </div>
                     <div class="mb-3">
-                        <label class="x-small text-emerald fw-bold mb-2">TEMİZLİK KRİTERLERİ <span class="text-muted fw-normal">(Her satıra bir kriter)</span></label>
-                        <textarea id="odaEkleKriterler" class="form-control bg-dark-glass text-white border-0 rounded-4 p-3" rows="5"
-                            placeholder="Zemin temiz
+                        <label class="x-small text-emerald fw-bold mb-2">TEMİZLİK KRİTERLERİ <span
+                                class="text-muted fw-normal">(Her satıra bir kriter)</span></label>
+                        <textarea id="odaEkleKriterler"
+                            class="form-control bg-dark-glass text-white border-0 rounded-4 p-3" rows="5" placeholder="Zemin temiz
 Camlar silinmiş
 Çöp yok
 Koku yok"></textarea>
                     </div>
-                    <button onclick="KurumYonetimManager.odaKaydet()" class="btn btn-emerald w-100 py-3 rounded-pill fw-bold shadow-success">ODAYI EKLE</button>
+                    <button onclick="KurumYonetimManager.odaKaydet()"
+                        class="btn btn-emerald w-100 py-3 rounded-pill fw-bold shadow-success">ODAYI EKLE</button>
                 </div>
             </div>
         </div>
@@ -827,9 +861,12 @@ Koku yok"></textarea>
                 <div class="modal-body p-4">
                     <div class="mb-3">
                         <label class="x-small text-emerald fw-bold mb-2">KAT ADI</label>
-                        <input type="text" id="katEkleAd" class="form-control bg-dark-glass text-white border-0 rounded-4 py-3" placeholder="Örn: 1. Kat, Zemin Kat">
+                        <input type="text" id="katEkleAd"
+                            class="form-control bg-dark-glass text-white border-0 rounded-4 py-3"
+                            placeholder="Örn: 1. Kat, Zemin Kat">
                     </div>
-                    <button onclick="KurumYonetimManager.katKaydet()" class="btn btn-emerald w-100 py-3 rounded-pill fw-bold shadow-success">KATI EKLE</button>
+                    <button onclick="KurumYonetimManager.katKaydet()"
+                        class="btn btn-emerald w-100 py-3 rounded-pill fw-bold shadow-success">KATI EKLE</button>
                 </div>
             </div>
         </div>
@@ -846,12 +883,16 @@ Koku yok"></textarea>
                 <div class="modal-body p-4">
                     <div class="mb-3">
                         <label class="x-small text-emerald fw-bold mb-2">AD SOYAD</label>
-                        <input type="text" id="pAd" class="form-control bg-dark-glass text-white border-0 rounded-4 py-3" placeholder="Ahmet Yılmaz">
+                        <input type="text" id="pAd"
+                            class="form-control bg-dark-glass text-white border-0 rounded-4 py-3"
+                            placeholder="Ahmet Yılmaz">
                     </div>
                     <div class="row g-2 mb-3">
                         <div class="col-6">
                             <label class="x-small text-emerald fw-bold mb-2">ŞİFRE</label>
-                            <input type="text" id="pSifre" class="form-control bg-dark-glass text-white border-0 rounded-4 py-3" placeholder="1234">
+                            <input type="text" id="pSifre"
+                                class="form-control bg-dark-glass text-white border-0 rounded-4 py-3"
+                                placeholder="1234">
                         </div>
                         <div class="col-6">
                             <label class="x-small text-emerald fw-bold mb-2">ROL</label>
@@ -871,19 +912,23 @@ Koku yok"></textarea>
                     <div class="row g-2 mb-3">
                         <div class="col-12">
                             <label class="x-small text-emerald fw-bold mb-2">ÖZEL YETKİLER</label>
-                            <div class="d-flex gap-3 p-3 rounded-4 bg-dark-glass border border-secondary border-opacity-10">
+                            <div
+                                class="d-flex gap-3 p-3 rounded-4 bg-dark-glass border border-secondary border-opacity-10">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="pIsAriza">
-                                    <label class="form-check-label x-small text-white" for="pIsAriza">🛠 Arıza Sorumlusu</label>
+                                    <label class="form-check-label x-small text-white" for="pIsAriza">🛠 Arıza
+                                        Sorumlusu</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="pIsDepo">
-                                    <label class="form-check-label x-small text-white" for="pIsDepo">📦 Depo Sorumlusu</label>
+                                    <label class="form-check-label x-small text-white" for="pIsDepo">📦 Depo
+                                        Sorumlusu</label>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <button onclick="KurumYonetimManager.personelKaydet()" class="btn btn-emerald w-100 py-3 rounded-pill fw-bold shadow-success">PERSONEL EKLE</button>
+                    <button onclick="KurumYonetimManager.personelKaydet()"
+                        class="btn btn-emerald w-100 py-3 rounded-pill fw-bold shadow-success">PERSONEL EKLE</button>
                 </div>
             </div>
         </div>
@@ -921,11 +966,20 @@ Koku yok"></textarea>
                 </div>
             </div>
             <div class="d-flex gap-2">
-                <button onclick="ChatManager.clear()" class="btn d-flex align-items-center justify-content-center rounded-circle border-0" 
+                <button onclick="ChatManager.clear()"
+                    class="btn d-flex align-items-center justify-content-center rounded-circle border-0"
                     style="width:36px; height:36px; background:rgba(239, 68, 68, 0.15);" title="Sohbeti Temizle">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 6h18" />
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                        <line x1="10" y1="11" x2="10" y2="17" />
+                        <line x1="14" y1="11" x2="14" y2="17" />
+                    </svg>
                 </button>
-                <button onclick="ChatManager.toggle()" class="btn d-flex align-items-center justify-content-center rounded-circle border-0"
+                <button onclick="ChatManager.toggle()"
+                    class="btn d-flex align-items-center justify-content-center rounded-circle border-0"
                     style="width:36px; height:36px; background:rgba(255,255,255,0.06);">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                         stroke="white" stroke-width="2.5" stroke-linecap="round">
@@ -937,13 +991,16 @@ Koku yok"></textarea>
         </div>
 
         <!-- KRİTİK NOT (PINNED SECTION) -->
-        <div id="pinnedSection" class="px-4 py-3 d-none" style="background: rgba(220,38,38,0.12); border-bottom: 1px solid rgba(220,38,38,0.2); position: relative;">
+        <div id="pinnedSection" class="px-4 py-3 d-none"
+            style="background: rgba(220,38,38,0.12); border-bottom: 1px solid rgba(220,38,38,0.2); position: relative;">
             <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-start gap-2">
                     <span style="font-size:1.1rem; animation: pulse 2s infinite;">📌</span>
                     <div>
-                        <div class="badge bg-danger rounded-pill mb-1" style="font-size:0.6rem; letter-spacing:1px;">KRİTİK DUYURU</div>
-                        <div id="pinnedNotes" class="text-white fw-bold" style="font-size:0.8rem; line-height:1.2;"></div>
+                        <div class="badge bg-danger rounded-pill mb-1" style="font-size:0.6rem; letter-spacing:1px;">
+                            KRİTİK DUYURU</div>
+                        <div id="pinnedNotes" class="text-white fw-bold" style="font-size:0.8rem; line-height:1.2;">
+                        </div>
                         <div id="pinnedMeta" class="x-small text-muted mt-1" style="font-size:0.65rem;"></div>
                     </div>
                 </div>
@@ -951,8 +1008,11 @@ Koku yok"></textarea>
         </div>
 
         <!-- MESAJLAR -->
-        <div id="chatMessages" class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3" style="position:relative; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-opacity: 0.05;">
-            <div id="chatEmptyState" class="d-flex flex-column align-items-center justify-content-center h-100 text-center" style="opacity:0.5; display:none;">
+        <div id="chatMessages" class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3"
+            style="position:relative; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-opacity: 0.05;">
+            <div id="chatEmptyState"
+                class="d-flex flex-column align-items-center justify-content-center h-100 text-center"
+                style="opacity:0.5; display:none;">
                 <div class="h1">💬</div>
                 <div class="small text-white">Henüz mesaj yok...</div>
             </div>
@@ -960,30 +1020,44 @@ Koku yok"></textarea>
         </div>
 
         <!-- INPUT ALANI (PREMIUM) -->
-        <div class="chat-input-area p-3 d-flex flex-column gap-2" style="background:#0b141a; border-top: 1px solid rgba(255,255,255,0.1);">
-            <div id="chatMediaPreview" class="d-none p-2 rounded-3 mb-2 position-relative" style="background: rgba(255,255,255,0.05);">
+        <div class="chat-input-area p-3 d-flex flex-column gap-2"
+            style="background:#0b141a; border-top: 1px solid rgba(255,255,255,0.1);">
+            <div id="chatMediaPreview" class="d-none p-2 rounded-3 mb-2 position-relative"
+                style="background: rgba(255,255,255,0.05);">
                 <img id="mediaPreviewImg" src="" style="max-height:100px; border-radius:8px; display:none;">
-                <video id="mediaPreviewVid" src="" style="max-height:100px; border-radius:8px; display:none;" muted></video>
-                <button onclick="ChatManager.clearMedia()" class="btn btn-sm btn-danger rounded-circle position-absolute" style="top:-5px; right:-5px; width:24px; height:24px; padding:0;">✕</button>
+                <video id="mediaPreviewVid" src="" style="max-height:100px; border-radius:8px; display:none;"
+                    muted></video>
+                <button onclick="ChatManager.clearMedia()"
+                    class="btn btn-sm btn-danger rounded-circle position-absolute"
+                    style="top:-5px; right:-5px; width:24px; height:24px; padding:0;">✕</button>
             </div>
-            
+
             <div class="d-flex gap-2 align-items-center">
                 <div class="d-flex gap-1">
-                    <button onclick="document.getElementById('chatMediaInput').click()" class="btn btn-glass-emerald p-0 d-flex align-items-center justify-content-center rounded-circle" style="width:40px; height:40px;">
+                    <button onclick="document.getElementById('chatMediaInput').click()"
+                        class="btn btn-glass-emerald p-0 d-flex align-items-center justify-content-center rounded-circle"
+                        style="width:40px; height:40px;">
                         <i data-lucide="paperclip" style="width:18px;"></i>
                     </button>
-                    <button id="criticalToggleBtn" onclick="ChatManager.toggleCritical()" class="btn btn-glass-danger p-0 d-flex align-items-center justify-content-center rounded-circle" style="width:40px; height:40px; border: 1px solid transparent;">
+                    <button id="criticalToggleBtn" onclick="ChatManager.toggleCritical()"
+                        class="btn btn-glass-danger p-0 d-flex align-items-center justify-content-center rounded-circle"
+                        style="width:40px; height:40px; border: 1px solid transparent;">
                         <i data-lucide="pin" style="width:18px;"></i>
                     </button>
                 </div>
-                
-                <input type="text" id="chatInput" placeholder="Mesaj yazın..." class="form-control" style="background:#2a3942 !important; border:none !important; color:#fff !important; border-radius:24px !important; padding:10px 20px !important; flex-grow:1;" onkeydown="if(event.key==='Enter') ChatManager.send()">
-                
-                <button onclick="ChatManager.send()" class="btn btn-emerald rounded-circle d-flex align-items-center justify-content-center p-0" style="width:42px; height:42px; background:#00a884; border:none; box-shadow: 0 4px 15px rgba(0,168,132,0.3);">
+
+                <input type="text" id="chatInput" placeholder="Mesaj yazın..." class="form-control"
+                    style="background:#2a3942 !important; border:none !important; color:#fff !important; border-radius:24px !important; padding:10px 20px !important; flex-grow:1;"
+                    onkeydown="if(event.key==='Enter') ChatManager.send()">
+
+                <button onclick="ChatManager.send()"
+                    class="btn btn-emerald rounded-circle d-flex align-items-center justify-content-center p-0"
+                    style="width:42px; height:42px; background:#00a884; border:none; box-shadow: 0 4px 15px rgba(0,168,132,0.3);">
                     <i data-lucide="send" style="width:20px; color:white; margin-left:2px;"></i>
                 </button>
             </div>
-            <input type="file" id="chatMediaInput" accept="image/*,video/*" class="d-none" onchange="ChatManager.handleMediaSelect(this)">
+            <input type="file" id="chatMediaInput" accept="image/*,video/*" class="d-none"
+                onchange="ChatManager.handleMediaSelect(this)">
         </div>
     </div>
 
@@ -1004,7 +1078,8 @@ Koku yok"></textarea>
 
     <!-- FLOATING BOTTOM NAV -->
     <nav class="mobile-nav d-md-none">
-        <div onclick="_routeUser()" class="nav-item active"><i data-lucide="layout-dashboard"></i><span>Panel</span></div>
+        <div onclick="_routeUser()" class="nav-item active"><i data-lucide="layout-dashboard"></i><span>Panel</span>
+        </div>
         <div onclick="ChatManager.toggle()" class="nav-item"><i data-lucide="message-square"></i><span>Saha</span></div>
         <div onclick="InventoryManager.ac()" class="nav-item"><i data-lucide="package"></i><span>Depo</span></div>
     </nav>
@@ -1026,16 +1101,21 @@ Koku yok"></textarea>
                     </div>
                     <div class="mb-3">
                         <label class="x-small text-emerald fw-bold mb-2">ARIZA DETAYI</label>
-                        <textarea id="arizaDetayText" class="form-control bg-dark-glass text-white border-0 rounded-4 py-3" rows="3" placeholder="Lamba patladı, musluk akıtıyor vb."></textarea>
+                        <textarea id="arizaDetayText"
+                            class="form-control bg-dark-glass text-white border-0 rounded-4 py-3" rows="3"
+                            placeholder="Lamba patladı, musluk akıtıyor vb."></textarea>
                     </div>
-                    <button onclick="ArizaManager.kaydet()" class="btn btn-danger w-100 py-3 rounded-pill fw-bold shadow-danger mt-2">BİLDİRİMİ GÖNDER</button>
+                    <button onclick="ArizaManager.kaydet()"
+                        class="btn btn-danger w-100 py-3 rounded-pill fw-bold shadow-danger mt-2">BİLDİRİMİ
+                        GÖNDER</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- PDF TEMPLATE (HIDDEN) -->
-    <div id="pdfExportTemplate" style="position: absolute; left: -9999px; top: 0; width: 800px; background: white; font-family: 'Inter', sans-serif; color: #333;">
+    <div id="pdfExportTemplate"
+        style="position: absolute; left: -9999px; top: 0; width: 800px; background: white; font-family: 'Inter', sans-serif; color: #333;">
         <!-- Bu alan JS ile dinamik doldurulacak -->
     </div>
 
