@@ -2330,6 +2330,28 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 100);
     }
 
+    // GİZLİ SUNUM TETİKLEYİCİSİ (Logo Triple-Click)
+    let logoClickCount = 0;
+    let logoClickTimer = null;
+    const loginLogo = document.querySelector('.login-logo-wrap');
+    if (loginLogo) {
+        loginLogo.style.cursor = 'pointer'; // Sadece sen biliyorsun ama tıklanabilir olsun
+        loginLogo.addEventListener('click', () => {
+            logoClickCount++;
+            clearTimeout(logoClickTimer);
+            
+            if (logoClickCount === 3) {
+                console.log("💎 [System] Secret Presentation Mode Activated!");
+                logoClickCount = 0;
+                PresentationManager.start();
+            }
+
+            logoClickTimer = setTimeout(() => {
+                logoClickCount = 0;
+            }, 500); // 500ms içinde 3 kez tıklanmalı
+        });
+    }
+
     // Kurum kodu alanı değişince kullanıcı listesini yükle
     const instInput = document.getElementById('instCode');
     if (instInput) {
@@ -2855,53 +2877,80 @@ const MigrationHelper = {
     }
 };
 
-// --- CINEMATIC PRESENTATION MANAGER ---
+
+// --- CINEMATIC PRESENTATION MANAGER v2.0 (Elite) ---
 const PresentationManager = {
     currentIndex: -1,
     isPlaying: false,
     synth: window.speechSynthesis,
     utterance: null,
+    bgMusic: null,
     
     slides: [
         {
-            title: "TopClean v5.1 Elite'e Hoş Geldiniz",
-            text: "Değerli jüri üyeleri, bugün sizlere kurumsal temizlik yönetiminde bir devrim niteliği taşıyan TopClean Elite platformunu sunuyorum. Bu sadece bir yazılım değil, bir yönetim vizyonudur.",
+            title: "TopClean Elite: Vizyoner Başlangıç",
+            text: "Değerli jüri üyeleri, bugün karşınıza sadece bir uygulama değil; kurum yönetim kültürünü dijitalleştiren, israfı önleyen ve disiplini estetikle birleştiren TopClean Elite v5.1 platformuyla çıkıyoruz. Vizyonumuz, sınırlı kaynakları teknolojiyle korumaktır.",
             image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_elite_presentation_mockup_1778961917991.png",
-            action: () => showPanel('loginPanel')
+            action: () => { showPanel('loginPanel'); this.pulseElement('.brand-name'); }
         },
         {
-            title: "Aero-Emerald Tasarım Dili",
-            text: "Uygulanabilirlik ve Tasarım puanlarımızı en üst düzeye çıkarmak için geliştirdiğimiz Aero-Emerald arayüzü, cam morfizm efektleri ve akışkan animasyonlar ile donatıldı. Kullanıcı dostu bu tasarım, sahadaki personelin işini kolaylaştırıyor.",
-            image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_elite_presentation_mockup_1778961917991.png",
-            action: () => {
-                showPanel('loginPanel');
-                initSqueegeeWipe();
-            }
-        },
-        {
-            title: "Beytülmal Hassasiyeti Modülü",
-            text: "Puanlama tablosundaki en kritik maddemiz: Beytülmal Hassasiyeti. Sistemimiz; enerji, su ve malzeme tasarrufunu gerçek verilerle analiz eder. Gereksiz tüketimi önleyerek kurumsal emaneti teknolojiyle koruyoruz.",
+            title: "Problem ve İhtiyaç Analizi",
+            text: "Günümüzde yurt ve kurumsal binalarda en büyük gizli gider; kontrol edilemeyen temizlik süreçleri ve geç fark edilen teknik arızalardır. TopClean, bu kaosu 'Gerçek Zamanlı Veri' ile çözerek kurumlara tam şeffaflık sağlar.",
             image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_efficiency_concept_1778961989083.png",
-            action: () => {
-                currentUser = { rol: 'idareci', name: 'Yurt Mesulü' };
-                showPanel('idarecPanel');
+            action: () => { showPanel('loginPanel'); }
+        },
+        {
+            title: "Aero-Emerald: Psikolojik Tasarım Etkisi",
+            text: "Tasarım puanımızdaki iddiamızın kaynağı olan Aero-Emerald dili, personelin motivasyonunu artırmak için tasarlandı. Cam morfizm ve derinlik efektleri, uygulamayı sıradan bir iş aracından, profesyonel bir kontrol paneline dönüştürür.",
+            image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_elite_presentation_mockup_1778961917991.png",
+            action: () => { initSqueegeeWipe(); this.pulseElement('.login-card-premium'); }
+        },
+        {
+            title: "Beytülmal Hassasiyeti: İsrafa Dur De!",
+            text: "Puanlama tablonuzdaki 'Beytülmal' maddesi bizim ana rotamızdır. Sistemimiz; enerji, su ve malzeme tüketimini arıza çözüm hızına göre anlık analiz eder. Hızlı onarılan her musluk, sisteme 'Tasarruf' olarak kaydedilir.",
+            image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_efficiency_concept_1778961989083.png",
+            action: () => { 
+                currentUser = { rol: 'idareci', name: 'Yurt Mesulü' }; 
+                showPanel('idarecPanel'); 
                 IdarecManager.switchSubTab('beytulmal');
+                setTimeout(() => this.pulseElement('#subTabBeytulmal'), 1000);
             }
         },
         {
-            title: "Gerçek Zamanlı Bina Röntgeni",
-            text: "Uygulanabilirlik kriterimizi destekleyen Kokpit modülü ile tüm binayı canlı izliyoruz. Hangi oda temiz, hangi arıza bekliyor; her şey anlık olarak yönetimin avucunun içinde.",
+            title: "Teknik Mimari: Firebase ve Real-time Gücü",
+            text: "Teknik altyapımızda Google Firebase kullanarak 'Sıfır Gecikme' (Zero Latency) sağladık. Sahadaki görevli bir odayı temizlediğinde, idarecinin ekranındaki 'Bina Röntgeni' milisaniyeler içinde güncellenir.",
             image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_elite_presentation_mockup_1778961917991.png",
-            action: () => {
-                showPanel('idarecPanel');
-                IdarecManager.renderCockpit();
-            }
+            action: () => { IdarecManager.renderCockpit(); this.pulseElement('#idarecCockpit'); }
         },
         {
-            title: "100 Tam Puanlık Performans",
-            text: "Özgünlük, teknik altyapı, kurumsal PDF raporlama ve mobil PWA desteği ile TopClean Elite, yarışmanın tüm kriterlerini eksiksiz karşılıyor. Dinlediğiniz için teşekkür ederiz.",
+            title: "Müfettiş Modülü: Kusursuz Denetim",
+            text: "Uygulanabilirlik kriterimiz kapsamında geliştirdiğimiz Müfettiş Paneli, objektif denetim sağlar. Fotoğraflı arıza bildirimi ve QR kod uyumlu yapı ile denetim süreçleri dijital bir disipline kavuşur.",
             image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_efficiency_concept_1778961989083.png",
-            action: () => showPanel('loginPanel')
+            action: () => { currentUser.rol = 'mufettis'; showPanel('mufettisPanel'); }
+        },
+        {
+            title: "Personel Dostu: Basitlik ve Verimlilik",
+            text: "Karmaşık formlar yerine, 'Tek Tıkla Onay' sistemini getirdik. Personelimiz işine odaklanırken, teknoloji onun yerine rapor hazırlar. Bu, insan hatasını minimize eden en güçlü özelliğimizdir.",
+            image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_elite_presentation_mockup_1778961917991.png",
+            action: () => { currentUser.rol = 'gorevli'; currentUser.kat = '1. Kat'; showPanel('gorevliPanel'); }
+        },
+        {
+            title: "Kurumsal Çıktı: Premium PDF Raporlama",
+            text: "Tüm bu dijital veriler, tek tuşla kurumsal, antetli ve mühürlü PDF raporlarına dönüşür. Yönetim kurulları ve denetim mercileri için 'Arşivlenebilir Şeffaflık' sunuyoruz.",
+            image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_efficiency_concept_1778961989083.png",
+            action: () => { showPanel('idarecPanel'); IdarecManager.switchSubTab('premium'); }
+        },
+        {
+            title: "PWA ve Mobil Özgürlük",
+            text: "Uygulamamız sadece bir web sitesi değil, bir PWA platformudur. Herhangi bir App Store'a ihtiyaç duymadan telefonlara saniyeler içinde kurulur ve her an çevrimiçi kalır.",
+            image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_elite_presentation_mockup_1778961917991.png",
+            action: () => { showPanel('loginPanel'); }
+        },
+        {
+            title: "Skor Özeti: Neden 100 Tam Puan?",
+            text: "Özgünlükte 100, Tasarımda 100, Teknik Altyapıda 100 ve Beytülmal Hassasiyetinde 100. TopClean Elite, yarışma şartnamesindeki her maddeyi 'Elite' standartlarda karşılamaktadır. Dinlediğiniz için teşekkür ederiz.",
+            image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_efficiency_concept_1778961989083.png",
+            action: () => { showPanel('loginPanel'); this.pulseElement('.login-logo-wrap'); }
         }
     ],
 
@@ -2910,8 +2959,22 @@ const PresentationManager = {
         this.isPlaying = true;
         this.currentIndex = -1;
         document.getElementById('presentationOverlay').classList.remove('d-none');
-        document.getElementById('presTrigger').classList.add('d-none');
+        
+        // Müzik Başlat (Temsili - Sessiz başlar, istersen URL ekleyebilirsin)
+        this.bgMusic = new Audio('https://assets.mixkit.co/music/preview/mixkit-tech-house-vibes-130.mp3');
+        this.bgMusic.volume = 0.15;
+        this.bgMusic.loop = true;
+        this.bgMusic.play().catch(e => console.log("Müzik oto-oynatma engellendi"));
+
         this.next();
+    },
+
+    pulseElement: function(selector) {
+        const el = document.querySelector(selector);
+        if (el) {
+            el.classList.add('pulse-highlight');
+            setTimeout(() => el.classList.remove('pulse-highlight'), 4000);
+        }
     },
 
     next: function() {
@@ -2922,33 +2985,44 @@ const PresentationManager = {
         }
 
         const slide = this.slides[this.currentIndex];
-        document.getElementById('presSlideTitle').innerText = slide.title;
-        document.getElementById('presSlideText').innerText = slide.text;
-        document.getElementById('presSlideImage').src = slide.image;
+        const titleEl = document.getElementById('presSlideTitle');
+        const textEl = document.getElementById('presSlideText');
+        const imgEl = document.getElementById('presSlideImage');
+
+        titleEl.classList.remove('animate__fadeInDown');
+        textEl.classList.remove('animate__fadeInUp');
+        
+        void titleEl.offsetWidth; // Force reflow
+        
+        titleEl.innerText = slide.title;
+        textEl.innerText = slide.text;
+        imgEl.src = slide.image;
+        
         document.getElementById('presProgressBar').style.width = ((this.currentIndex + 1) / this.slides.length * 100) + "%";
 
         if (slide.action) slide.action();
 
-        // Yapay Zeka Seslendirme
         if (this.synth) {
             this.synth.cancel();
             this.utterance = new SpeechSynthesisUtterance(slide.text);
             this.utterance.lang = 'tr-TR';
             this.utterance.rate = 0.95;
+            this.utterance.pitch = 1.1;
             this.utterance.onend = () => {
-                setTimeout(() => { if(this.isPlaying) this.next(); }, 2000);
+                setTimeout(() => { if(this.isPlaying) this.next(); }, 1500);
             };
             this.synth.speak(this.utterance);
-        } else {
-            setTimeout(() => this.next(), 8000);
         }
     },
 
     stop: function() {
         this.isPlaying = false;
         if (this.synth) this.synth.cancel();
+        if (this.bgMusic) {
+            this.bgMusic.pause();
+            this.bgMusic = null;
+        }
         document.getElementById('presentationOverlay').classList.add('d-none');
-        document.getElementById('presTrigger').classList.remove('d-none');
         showPanel('loginPanel');
     }
 };
