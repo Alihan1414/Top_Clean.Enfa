@@ -1084,40 +1084,28 @@ body.light-mode .modal-title { color: #0f172a !important; }
 }
 
 .glass-title {
-    font-family: 'Homemade Apple', cursive;
-    font-size: 6.5rem;
-    color: rgba(255, 255, 255, 0.9); /* Pure white as requested */
+    font-family: 'Sacramento', cursive;
+    font-size: 8rem;
+    color: rgba(255, 255, 255, 0.9);
     margin: 0;
-    line-height: 0.7;
-    text-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    line-height: 0.8;
+    text-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    font-weight: 400;
 }
 
 .glass-subtitle {
-    font-family: 'Homemade Apple', cursive;
-    font-size: 3.5rem;
+    font-family: 'Dancing Script', cursive;
+    font-size: 2.8rem;
     color: rgba(255, 255, 255, 0.8);
     margin: 0;
-    margin-left: 2rem;
+    margin-left: 1.5rem;
     display: flex;
     align-items: center;
     gap: 15px;
-    text-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    text-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    font-weight: 500;
 }
 
-.heart-svg {
-    width: 60px;
-    height: 60px;
-    stroke: rgba(255, 255, 255, 0.85);
-    stroke-width: 1.5;
-    fill: none;
-}
-
-.heart {
-    color: #10b981;
-    display: inline-block;
-    margin-left: 10px;
-    filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.5));
-}
 
 /* PREMIUM CARD */
 .login-card-premium {
