@@ -758,7 +758,6 @@ const ReportManager = {
 
         const totalRooms = Object.values(katlar).reduce((s, k) => s + Object.keys(k).length, 0);
         const reportRate = (reports.length / (totalRooms || 1)) * 100;
-        const solvedArizalar = arizalar.filter(a => a.durum === 'cozuldu').length;
 
         document.getElementById('pdfStatEnergy').innerText = `%${Math.min(98, 72 + (solvedArizalar * 1.5))}`;
         document.getElementById('pdfStatMat').innerText = `%${Math.min(95, 65 + (reportRate / 2))}`;
@@ -1698,11 +1697,12 @@ function handleBack() {
 
 async function populateUserSelect(instId) {
     const sel = document.getElementById('userSelect');
-    if (!sel) return;
+    if (!sel || !instId) return;
     
     instId = instId.toUpperCase();
+    console.log(`🔍 [Auth] Kurum kodu sorgulanıyor: ${instId}`);
 
-    // --- MASTER LOGIN OVERRIDE ---
+    // Master login için özel durum
     if (instId === "MASTER") {
         sel.innerHTML = '<option value="" disabled selected>Kullanıcı Seçin</option>' +
                       '<option value="SUPERADMIN">SÜPER ADMİN</option>';
@@ -1710,17 +1710,27 @@ async function populateUserSelect(instId) {
         return true;
     }
 
+    // Dropdown'u geçici olarak "Yükleniyor" yapalım
+    sel.innerHTML = '<option value="" disabled selected>Yükleniyor...</option>';
+
     const success = await loadInstitutionContext(instId);
-    if (success) {
+    if (success && currentConfig) {
         usersData = currentConfig.users || [];
         katlar = currentConfig.floors || {};
         
+        if (usersData.length === 0) {
+            sel.innerHTML = '<option value="" disabled selected>Bu kurumda kullanıcı yok</option>';
+            return false;
+        }
+
         let options = '<option value="" disabled selected>Kullanıcı Seçin</option>';
         options += usersData.map(u => `<option value="${u.name}">${u.name}</option>`).join('');
         sel.innerHTML = options;
+        console.log(`✅ [Auth] ${usersData.length} kullanıcı yüklendi.`);
         return true;
     } else {
         sel.innerHTML = '<option value="" disabled selected>Kurum Bulunamadı</option>';
+        console.warn(`❌ [Auth] Kurum bulunamadı: ${instId}`);
         return false;
     }
 }
@@ -2320,12 +2330,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 100);
     }
 
-    // Kurum kodu alanı blur olunca kullanıcı listesini yükle
+    // Kurum kodu alanı değişince kullanıcı listesini yükle
     const instInput = document.getElementById('instCode');
     if (instInput) {
-        instInput.addEventListener('blur', () => {
+        // Hem blur hem de 4 karakterden uzunsa değişimde tetikle
+        const triggerLoad = () => {
             const val = instInput.value.trim();
-            if (val) populateUserSelect(val);
+            if (val.length >= 3) populateUserSelect(val);
+        };
+        instInput.addEventListener('blur', triggerLoad);
+        instInput.addEventListener('input', () => {
+            const val = instInput.value.trim();
+            if (val.length >= 6) triggerLoad(); // Kodlar genelde 6+ hane ise hızlı tetikle
         });
     }
 
