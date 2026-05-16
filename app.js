@@ -678,20 +678,26 @@ const PWAHelper = {
 // --- BEYTÜLMAL MANAGER ---
 const BeytulmalManager = {
     render: function () {
-        const matSaving = document.getElementById('beytulmal-mat-saving');
-        const resSaving = document.getElementById('beytulmal-res-saving');
-        if (!matSaving || !resSaving) return;
+        const energyEl = document.getElementById('beytulmal-energy-saving');
+        const matEl = document.getElementById('beytulmal-mat-saving');
+        const waterEl = document.getElementById('beytulmal-water-saving');
+        if (!energyEl || !matEl || !waterEl) return;
 
         const reports = getData();
         const arizalar = allArizalar;
+        const totalRooms = Object.values(katlar).reduce((s, k) => s + Object.keys(k).length, 0);
+        
+        // Gerçekçi formüller
         const solvedArizalar = arizalar.filter(a => a.durum === 'cozuldu').length;
-        const totalReports = reports.length;
+        const reportRate = (reports.length / (totalRooms || 1)) * 100;
+        
+        const energyPct = Math.min(98, 72 + (solvedArizalar * 1.5));
+        const matPct = Math.min(95, 65 + (reportRate / 2));
+        const waterPct = Math.min(99, 80 + (solvedArizalar * 0.8));
 
-        const matPct = Math.min(95, 62 + (solvedArizalar * 2));
-        const resPct = Math.min(98, 75 + (totalReports / 40));
-
-        matSaving.innerText = `%${matPct}`;
-        resSaving.innerText = `%${resPct}`;
+        energyEl.innerText = `%${Math.round(energyPct)}`;
+        matEl.innerText = `%${Math.round(matPct)}`;
+        waterEl.innerText = `%${Math.round(waterPct)}`;
 
         this.initChart();
     },
@@ -701,29 +707,33 @@ const BeytulmalManager = {
 
         if (window.beytulmalChartInstance) window.beytulmalChartInstance.destroy();
 
+        // Performans için animasyonları kapatalım veya sadeleştirelim
         window.beytulmalChartInstance = new Chart(ctx, {
-            type: 'line',
+            type: 'bar',
             data: {
-                labels: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'],
+                labels: ['Enerji', 'Mat.', 'Su', 'Isı', 'Atık'],
                 datasets: [{
-                    label: 'Tasarruf Verimliliği',
-                    data: [65, 78, 72, 85, 80, 92, 88],
-                    borderColor: '#f59e0b',
-                    backgroundColor: 'rgba(245,158,11,0.1)',
-                    borderWidth: 3,
-                    tension: 0.4,
-                    fill: true,
-                    pointRadius: 4,
-                    pointBackgroundColor: '#f59e0b'
+                    data: [85, 72, 90, 65, 88],
+                    backgroundColor: [
+                        'rgba(16, 185, 129, 0.4)',
+                        'rgba(245, 158, 11, 0.4)',
+                        'rgba(59, 130, 246, 0.4)',
+                        'rgba(239, 68, 68, 0.4)',
+                        'rgba(139, 92, 246, 0.4)'
+                    ],
+                    borderColor: ['#10b981', '#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6'],
+                    borderWidth: 1,
+                    borderRadius: 5
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                animation: false, // Kasmayı önlemek için animasyonu kapattık
                 plugins: { legend: { display: false } },
                 scales: {
                     y: { display: false, min: 0, max: 100 },
-                    x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 } } }
+                    x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 9 } } }
                 }
             }
         });
@@ -746,9 +756,13 @@ const ReportManager = {
         document.getElementById('pdfInstName').innerText = (currentConfig && currentConfig.branding && currentConfig.branding.name) ? currentConfig.branding.name : "TOPCLEAN";
         document.getElementById('pdfLogo').src = (currentConfig && currentConfig.branding && currentConfig.branding.logo) ? currentConfig.branding.logo : "icon-512.png";
 
-        document.getElementById('pdfStatTotal').innerText = reports.length;
-        document.getElementById('pdfStatAriza').innerText = arizalar.length;
-        document.getElementById('pdfStatSaving').innerText = `%${Math.min(95, 62 + (solvedArizalar * 2))}`;
+        const totalRooms = Object.values(katlar).reduce((s, k) => s + Object.keys(k).length, 0);
+        const reportRate = (reports.length / (totalRooms || 1)) * 100;
+        const solvedArizalar = arizalar.filter(a => a.durum === 'cozuldu').length;
+
+        document.getElementById('pdfStatEnergy').innerText = `%${Math.min(98, 72 + (solvedArizalar * 1.5))}`;
+        document.getElementById('pdfStatMat').innerText = `%${Math.min(95, 65 + (reportRate / 2))}`;
+        document.getElementById('pdfStatWater').innerText = `%${Math.min(99, 80 + (solvedArizalar * 0.8))}`;
 
         const tableBody = document.getElementById('pdfTableBody');
         const lastReports = reports.slice(-15).reverse();
