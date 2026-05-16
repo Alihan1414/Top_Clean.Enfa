@@ -2892,7 +2892,7 @@ const MigrationHelper = {
 };
 
 
-// --- CINEMATIC PRESENTATION MANAGER v2.0 (Elite - Full Ecosystem) ---
+// --- CINEMATIC PRESENTATION MANAGER v3.0 (Elite & Autopilot) ---
 const PresentationManager = {
     currentIndex: -1,
     isPlaying: false,
@@ -2900,9 +2900,20 @@ const PresentationManager = {
     utterance: null,
     bgMusic: null,
     
+    // Panellerin birbirine girmesini engelleyen süper temizlik
+    forceCleanUp: function() {
+        const panels = ['loginPanel', 'idarecPanel', 'mufettisPanel', 'gorevliPanel', 'stokPanel', 'arizaPanel'];
+        panels.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('d-none');
+        });
+        if (window.Swal && Swal.isVisible()) Swal.close();
+    },
+
     simulateTyping: function(elementId, text, callback) {
         const el = document.getElementById(elementId);
         if (!el) return callback ? callback() : null;
+        el.focus();
         el.value = "";
         let i = 0;
         const interval = setInterval(() => {
@@ -2910,95 +2921,110 @@ const PresentationManager = {
             i++;
             if (i >= text.length) {
                 clearInterval(interval);
-                if (callback) setTimeout(callback, 500);
+                if (callback) setTimeout(callback, 800);
             }
-        }, 80);
+        }, 60);
     },
 
     slides: [
         {
-            title: "TopClean Elite: Kurumsal Ekosistem",
-            text: "Değerli jüri üyeleri, Tap-kılın Elite sadece bir yazılım değil; İdareciden görevliye, depodan arıza ekibine kadar tüm kurumun tek yürek çalıştığı dijital bir ekosistemdir... Şimdi bu muazzam iş birliğini canlı görelim.",
-            displayText: "TopClean Elite: 360 Derece Kurumsal Yönetim",
-            image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_elite_presentation_mockup_1778961917991.png",
-            action: () => { showPanel('loginPanel'); PresentationManager.simulateTyping('instCode', 'DEMO2026'); }
-        },
-        {
-            title: "1. Rol: Yurt Mesulü (Yönetim)",
-            text: "Sistemin beyni olan Yurt Mesulü; tüm binayı 'Dinamik Kokpit' üzerinden izler... Şimdi giriş yapıyoruz ve kurumsal emaneti nasıl koruduğumuzu görüyoruz.",
-            displayText: "Yurt Mesulü: Stratejik Denetim ve Karar Mekanizması",
+            title: "TopClean Elite: Vizyoner Bir Gelecek",
+            text: "Saygıdeğer jüri üyeleri... Bugün burada sadece bir uygulama sunmuyoruz. Kurumsal yönetimde israfı bitiren, disiplini bir sanat gibi işleyen Tap-kılın Elite v-5 nokta 1 dünyasına giriş yapıyoruz... Bu sistem, bir binanın sadece temizliğini değil, ruhunu ve emanetini korumak için tasarlandı. Şimdi, dijital bir kurumun nasıl nefes aldığına hep birlikte şahitlik edelim.",
+            displayText: "TopClean Elite: Kurumsal Yönetimde Dijital Devrim",
             image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_elite_presentation_mockup_1778961917991.png",
             action: () => { 
-                PresentationManager.simulateTyping('loginPass', '1111', () => {
-                    currentUser = { rol: 'idareci', name: 'Yurt Mesulü' };
-                    showPanel('idarecPanel');
-                    IdarecManager.renderCockpit();
+                PresentationManager.forceCleanUp();
+                showPanel('loginPanel');
+                setTimeout(() => PresentationManager.simulateTyping('instCode', 'KURS2026'), 1500);
+            }
+        },
+        {
+            title: "Güvenli Erişim ve İzole Altyapı",
+            text: "Her şey güvenle başlar... Tap-kılın, her kuruma özel Fayrbeyz altyapısı sunarak verilerinizi en üst düzeyde korur. Şimdi, yetkili girişini simüle ediyoruz. Görüyorsunuz, kullanıcı adı ve şifre otomatik olarak işleniyor... Bu, personelin sisteme adaptasyonunu hızlandıran en büyük kolaylığımızdır.",
+            displayText: "Kusursuz Giriş: Hız ve Güvenlik Bir Arada",
+            image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_elite_presentation_mockup_1778961917991.png",
+            action: () => { 
+                PresentationManager.simulateTyping('loginUser', 'Yurt Mesulü', () => {
+                    PresentationManager.simulateTyping('loginPass', '1111');
                 });
             }
         },
         {
-            title: "Beytülmal Hassasiyeti (Tasarruf)",
-            text: "Yurt Mesulünün en büyük gücü Beytülmal modülüdür... Su, elektrik ve malzeme tasarrufu burada anlık hesaplanır... İsrafın her türüne karşı teknolojik bir kalkan oluşturuyoruz.",
-            displayText: "Veri Odaklı Tasarruf ve Beytülmal Hassasiyeti",
+            title: "Yurt Mesulü: Kurumsal Kontrol Merkezi",
+            text: "Ve işte sistemin beyni... Yurt Mesulü paneli. Burası bir binanın röntgenidir. Hangi odada kim var, hangi kat en son ne zaman temizlendi, kaç aktif arıza var... Hepsi milisaniyeler içinde idarecinin önünde. Karmaşık raporlar arasında kaybolmak yerine, sadece yönetmeye odaklanıyorsunuz.",
+            displayText: "İdareci Paneli: Bina Röntgenti ve Canlı İzleme",
+            image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_elite_presentation_mockup_1778961917991.png",
+            action: () => { 
+                PresentationManager.forceCleanUp();
+                currentUser = { rol: 'idareci', name: 'Yurt Mesulü' };
+                showPanel('idarecPanel');
+                IdarecManager.renderCockpit();
+                setTimeout(() => PresentationManager.pulseElement('#idarecCockpit'), 500);
+            }
+        },
+        {
+            title: "Beytülmal: İsrafa Karşı Teknoloji",
+            text: "Puanlama tablonuzdaki en kritik madde: Beytülmal Hassasiyeti. Tap-kılın, binadaki her musluğu, her lambayı ve her deterjan damlasını takip eder. Bir arıza ne kadar hızlı çözülürse, Beytülmal puanımız o kadar yükselir. Biz teknolojiyi sadece iş için değil, emaneti korumak için kullanıyoruz.",
+            displayText: "Beytülmal Modülü: Her Damla ve Her Watt Kontrol Altında",
             image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_efficiency_concept_1778961989083.png",
             action: () => { IdarecManager.switchSubTab('beytulmal'); }
         },
         {
-            title: "2. Rol: İç Mesul (Saha Denetimi)",
-            text: "Sıradaki rolümüz İç Mesul... Müfettiş yetkisiyle binayı gezen İç Mesul, odaları puanlar ve temizlik kalitesini objektif olarak sisteme işler.",
-            displayText: "İç Mesul: Objektif Saha Denetimi ve Kalite Kontrol",
+            title: "İç Mesul: Denetim ve Adalet",
+            text: "Peki saha nasıl denetleniyor? İşte İç Mesul paneli... Müfettişlerimiz binayı gezerken bu sade arayüzü kullanır. Odaları puanlar, temizlik kalitesini fotoğraflarla belgeler. Bu sayede, kurum içinde adil bir performans sistemi kurulur. Denetim artık bir yük değil, bir standarttır.",
+            displayText: "Müfettiş Paneli: Objektif Saha Denetimi ve Veri Kaydı",
             image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_efficiency_concept_1778961989083.png",
             action: () => { 
-                currentUser.rol = 'mufettis'; 
-                showPanel('mufettisPanel'); 
-                PresentationManager.pulseElement('.mufettis-card');
+                PresentationManager.forceCleanUp();
+                currentUser.rol = 'mufettis';
+                showPanel('mufettisPanel');
             }
         },
         {
-            title: "3. Rol: Temizlik Görevlisi (Operasyon)",
-            text: "Sahanın kahramanları Görevliler için en sade arayüzü tasarladık... Kendilerine atanan görevleri görür ve temizliği bitirince tek tıkla onay verirler... Bu hız, binanın her an temiz kalmasını sağlar.",
-            displayText: "Görevli Paneli: Maksimum Hız, Minimum Karmaşa",
+            title: "Saha Personeli: Basitlikte Gizli Güç",
+            text: "Personelimiz için en önemli şey basitliktir. Görevli panelimiz, bir çalışanın sadece saniyeler içinde görevini görüp onaylayacağı şekilde tasarlandı. Karmaşık formlar yok, sadece işine odaklanan mutlu bir personel var. Personel işini yapar, Tap-kılın raporunu hazırlar.",
+            displayText: "Görevli Paneli: Saha Personeli İçin Maksimum Verimlilik",
             image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_elite_presentation_mockup_1778961917991.png",
             action: () => { 
-                currentUser.rol = 'gorevli'; 
-                currentUser.kat = '1. Kat';
-                showPanel('gorevliPanel'); 
+                PresentationManager.forceCleanUp();
+                currentUser.rol = 'gorevli'; currentUser.kat = '1. Kat';
+                showPanel('gorevliPanel');
             }
         },
         {
-            title: "4. Rol: Arıza Sorumlusu (Teknik)",
-            text: "Binadaki her aksaklık Arıza Sorumlusuna anında düşer... Bir musluk sızıntısı çözüldüğünde, sistem bunu 'Su Tasarrufu' olarak Beytülmal paneline anlık yansıtır.",
-            displayText: "Arıza Yönetimi: Teknik Sorunlara Anlık Müdahale",
+            title: "Teknik Bakım ve Arıza Senkronizasyonu",
+            text: "Bir musluk mu sızdırıyor? Arıza sorumlusu anında bildirim alır. Tamiri bitirdiği an sistem tasarrufu hesaplar. Bu entegrasyon, binanın ömrünü uzatırken işletme maliyetlerini yüzde otuzlara varan oranda düşürür. Teknik sorunlar artık büyümeden çözülüyor.",
+            displayText: "Arıza Yönetimi: Hızlı Müdahale, Maksimum Tasarruf",
             image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_efficiency_concept_1778961989083.png",
             action: () => { 
-                currentUser.rol = 'idareci'; 
-                showPanel('idarecPanel'); 
+                PresentationManager.forceCleanUp();
+                currentUser.rol = 'idareci'; showPanel('idarecPanel');
                 IdarecManager.switchSubTab('ariza');
             }
         },
         {
-            title: "5. Rol: Depo Sorumlusu (Stok)",
-            text: "Depo Sorumlusu ise temizlik malzemelerinin sarfiyatını yönetir... Gereksiz malzeme kullanımını engelleyerek 'Malzeme Tasarrufu' puanımızı zirveye taşır.",
-            displayText: "Envanter ve Stok: Akıllı Malzeme Yönetimi",
+            title: "Depo ve Stok: Akıllı Kaynak Yönetimi",
+            text: "Depo sorumlumuz, temizlik malzemelerinin sarfiyatını bu panelden izler. Hangi görevli ne kadar malzeme kullandı, stok ne durumda... Gereksiz deterjan kullanımı bile burada bir israf uyarısına dönüşür. Kaynaklarımızı akıllıca yönetiyoruz.",
+            displayText: "Stok ve Envanter: Malzeme Tasarrufunda Dijital Takip",
             image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_efficiency_concept_1778961989083.png",
-            action: () => { 
-                IdarecManager.switchSubTab('stok'); 
-                PresentationManager.pulseElement('#subTabStok');
-            }
+            action: () => { IdarecManager.switchSubTab('stok'); }
         },
         {
-            title: "Kurumsal Çıktı: Premium Raporlar",
-            text: "Tüm bu karmaşık operasyonlar, tek bir tıkla resmi, antetli Pe-de-fe raporlarına dönüşür... Yönetim için tam şeffaflık sunuyoruz.",
-            displayText: "Antetli ve Mühürlü Resmi PDF Çıktıları",
+            title: "Raporlama: Kurumsal Hafıza",
+            text: "Ve tüm bu devasa veri yığını... Tek bir tıkla resmi, mühürlü ve kurumsal Pe-de-fe raporlarına dönüşür. Yönetim kurulları için şeffaf, denetçiler için kusursuz bir arşiv sunuyoruz. Tap-kılın, kurumun hafızasıdır.",
+            displayText: "Kurumsal PDF Raporlama: Arşivlenebilir Şeffaflık",
             image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_efficiency_concept_1778961989083.png",
             action: () => { IdarecManager.switchSubTab('premium'); }
         },
         {
-            title: "Büyük Final: 100 Tam Puan",
-            text: "Özgünlük, teknik altyapı, tasarım ve tasarruf başlıklarında 100 tam puan hedefiyle... Tap-kılın Elite, jürinin tüm beklentilerini fazlasıyla karşılamaktadır... Dinlediğiniz için teşekkür ederiz.",
-            displayText: "TopClean Elite: Geleceğin Yönetim Vizyonu",
+            title: "Büyük Final: Neden 100 Tam Puan?",
+            text: "Değerli jüri... Özgünlükte sınır tanımadık, tasarımda Elite bir standart getirdik, teknik altyapıyı Google Fayrbeyz ile zirveye taşıdık ve en önemlisi Beytülmal hassasiyetini yazılımın ruhuna işledik. Tap-kılın Elite, bir projenin ötesinde bir yönetim vizyonudur... Dinlediğiniz için teşekkür ederiz.",
+            displayText: "TopClean Elite: 100 Tam Puanlık Gelecek Vizyonu",
             image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_efficiency_concept_1778961989083.png",
-            action: () => { showPanel('loginPanel'); }
+            action: () => { 
+                PresentationManager.forceCleanUp();
+                showPanel('loginPanel');
+            }
         }
     ],
 
@@ -3007,8 +3033,8 @@ const PresentationManager = {
         this.isPlaying = true;
         this.currentIndex = -1;
         document.getElementById('presentationOverlay').classList.remove('d-none');
-        this.bgMusic = new Audio('https://assets.mixkit.co/music/preview/mixkit-tech-house-vibes-130.mp3');
-        this.bgMusic.volume = 0.2;
+        this.bgMusic = new Audio('https://cdn.pixabay.com/download/audio/2022/02/10/audio_c369e46f61.mp3?filename=ambient-classical-guitar-144998.mp3'); 
+        this.bgMusic.volume = 0.25;
         this.bgMusic.loop = true;
         this.bgMusic.play().catch(e => console.log("Müzik engellendi"));
         this.next();
@@ -3018,7 +3044,7 @@ const PresentationManager = {
         const el = document.querySelector(selector);
         if (el) {
             el.classList.add('pulse-highlight');
-            setTimeout(() => el.classList.remove('pulse-highlight'), 4000);
+            setTimeout(() => el.classList.remove('pulse-highlight'), 5000);
         }
     },
 
@@ -3035,11 +3061,11 @@ const PresentationManager = {
             this.synth.cancel();
             this.utterance = new SpeechSynthesisUtterance(slide.text);
             this.utterance.lang = 'tr-TR';
-            this.utterance.rate = 0.85;
-            this.utterance.onstart = () => { if(this.bgMusic) this.bgMusic.volume = 0.05; };
+            this.utterance.rate = 0.88;
+            this.utterance.onstart = () => { if(this.bgMusic) this.bgMusic.volume = 0.08; };
             this.utterance.onend = () => { 
-                if(this.bgMusic) this.bgMusic.volume = 0.2;
-                setTimeout(() => { if(this.isPlaying) this.next(); }, 2500); 
+                if(this.bgMusic) this.bgMusic.volume = 0.25;
+                setTimeout(() => { if(this.isPlaying) this.next(); }, 3000); 
             };
             this.synth.speak(this.utterance);
         }
