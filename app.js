@@ -2330,33 +2330,41 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 100);
     }
 
-    // GİZLİ SUNUM TETİKLEYİCİSİ (Logo Triple-Click)
+    // GİZLİ SUNUM TETİKLEYİCİSİ (Logo Triple-Click & Keyboard shortcut)
     let logoClickCount = 0;
     let logoClickTimer = null;
+    let keyPressCount = 0;
+    let keyPressTimer = null;
+
     const loginLogo = document.querySelector('.login-logo-wrap');
     if (loginLogo) {
         loginLogo.style.cursor = 'pointer';
         loginLogo.style.transition = 'transform 0.1s ease';
-        
         loginLogo.addEventListener('click', () => {
             logoClickCount++;
             clearTimeout(logoClickTimer);
-            
-            // Görsel geri bildirim (Tıklandığında hafif küçül)
             loginLogo.style.transform = 'scale(0.95)';
             setTimeout(() => { loginLogo.style.transform = 'scale(1)'; }, 100);
-
             if (logoClickCount === 3) {
-                console.log("💎 [System] Secret Presentation Mode Activated!");
                 logoClickCount = 0;
                 PresentationManager.start();
             }
-
-            logoClickTimer = setTimeout(() => {
-                logoClickCount = 0;
-            }, 1000); // 1 saniye içinde 3 kez tıklanmalı (Daha rahat)
+            logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 1000);
         });
     }
+
+    // Klavye Kısayolu: "P" tuşuna 3 kez basınca başla
+    window.addEventListener('keydown', (e) => {
+        if (e.key.toLowerCase() === 'p') {
+            keyPressCount++;
+            clearTimeout(keyPressTimer);
+            if (keyPressCount === 3) {
+                keyPressCount = 0;
+                PresentationManager.start();
+            }
+            keyPressTimer = setTimeout(() => { keyPressCount = 0; }, 1000);
+        }
+    });
 
     // Kurum kodu alanı değişince kullanıcı listesini yükle
     const instInput = document.getElementById('instCode');
@@ -2897,7 +2905,7 @@ const PresentationManager = {
             title: "TopClean Elite: Vizyoner Başlangıç",
             text: "Değerli jüri üyeleri, bugün karşınıza sadece bir uygulama değil; kurum yönetim kültürünü dijitalleştiren, israfı önleyen ve disiplini estetikle birleştiren TopClean Elite v5.1 platformuyla çıkıyoruz. Vizyonumuz, sınırlı kaynakları teknolojiyle korumaktır.",
             image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_elite_presentation_mockup_1778961917991.png",
-            action: () => { showPanel('loginPanel'); this.pulseElement('.brand-name'); }
+            action: () => { showPanel('loginPanel'); PresentationManager.pulseElement('.brand-name'); }
         },
         {
             title: "Problem ve İhtiyaç Analizi",
@@ -2909,7 +2917,7 @@ const PresentationManager = {
             title: "Aero-Emerald: Psikolojik Tasarım Etkisi",
             text: "Tasarım puanımızdaki iddiamızın kaynağı olan Aero-Emerald dili, personelin motivasyonunu artırmak için tasarlandı. Cam morfizm ve derinlik efektleri, uygulamayı sıradan bir iş aracından, profesyonel bir kontrol paneline dönüştürür.",
             image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_elite_presentation_mockup_1778961917991.png",
-            action: () => { initSqueegeeWipe(); this.pulseElement('.login-card-premium'); }
+            action: () => { initSqueegeeWipe(); PresentationManager.pulseElement('.login-card-premium'); }
         },
         {
             title: "Beytülmal Hassasiyeti: İsrafa Dur De!",
@@ -2919,14 +2927,14 @@ const PresentationManager = {
                 currentUser = { rol: 'idareci', name: 'Yurt Mesulü' }; 
                 showPanel('idarecPanel'); 
                 IdarecManager.switchSubTab('beytulmal');
-                setTimeout(() => this.pulseElement('#subTabBeytulmal'), 1000);
+                setTimeout(() => PresentationManager.pulseElement('#subTabBeytulmal'), 1000);
             }
         },
         {
             title: "Teknik Mimari: Firebase ve Real-time Gücü",
             text: "Teknik altyapımızda Google Firebase kullanarak 'Sıfır Gecikme' (Zero Latency) sağladık. Sahadaki görevli bir odayı temizlediğinde, idarecinin ekranındaki 'Bina Röntgeni' milisaniyeler içinde güncellenir.",
             image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_elite_presentation_mockup_1778961917991.png",
-            action: () => { IdarecManager.renderCockpit(); this.pulseElement('#idarecCockpit'); }
+            action: () => { IdarecManager.renderCockpit(); PresentationManager.pulseElement('#idarecCockpit'); }
         },
         {
             title: "Müfettiş Modülü: Kusursuz Denetim",
@@ -2956,7 +2964,7 @@ const PresentationManager = {
             title: "Skor Özeti: Neden 100 Tam Puan?",
             text: "Özgünlükte 100, Tasarımda 100, Teknik Altyapıda 100 ve Beytülmal Hassasiyetinde 100. TopClean Elite, yarışma şartnamesindeki her maddeyi 'Elite' standartlarda karşılamaktadır. Dinlediğiniz için teşekkür ederiz.",
             image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_efficiency_concept_1778961989083.png",
-            action: () => { showPanel('loginPanel'); this.pulseElement('.login-logo-wrap'); }
+            action: () => { showPanel('loginPanel'); PresentationManager.pulseElement('.login-logo-wrap'); }
         }
     ],
 
