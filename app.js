@@ -2335,11 +2335,17 @@ document.addEventListener("DOMContentLoaded", () => {
     let logoClickTimer = null;
     const loginLogo = document.querySelector('.login-logo-wrap');
     if (loginLogo) {
-        loginLogo.style.cursor = 'pointer'; // Sadece sen biliyorsun ama tıklanabilir olsun
+        loginLogo.style.cursor = 'pointer';
+        loginLogo.style.transition = 'transform 0.1s ease';
+        
         loginLogo.addEventListener('click', () => {
             logoClickCount++;
             clearTimeout(logoClickTimer);
             
+            // Görsel geri bildirim (Tıklandığında hafif küçül)
+            loginLogo.style.transform = 'scale(0.95)';
+            setTimeout(() => { loginLogo.style.transform = 'scale(1)'; }, 100);
+
             if (logoClickCount === 3) {
                 console.log("💎 [System] Secret Presentation Mode Activated!");
                 logoClickCount = 0;
@@ -2348,7 +2354,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             logoClickTimer = setTimeout(() => {
                 logoClickCount = 0;
-            }, 500); // 500ms içinde 3 kez tıklanmalı
+            }, 1000); // 1 saniye içinde 3 kez tıklanmalı (Daha rahat)
         });
     }
 
