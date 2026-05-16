@@ -84,6 +84,24 @@
 </head>
 
 <body>
+    <!-- CINEMATIC PRESENTATION OVERLAY -->
+    <div id="presentationOverlay" class="presentation-overlay d-none">
+        <div class="pres-content">
+            <div class="pres-header">
+                <img src="icon-512.png" alt="Logo" class="pres-logo">
+                <div class="pres-title">TopClean Elite v5.1</div>
+            </div>
+            <div id="presText" class="pres-text">Sunum hazırlanıyor...</div>
+            <div class="pres-footer">
+                <div class="pres-progress-bar"><div id="presProgress" class="pres-progress-inner"></div></div>
+                <div class="d-flex justify-content-between mt-2 x-small text-muted">
+                    <span id="presStepName">Giriş</span>
+                    <button onclick="PresentationManager.stop()" class="btn btn-sm btn-link text-danger p-0">Sunumu Kapat [ESC]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="aurora-container"></div>
 
     <!-- ENVANTER EKLEME MODALI -->
@@ -1239,6 +1257,43 @@ Koku yok"></textarea>
                 <p style="font-size: 12px; color: #64748b; margin: 2px 0 0;">İmza / Mühür</p>
             </div>
         </div>
+    </div>
+
+    <!-- CINEMATIC PRESENTATION OVERLAY -->
+    <div id="presentationOverlay" class="view-panel d-none"
+        style="z-index: 9999; background: rgba(5,5,10,0.98); backdrop-filter: blur(20px); position: fixed; inset: 0;">
+        <div class="container h-100 d-flex flex-column justify-content-center align-items-center text-center">
+            <div id="presImageContainer" class="mb-5">
+                <img id="presSlideImage" src=""
+                    style="max-width: 80%; border-radius: 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); border: 1px solid rgba(16,185,129,0.2);">
+            </div>
+            <div class="pres-content-box p-4 rounded-5 bg-dark-glass border border-emerald border-opacity-25"
+                style="max-width: 800px;">
+                <h2 id="presSlideTitle" class="text-emerald fw-bold mb-3">TopClean Elite</h2>
+                <p id="presSlideText" class="text-white lead mb-4" style="font-size: 1.4rem; line-height: 1.6;"></p>
+                <div class="d-flex justify-content-center gap-3">
+                    <div id="presProgress" class="progress flex-grow-1"
+                        style="height: 6px; background: rgba(255,255,255,0.05); margin-top: 15px; width: 300px;">
+                        <div id="presProgressBar" class="progress-bar bg-emerald" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <button onclick="PresentationManager.stop()" class="btn btn-glass-danger rounded-pill px-4">Sunumu
+                        Durdur</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FLOATING PRESENTATION TRIGGER -->
+    <div id="presTrigger" class="position-fixed bottom-0 start-0 m-4" style="z-index: 1000;">
+        <button onclick="PresentationManager.start()"
+            class="btn btn-premium-gold rounded-pill p-3 shadow-lg">
+            <div class="d-flex align-items-center gap-2">
+                <i data-lucide="play-circle"></i>
+                <span class="fw-bold small">SUNUMU BAŞLAT</span>
+            </div>
+        </button>
     </div>
 
     <script src="app.js?v=elite_final_v8"></script>
