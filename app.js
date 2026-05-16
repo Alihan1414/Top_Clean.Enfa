@@ -2855,7 +2855,106 @@ const MigrationHelper = {
     }
 };
 
+// --- CINEMATIC PRESENTATION MANAGER ---
+const PresentationManager = {
+    currentIndex: -1,
+    isPlaying: false,
+    synth: window.speechSynthesis,
+    utterance: null,
+    
+    slides: [
+        {
+            title: "TopClean v5.1 Elite'e Hoş Geldiniz",
+            text: "Değerli jüri üyeleri, bugün sizlere kurumsal temizlik yönetiminde bir devrim niteliği taşıyan TopClean Elite platformunu sunuyorum. Bu sadece bir yazılım değil, bir yönetim vizyonudur.",
+            image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_elite_presentation_mockup_1778961917991.png",
+            action: () => showPanel('loginPanel')
+        },
+        {
+            title: "Aero-Emerald Tasarım Dili",
+            text: "Uygulanabilirlik ve Tasarım puanlarımızı en üst düzeye çıkarmak için geliştirdiğimiz Aero-Emerald arayüzü, cam morfizm efektleri ve akışkan animasyonlar ile donatıldı. Kullanıcı dostu bu tasarım, sahadaki personelin işini kolaylaştırıyor.",
+            image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_elite_presentation_mockup_1778961917991.png",
+            action: () => {
+                showPanel('loginPanel');
+                initSqueegeeWipe();
+            }
+        },
+        {
+            title: "Beytülmal Hassasiyeti Modülü",
+            text: "Puanlama tablosundaki en kritik maddemiz: Beytülmal Hassasiyeti. Sistemimiz; enerji, su ve malzeme tasarrufunu gerçek verilerle analiz eder. Gereksiz tüketimi önleyerek kurumsal emaneti teknolojiyle koruyoruz.",
+            image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_efficiency_concept_1778961989083.png",
+            action: () => {
+                currentUser = { rol: 'idareci', name: 'Yurt Mesulü' };
+                showPanel('idarecPanel');
+                IdarecManager.switchSubTab('beytulmal');
+            }
+        },
+        {
+            title: "Gerçek Zamanlı Bina Röntgeni",
+            text: "Uygulanabilirlik kriterimizi destekleyen Kokpit modülü ile tüm binayı canlı izliyoruz. Hangi oda temiz, hangi arıza bekliyor; her şey anlık olarak yönetimin avucunun içinde.",
+            image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_elite_presentation_mockup_1778961917991.png",
+            action: () => {
+                showPanel('idarecPanel');
+                IdarecManager.renderCockpit();
+            }
+        },
+        {
+            title: "100 Tam Puanlık Performans",
+            text: "Özgünlük, teknik altyapı, kurumsal PDF raporlama ve mobil PWA desteği ile TopClean Elite, yarışmanın tüm kriterlerini eksiksiz karşılıyor. Dinlediğiniz için teşekkür ederiz.",
+            image: "C:\\Users\\ACER\\.gemini\\antigravity\\brain\\6949b79c-45f1-45e4-b72e-ad95835c9f44\\topclean_efficiency_concept_1778961989083.png",
+            action: () => showPanel('loginPanel')
+        }
+    ],
+
+    start: function() {
+        if (this.isPlaying) return;
+        this.isPlaying = true;
+        this.currentIndex = -1;
+        document.getElementById('presentationOverlay').classList.remove('d-none');
+        document.getElementById('presTrigger').classList.add('d-none');
+        this.next();
+    },
+
+    next: function() {
+        this.currentIndex++;
+        if (this.currentIndex >= this.slides.length) {
+            this.stop();
+            return;
+        }
+
+        const slide = this.slides[this.currentIndex];
+        document.getElementById('presSlideTitle').innerText = slide.title;
+        document.getElementById('presSlideText').innerText = slide.text;
+        document.getElementById('presSlideImage').src = slide.image;
+        document.getElementById('presProgressBar').style.width = ((this.currentIndex + 1) / this.slides.length * 100) + "%";
+
+        if (slide.action) slide.action();
+
+        // Yapay Zeka Seslendirme
+        if (this.synth) {
+            this.synth.cancel();
+            this.utterance = new SpeechSynthesisUtterance(slide.text);
+            this.utterance.lang = 'tr-TR';
+            this.utterance.rate = 0.95;
+            this.utterance.onend = () => {
+                setTimeout(() => { if(this.isPlaying) this.next(); }, 2000);
+            };
+            this.synth.speak(this.utterance);
+        } else {
+            setTimeout(() => this.next(), 8000);
+        }
+    },
+
+    stop: function() {
+        this.isPlaying = false;
+        if (this.synth) this.synth.cancel();
+        document.getElementById('presentationOverlay').classList.add('d-none');
+        document.getElementById('presTrigger').classList.remove('d-none');
+        showPanel('loginPanel');
+    }
+};
+
 window.PWAHelper = PWAHelper;
 window.BeytulmalManager = BeytulmalManager;
 window.ReportManager = ReportManager;
 window.MigrationHelper = MigrationHelper;
+window.PresentationManager = PresentationManager;
