@@ -465,46 +465,49 @@
                 </div>
             </div>
             <div id="subTabBeytulmal" class="idarec-sub-tab d-none mt-4">
-                <div class="glass-card p-4 mb-3 border-warning border-opacity-25"
-                    style="background: linear-gradient(135deg, rgba(245,158,11,0.05) 0%, rgba(5,5,10,0.95) 100%);">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="glass-card p-3 mb-3 border-warning border-opacity-25"
+                    style="background: linear-gradient(160deg, rgba(245,158,11,0.08) 0%, rgba(5,5,10,0.98) 100%);">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
                         <div class="d-flex align-items-center gap-2">
-                            <span style="font-size:1.5rem;">✨</span>
+                            <div class="p-2 rounded-circle bg-warning bg-opacity-10 text-warning">
+                                <i data-lucide="leaf" style="width:16px;"></i>
+                            </div>
                             <div>
-                                <h6 class="h6 text-warning fw-bold mb-0">Beytülmal Hassasiyeti</h6>
-                                <p class="x-small text-muted mb-0">Kaynak Kullanımı ve Tasarruf Analizi</p>
+                                <h6 class="small text-warning fw-bold mb-0">Beytülmal Hassasiyeti</h6>
+                                <p style="font-size:0.6rem;" class="text-muted mb-0">Optimize Kaynak Yönetimi</p>
                             </div>
                         </div>
-                        <button onclick="showPanel('idarecPanel')" class="btn btn-sm btn-glass-emerald rounded-pill">←
-                            Geri</button>
+                        <button onclick="showPanel('idarecPanel')" class="btn btn-sm btn-glass-emerald px-3 rounded-pill" style="font-size:0.65rem;">← Geri</button>
                     </div>
 
-                    <div class="row g-3 mb-4">
-                        <div class="col-6">
-                            <div class="p-3 rounded-4 bg-dark-glass text-center">
-                                <div class="x-small text-muted mb-1">MALZEME TASARRUFU</div>
-                                <div class="h5 fw-bold text-success" id="beytulmal-mat-saving">%0</div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-4">
+                            <div class="p-2 rounded-3 bg-dark-glass text-center border border-white border-opacity-5">
+                                <div style="font-size:0.55rem;" class="text-muted mb-1">ENERJİ</div>
+                                <div class="small fw-bold text-success" id="beytulmal-energy-saving">%0</div>
                             </div>
                         </div>
-                        <div class="col-6">
-                            <div class="p-3 rounded-4 bg-dark-glass text-center">
-                                <div class="x-small text-muted mb-1">KAYNAK KORUMA</div>
-                                <div class="h5 fw-bold text-warning" id="beytulmal-res-saving">%0</div>
+                        <div class="col-4">
+                            <div class="p-2 rounded-3 bg-dark-glass text-center border border-white border-opacity-5">
+                                <div style="font-size:0.55rem;" class="text-muted mb-1">MALZEME</div>
+                                <div class="small fw-bold text-warning" id="beytulmal-mat-saving">%0</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-2 rounded-3 bg-dark-glass text-center border border-white border-opacity-5">
+                                <div style="font-size:0.55rem;" class="text-muted mb-1">SU</div>
+                                <div class="small fw-bold text-info" id="beytulmal-water-saving">%0</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="p-3 rounded-4 bg-dark-glass mb-3">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="x-small text-white fw-bold">VERİMLİLİK TRENDİ</span>
-                            <span class="badge bg-success rounded-pill x-small">Yükselen Trend</span>
-                        </div>
-                        <canvas id="beytulmalChart" height="180"></canvas>
+                    <div class="p-3 rounded-4 bg-dark-glass mb-2 border border-white border-opacity-5" style="height:140px;">
+                        <canvas id="beytulmalChart"></canvas>
                     </div>
 
-                    <div class="x-small text-muted italic">
-                        * Bu veriler bina içerisindeki hızlı arıza bildirimi, optimize edilmiş malzeme kullanımı ve
-                        periyodik bakım verimliliğine dayanmaktadır.
+                    <div class="d-flex justify-content-between align-items-center x-small text-muted px-1">
+                        <span>Verimlilik Endeksi</span>
+                        <span class="text-success fw-bold">+12.4% ↑</span>
                     </div>
                 </div>
             </div>
@@ -1194,16 +1197,16 @@ Koku yok"></textarea>
         <!-- Summary Cards -->
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px;">
             <div style="background: #f8fafc; padding: 20px; border-radius: 16px; border-left: 5px solid #10b981;">
-                <p style="font-size: 12px; font-weight: 700; color: #64748b; margin: 0 0 10px; text-transform: uppercase;">Toplam Kontrol</p>
-                <p id="pdfStatTotal" style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 0;">0</p>
-            </div>
-            <div style="background: #f8fafc; padding: 20px; border-radius: 16px; border-left: 5px solid #ef4444;">
-                <p style="font-size: 12px; font-weight: 700; color: #64748b; margin: 0 0 10px; text-transform: uppercase;">Arıza Bildirimi</p>
-                <p id="pdfStatAriza" style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 0;">0</p>
+                <p style="font-size: 10px; font-weight: 700; color: #64748b; margin: 0 0 5px; text-transform: uppercase;">Enerji Tasarrufu</p>
+                <p id="pdfStatEnergy" style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0;">%0</p>
             </div>
             <div style="background: #f8fafc; padding: 20px; border-radius: 16px; border-left: 5px solid #f59e0b;">
-                <p style="font-size: 12px; font-weight: 700; color: #64748b; margin: 0 0 10px; text-transform: uppercase;">Beytülmal Tasarruf</p>
-                <p id="pdfStatSaving" style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 0;">%0</p>
+                <p style="font-size: 10px; font-weight: 700; color: #64748b; margin: 0 0 5px; text-transform: uppercase;">Malzeme Opt.</p>
+                <p id="pdfStatMat" style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0;">%0</p>
+            </div>
+            <div style="background: #f8fafc; padding: 20px; border-radius: 16px; border-left: 5px solid #3b82f6;">
+                <p style="font-size: 10px; font-weight: 700; color: #64748b; margin: 0 0 5px; text-transform: uppercase;">Su Verimliliği</p>
+                <p id="pdfStatWater" style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0;">%0</p>
             </div>
         </div>
 
