@@ -1983,18 +1983,26 @@ function spawnPremiumBubble() {
     }, duration * 1000);
 }
 
-function initLuxuryAura() {
-    const container = document.getElementById('luxuryAura');
+function initLoginBubbles() {
+    const container = document.getElementById('loginBubbles');
     if (!container) return;
-    
+
     container.innerHTML = '';
-    for (let i = 0; i < 3; i++) {
-        const aura = document.createElement('div');
-        aura.className = 'luxury-aura';
-        aura.style.animationDelay = (i * 5) + 's';
-        aura.style.background = `radial-gradient(circle at ${20 + i * 30}% ${30 + i * 20}%, rgba(16, 185, 129, ${0.05 + i * 0.05}), transparent 70%)`;
-        container.appendChild(aura);
+    if (bubbleInterval) clearInterval(bubbleInterval);
+
+    // Initial burst
+    const burstCount = window.innerWidth < 768 ? 3 : 10;
+    for (let i = 0; i < burstCount; i++) {
+        setTimeout(() => spawnPremiumBubble(), Math.random() * 5000);
     }
+
+    bubbleInterval = setInterval(() => {
+        if (document.getElementById('loginBubbles')) {
+            spawnPremiumBubble();
+        } else {
+            clearInterval(bubbleInterval);
+        }
+    }, window.innerWidth < 768 ? 4000 : 2000);
 }
 
 function initFoamLayer() {
@@ -2110,32 +2118,39 @@ function createWipeStreak(x, y, angle) {
 
 function performWipe(squeegee, mist) {
     let progress = 0;
-    const duration = 3000; // Slower for luxury feel
+    const duration = 2500;
     const start = performance.now();
     
+    // Clear existing drops near the wipe path
     const drops = document.querySelectorAll('.glass-drop');
 
     function animate(time) {
         let elapsed = time - start;
         progress = Math.min(elapsed / duration, 1);
 
-        const x = progress * 130; 
+        const x = progress * 120; 
         const y = progress * 100;
-        const angle = -30 + (progress * 10);
+        const angle = -35 + (progress * 15);
 
         squeegee.style.transform = `translate(${x}vw, ${y}vh) rotate(${angle}deg)`;
 
-        // Dynamic Reveal with a smoother gradient
-        const linearMask = `linear-gradient(${135}deg, transparent ${progress * 110}%, black ${progress * 110 + 15}%)`;
+        // Cinematic Streak
+        if (Math.random() > 0.7) {
+            createWipeStreak(x, y, angle);
+        }
+
+        // Dynamic Reveal
+        const linearMask = `linear-gradient(${135}deg, transparent ${progress * 120}%, black ${progress * 120 + 5}%)`;
         mist.style.webkitMaskImage = linearMask;
 
         // Clear droplets in the path
         drops.forEach(drop => {
             const dropX = parseFloat(drop.style.left);
             const dropY = parseFloat(drop.style.top);
-            if (dropX + dropY < progress * 180) {
+            // Rough diagonal check
+            if (dropX + dropY < progress * 200) {
                 drop.style.opacity = '0';
-                drop.style.transition = 'opacity 0.8s';
+                drop.style.transition = 'opacity 0.5s';
             }
         });
 
@@ -2144,7 +2159,7 @@ function performWipe(squeegee, mist) {
         } else {
             setTimeout(() => {
                 squeegee.style.opacity = '0';
-                squeegee.style.transition = 'opacity 1.5s';
+                squeegee.style.transition = 'opacity 1s';
             }, 500);
         }
     }
@@ -2189,7 +2204,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Yeni oturum — login ekranını göster
         showPanel('loginPanel');
         setTimeout(() => {
-            initLuxuryAura();
+            initLoginBubbles();
             initFoamLayer();
             initCondensation();
             initSqueegeeWipe();
