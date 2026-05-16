@@ -39,6 +39,10 @@ async function loadInstitutionContext(instId) {
                 if (config.branding.logo) {
                     document.querySelectorAll('img[alt*="Logo"], .logo-circle img').forEach(el => el.src = config.branding.logo);
                 }
+                if (config.branding.chatBg) {
+                    const chatMsgs = document.getElementById('chatMessages');
+                    if (chatMsgs) chatMsgs.style.backgroundImage = `url('${config.branding.chatBg}')`;
+                }
             }
             
             // Populate Global Katlar & Users
@@ -1979,26 +1983,18 @@ function spawnPremiumBubble() {
     }, duration * 1000);
 }
 
-function initLoginBubbles() {
-    const container = document.getElementById('loginBubbles');
+function initLuxuryAura() {
+    const container = document.getElementById('luxuryAura');
     if (!container) return;
-
+    
     container.innerHTML = '';
-    if (bubbleInterval) clearInterval(bubbleInterval);
-
-    // Initial burst
-    const burstCount = window.innerWidth < 768 ? 3 : 10;
-    for (let i = 0; i < burstCount; i++) {
-        setTimeout(() => spawnPremiumBubble(), Math.random() * 5000);
+    for (let i = 0; i < 3; i++) {
+        const aura = document.createElement('div');
+        aura.className = 'luxury-aura';
+        aura.style.animationDelay = (i * 5) + 's';
+        aura.style.background = `radial-gradient(circle at ${20 + i * 30}% ${30 + i * 20}%, rgba(16, 185, 129, ${0.05 + i * 0.05}), transparent 70%)`;
+        container.appendChild(aura);
     }
-
-    bubbleInterval = setInterval(() => {
-        if (document.getElementById('loginBubbles')) {
-            spawnPremiumBubble();
-        } else {
-            clearInterval(bubbleInterval);
-        }
-    }, window.innerWidth < 768 ? 4000 : 2000);
 }
 
 function initFoamLayer() {
@@ -2114,39 +2110,32 @@ function createWipeStreak(x, y, angle) {
 
 function performWipe(squeegee, mist) {
     let progress = 0;
-    const duration = 2500;
+    const duration = 3000; // Slower for luxury feel
     const start = performance.now();
     
-    // Clear existing drops near the wipe path
     const drops = document.querySelectorAll('.glass-drop');
 
     function animate(time) {
         let elapsed = time - start;
         progress = Math.min(elapsed / duration, 1);
 
-        const x = progress * 120; 
+        const x = progress * 130; 
         const y = progress * 100;
-        const angle = -35 + (progress * 15);
+        const angle = -30 + (progress * 10);
 
         squeegee.style.transform = `translate(${x}vw, ${y}vh) rotate(${angle}deg)`;
 
-        // Cinematic Streak
-        if (Math.random() > 0.7) {
-            createWipeStreak(x, y, angle);
-        }
-
-        // Dynamic Reveal
-        const linearMask = `linear-gradient(${135}deg, transparent ${progress * 120}%, black ${progress * 120 + 5}%)`;
+        // Dynamic Reveal with a smoother gradient
+        const linearMask = `linear-gradient(${135}deg, transparent ${progress * 110}%, black ${progress * 110 + 15}%)`;
         mist.style.webkitMaskImage = linearMask;
 
         // Clear droplets in the path
         drops.forEach(drop => {
             const dropX = parseFloat(drop.style.left);
             const dropY = parseFloat(drop.style.top);
-            // Rough diagonal check
-            if (dropX + dropY < progress * 200) {
+            if (dropX + dropY < progress * 180) {
                 drop.style.opacity = '0';
-                drop.style.transition = 'opacity 0.5s';
+                drop.style.transition = 'opacity 0.8s';
             }
         });
 
@@ -2155,7 +2144,7 @@ function performWipe(squeegee, mist) {
         } else {
             setTimeout(() => {
                 squeegee.style.opacity = '0';
-                squeegee.style.transition = 'opacity 1s';
+                squeegee.style.transition = 'opacity 1.5s';
             }, 500);
         }
     }
@@ -2200,7 +2189,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Yeni oturum — login ekranını göster
         showPanel('loginPanel');
         setTimeout(() => {
-            initLoginBubbles();
+            initLuxuryAura();
             initFoamLayer();
             initCondensation();
             initSqueegeeWipe();
@@ -2264,7 +2253,7 @@ const KurumYonetimManager = {
     // Yerel düzenleme için geçici versiyon (kaydet butonu Firebase'e yazar)
     localFloors: {},
     localUsers: [],
-    localBranding: { name: '', logo: '' },
+    localBranding: { name: '', logo: '', chatBg: '' },
 
     acPanel: function() {
         showPanel('kurumYonetimPanel');
@@ -2277,17 +2266,22 @@ const KurumYonetimManager = {
         this.localUsers = JSON.parse(JSON.stringify(usersData || []));
         this.localBranding = {
             name: currentConfig?.branding?.name || '',
-            logo: currentConfig?.branding?.logo || ''
+            logo: currentConfig?.branding?.logo || '',
+            chatBg: currentConfig?.branding?.chatBg || ''
         };
 
         // Marka alanlarını doldur
         const markaAd = document.getElementById('markaAd');
         const markaLogo = document.getElementById('markaLogo');
+        const markaChatBg = document.getElementById('markaSohbetBg');
         const preview = document.getElementById('markaLogoOnizleme');
+        const previewChat = document.getElementById('markaSohbetBgOnizleme');
         
         if (markaAd) markaAd.value = this.localBranding.name;
         if (markaLogo) markaLogo.value = this.localBranding.logo;
+        if (markaChatBg) markaChatBg.value = this.localBranding.chatBg;
         if (preview && this.localBranding.logo) preview.src = this.localBranding.logo;
+        if (previewChat && this.localBranding.chatBg) previewChat.src = this.localBranding.chatBg;
 
         this.renderKatlar();
         this.renderPersonel();
@@ -2526,6 +2520,18 @@ const KurumYonetimManager = {
             reader.readAsDataURL(input.files[0]);
         }
     },
+    sohbetBgSecildi: function(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const base64 = e.target.result;
+                document.getElementById('markaSohbetBgOnizleme').src = base64;
+                document.getElementById('markaSohbetBg').value = base64;
+                this.localBranding.chatBg = base64;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    },
 
     kaydet: async function(sessiz = false) {
         if (!db || !currentInstitutionId) return Swal.fire('Hata', 'Kurum bağlantısı yok!', 'error');
@@ -2533,8 +2539,10 @@ const KurumYonetimManager = {
         // Marka bilgilerini al
         const markaAd = document.getElementById('markaAd')?.value.trim();
         const markaLogo = document.getElementById('markaLogo')?.value.trim();
+        const markaChatBg = document.getElementById('markaSohbetBg')?.value.trim();
         if (markaAd) this.localBranding.name = markaAd;
         if (markaLogo) this.localBranding.logo = markaLogo;
+        if (markaChatBg) this.localBranding.chatBg = markaChatBg;
 
         const config = {
             branding: this.localBranding,
@@ -2556,6 +2564,10 @@ const KurumYonetimManager = {
             }
             if (this.localBranding.logo) {
                 document.querySelectorAll('.logo-circle img').forEach(el => el.src = this.localBranding.logo);
+            }
+            if (this.localBranding.chatBg) {
+                const chatMsgs = document.getElementById('chatMessages');
+                if (chatMsgs) chatMsgs.style.backgroundImage = `url('${this.localBranding.chatBg}')`;
             }
 
             // UI Tazele
