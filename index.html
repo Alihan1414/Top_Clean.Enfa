@@ -197,7 +197,7 @@
                     <!-- Overlay for depth -->
                     <div class="login-bg-overlay"></div>
 
-                    <div class="bubble-container" id="loginBubbles"></div>
+                    <div class="luxury-aura-container" id="luxuryAura"></div>
                     <div class="glass-drops" id="glassDrops"></div>
                     <div class="foam-layer" id="foamLayer"></div>
                 </div>
@@ -205,14 +205,10 @@
                 <!-- HANDWRITTEN GLASS TEXT -->
                 <div class="glass-text-container">
                     <div class="glass-wipe-area">
-                        <h1 class="glass-title">TopClean</h1>
+                        <h1 class="glass-title">TOPCLEAN</h1>
                         <p class="glass-subtitle">
-                            sizinle
-                            <svg class="heart-svg" viewBox="0 0 24 24">
-                                <path
-                                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                                </path>
-                            </svg>
+                            YÖNETİM PORTALI
+                            <span class="luxury-dot"></span>
                         </p>
                     </div>
                     <div class="squeegee-handle" id="squeegee">
@@ -230,7 +226,7 @@
                                 <img src="icon-512.png" alt="TopClean Logo">
                             </div>
                             <h2 class="brand-name mt-3">TOPCLEAN</h2>
-                            <div class="brand-tagline"><span></span> sizinle <span></span></div>
+                            <div class="brand-tagline"><span></span> MANAGEMENT SYSTEMS <span></span></div>
                         </div>
 
                         <!-- Form -->
@@ -802,7 +798,23 @@
                             <input type="file" id="logoInput" accept="image/*" style="display:none;"
                                 onchange="KurumYonetimManager.logoSecildi(this)">
                             <input type="hidden" id="markaLogo">
-                            <div class="x-small text-muted mt-2">Önerilen: 512x512 PNG</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="x-small text-emerald fw-bold mb-2">SOHBET ARKA PLANI</label>
+                    <div
+                        class="d-flex align-items-center gap-3 p-3 rounded-4 bg-dark-glass border border-secondary border-opacity-10">
+                        <img id="markaSohbetBgOnizleme" src="https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png" alt="Sohbet Arka Plan"
+                            style="width:64px; height:64px; border-radius:12px; object-fit:cover; border:2px solid rgba(16,185,129,0.4);">
+                        <div class="flex-grow-1">
+                            <button onclick="document.getElementById('sohbetBgInput').click()"
+                                class="btn btn-sm btn-glass-emerald w-100 py-2 rounded-pill fw-bold">🖼 GÖRSEL
+                                SEÇ</button>
+                            <input type="file" id="sohbetBgInput" accept="image/*" style="display:none;"
+                                onchange="KurumYonetimManager.sohbetBgSecildi(this)">
+                            <input type="hidden" id="markaSohbetBg">
+                            <div class="x-small text-muted mt-2">Dikey (Mobile) görseller önerilir</div>
                         </div>
                     </div>
                 </div>
@@ -1004,7 +1016,7 @@ Koku yok"></textarea>
 
         <!-- MESAJLAR -->
         <div id="chatMessages" class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3"
-            style="position:relative; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-opacity: 0.05;">
+            style="position:relative; background-size: cover; background-position: center; background-repeat: no-repeat;">
             <div id="chatEmptyState"
                 class="d-flex flex-column align-items-center justify-content-center h-100 text-center"
                 style="opacity:0.5; display:none;">
