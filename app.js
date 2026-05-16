@@ -200,53 +200,8 @@ const NotificationManager = {
     }
 };
 
-// --- REPORT MANAGER ---
-const ReportManager = {
-    generateMonthly: function() {
-        if (typeof jspdf === 'undefined') return Swal.fire("Hata", "PDF kütüphanesi yüklenemedi.", "error");
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        const ayIsmi = new Date().toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' });
-        
-        // BAŞLIK
-        doc.setFontSize(22); doc.setTextColor(16, 185, 129); doc.text("TopClean Faaliyet Raporu", 20, 20);
-        doc.setFontSize(12); doc.setTextColor(100); doc.text(`Dönem: ${ayIsmi}`, 20, 30);
-        doc.line(20, 35, 190, 35);
 
-        // 1. TEMİZLİK İSTATİSTİKLERİ
-        const data = getData();
-        const bugun = todayISO().substring(0, 7); // YYYY-MM
-        const ayVerisi = data.filter(d => d.tarih && d.tarih.startsWith(bugun));
-        
-        doc.setFontSize(16); doc.setTextColor(0); doc.text("1. Temizlik Performansı", 20, 50);
-        doc.setFontSize(11);
-        doc.text(`Toplam Temizlenen Oda: ${ayVerisi.length}`, 25, 60);
-        doc.text(`Onaylanan Rapor: ${ayVerisi.filter(d=>d.durum==='onaylandi').length}`, 25, 65);
-        doc.text(`Reddedilen Rapor: ${ayVerisi.filter(d=>d.durum==='reddedildi').length}`, 25, 70);
 
-        // 2. ARIZA DURUMU
-        doc.setFontSize(16); doc.text("2. Teknik Arızalar", 20, 85);
-        const resolved = allArizalar.filter(a => a.cozuldu).length;
-        doc.text(`Bildirilen Toplam Arıza: ${allArizalar.length}`, 25, 95);
-        doc.text(`Giderilen Arıza: ${resolved}`, 25, 100);
-        doc.text(`Bekleyen Arıza: ${allArizalar.length - resolved}`, 25, 105);
-
-        // 3. MALZEME TÜKETİMİ (TABLO)
-        doc.setFontSize(16); doc.text("3. Malzeme Stok Durumu", 20, 120);
-        const tableData = allInventory.map(i => [i.name, i.stock, i.unit, i.stock <= i.threshold ? 'KRİTİK' : 'YETERLİ']);
-        
-        doc.autoTable({
-            startY: 125,
-            head: [['Malzeme', 'Mevcut Stok', 'Birim', 'Durum']],
-            body: tableData,
-            theme: 'striped',
-            headStyles: { fillColor: [16, 185, 129] }
-        });
-
-        doc.save(`TopClean_Faaliyet_Raporu_${ayIsmi}.pdf`);
-        Swal.fire("Başarılı", "Aylık faaliyet raporu oluşturuldu.", "success");
-    }
-};
 
 // --- VOICE MANAGER ---
 const VoiceManager = {
@@ -698,6 +653,144 @@ const MufettisFocus = {
         }
     }
 };
+// --- PWA HELPER ---
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const installBtn = document.getElementById('pwaInstallBtn');
+    if (installBtn) installBtn.classList.remove('d-none');
+});
+
+const PWAHelper = {
+    install: async function () {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            const btn = document.getElementById('pwaInstallBtn');
+            if (btn) btn.classList.add('d-none');
+        }
+        deferredPrompt = null;
+    }
+};
+
+// --- BEYTÜLMAL MANAGER ---
+const BeytulmalManager = {
+    render: function () {
+        const matSaving = document.getElementById('beytulmal-mat-saving');
+        const resSaving = document.getElementById('beytulmal-res-saving');
+        if (!matSaving || !resSaving) return;
+
+        const reports = getData();
+        const arizalar = allArizalar;
+        const solvedArizalar = arizalar.filter(a => a.durum === 'cozuldu').length;
+        const totalReports = reports.length;
+
+        const matPct = Math.min(95, 62 + (solvedArizalar * 2));
+        const resPct = Math.min(98, 75 + (totalReports / 40));
+
+        matSaving.innerText = `%${matPct}`;
+        resSaving.innerText = `%${resPct}`;
+
+        this.initChart();
+    },
+    initChart: function () {
+        const ctx = document.getElementById('beytulmalChart');
+        if (!ctx) return;
+
+        if (window.beytulmalChartInstance) window.beytulmalChartInstance.destroy();
+
+        window.beytulmalChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'],
+                datasets: [{
+                    label: 'Tasarruf Verimliliği',
+                    data: [65, 78, 72, 85, 80, 92, 88],
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'rgba(245,158,11,0.1)',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#f59e0b'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { display: false, min: 0, max: 100 },
+                    x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 } } }
+                }
+            }
+        });
+    }
+};
+
+// --- PREMIUM REPORT MANAGER ---
+const ReportManager = {
+    generateMonthly: function () {
+        const template = document.getElementById('pdfExportTemplate');
+        if (!template) return;
+
+        const reports = getData();
+        const arizalar = allArizalar;
+        const solvedArizalar = arizalar.filter(a => a.durum === 'cozuldu').length;
+
+        // Verileri doldur
+        document.getElementById('pdfDate').innerText = `TARİH: ${new Date().toLocaleDateString('tr-TR')}`;
+        document.getElementById('pdfReportId').innerText = `ID: #REF-${Math.floor(1000 + Math.random() * 9000)}`;
+        document.getElementById('pdfInstName').innerText = (currentConfig && currentConfig.branding && currentConfig.branding.name) ? currentConfig.branding.name : "TOPCLEAN";
+        document.getElementById('pdfLogo').src = (currentConfig && currentConfig.branding && currentConfig.branding.logo) ? currentConfig.branding.logo : "icon-512.png";
+
+        document.getElementById('pdfStatTotal').innerText = reports.length;
+        document.getElementById('pdfStatAriza').innerText = arizalar.length;
+        document.getElementById('pdfStatSaving').innerText = `%${Math.min(95, 62 + (solvedArizalar * 2))}`;
+
+        const tableBody = document.getElementById('pdfTableBody');
+        const lastReports = reports.slice(-15).reverse();
+        tableBody.innerHTML = lastReports.map(r => `
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 12px 20px; font-size: 11px; font-weight: 600; color: #334155;">${r.kat} / ${r.bolum}</td>
+                <td style="padding: 12px 20px;">
+                    <span style="font-size: 9px; font-weight: 800; color: ${r.durum === 'onaylandi' ? '#10b981' : '#ef4444'}; text-transform: uppercase; background: ${r.durum === 'onaylandi' ? '#f0fdf4' : '#fef2f2'}; padding: 4px 8px; border-radius: 10px;">${r.durum}</span>
+                </td>
+                <td style="padding: 12px 20px; font-size: 11px; color: #64748b;">${r.gorevli}</td>
+            </tr>
+        `).join('') || '<tr><td colspan="3" style="padding:20px; text-align:center; color:#94a3b8;">Veri bulunamadı</td></tr>';
+
+        const opt = {
+            margin: 0,
+            filename: `TopClean_Elite_Rapor_${new Date().toISOString().slice(0, 10)}.pdf`,
+            image: { type: 'jpeg', quality: 1.0 },
+            html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        Swal.fire({
+            title: 'Elite Rapor Hazırlanıyor',
+            html: 'Beytülmal verileri işleniyor ve PDF tasarımı oluşturuluyor...<br><br><div class="spinner-border text-success"></div>',
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+
+        setTimeout(() => {
+            html2pdf().from(template).set(opt).save().then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Rapor Hazır!',
+                    text: 'Kurumsal faaliyet raporu başarıyla indirildi.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            });
+        }, 1500);
+    }
+};
+
 
 // --- IDARECI MANAGER (6 ÖZELLİK) ---
 const IdarecManager = {
@@ -717,6 +810,7 @@ const IdarecManager = {
         if (tabId === 'liderlik') this.renderLiderlik();
         if (tabId === 'ariza') this.renderAriza();
         if (tabId === 'personel') this.renderUsers();
+        if (tabId === 'beytulmal') BeytulmalManager.render();
     },
 
     // --- COCKPIT (BINA RÖNTGENİ) ---
@@ -2712,39 +2806,26 @@ const SuperAdminManager = {
     }
 };
 
+
 // --- MIGRATION & SETUP HELPER ---
-// Bu nesne sadece ilk kurulumda veya yeni kurum eklerken konsoldan kullanılabilir.
 const MigrationHelper = {
     setupNewInstitution: async function(instId, name, logo) {
         if (!db) return console.error("DB bağlantısı yok.");
-        
         const config = {
-            branding: {
-                name: name || "TopClean",
-                logo: logo || "icon-512.png"
-            },
+            branding: { name: name || "TopClean", logo: logo || "icon-512.png" },
             floors: {},
-            users: [
-                { name: "Yurt Mesulü", pass: "1111", kat: "", rol: "idareci" }
-            ]
+            users: [{ name: "Yurt Mesulü", pass: "1111", kat: "", rol: "idareci" }]
         };
-        
         try {
-            // Temiz bir başlangıç için diğer verileri de sıfırlayalım (opsiyonel ama garanti)
             await db.ref(`institutions/${instId}`).set({
-                config: config,
-                reports: {},
-                arizalar: {},
-                inventory: {},
-                messages: {}
+                config: config, reports: {}, arizalar: {}, inventory: {}, messages: {}
             });
-            console.log(`✅ ${instId} kurumu başarıyla oluşturuldu!`);
-            Swal.fire("Başarılı", `${instId} kurumu oluşturuldu. Giriş yapabilirsiniz.`, "success");
-        } catch (e) {
-            console.error("Setup Error:", e);
-        }
+            Swal.fire("Başarılı", `${instId} kurumu oluşturuldu.`, "success");
+        } catch (e) { console.error("Setup Error:", e); }
     }
 };
 
-// Global erişim için
+window.PWAHelper = PWAHelper;
+window.BeytulmalManager = BeytulmalManager;
+window.ReportManager = ReportManager;
 window.MigrationHelper = MigrationHelper;
