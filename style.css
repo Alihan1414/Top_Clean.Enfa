@@ -43,6 +43,7 @@ h1, h2, h3, h4, h5, h6, p, div, span, label { color: inherit; }
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    touch-action: manipulation; /* Mobil 300ms tıklama gecikmesini iptal et! */
 }
 
 body {
@@ -104,13 +105,19 @@ body:not(.light-mode) .glass-card {
 /* --- SWEETALERT CUSTOM THEME (PREMIUM COMPACT) --- */
 .swal2-popup.swal2-modal {
     background: rgba(10, 15, 25, 0.98) !important;
-    backdrop-filter: blur(30px) !important;
+    backdrop-filter: blur(6px) !important;
     border: 1px solid rgba(16, 185, 129, 0.3) !important;
     border-radius: 28px !important;
     color: #fff !important;
     padding: 1.2rem !important;
     width: 290px !important; /* Compact width */
     box-shadow: 0 0 50px rgba(16,185,129,0.15) !important;
+}
+.swal2-show {
+    animation: none !important;
+}
+.swal2-hide {
+    animation: none !important;
 }
 .swal2-title {
     color: #fff !important;
@@ -1732,7 +1739,7 @@ body.light-mode #themeToggleButton {
 }
 
 /* --- RESPONSIVE OPTIMIZATIONS (MOBILE FIRST FOCUS) --- */
-@media (max-width: 768px) {
+@media (max-width: 1199px) {
     .glass-text-container { display: none; }
     
     .view-panel { padding-bottom: 120px !important; }
@@ -1788,7 +1795,7 @@ body.light-mode #themeToggleButton {
     h6.x-small { letter-spacing: 2px !important; font-size: 0.6rem !important; }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1199px) {
     .login-screen {
         flex-direction: column;
         justify-content: flex-start;
@@ -2028,9 +2035,26 @@ select option {
     to { transform: translateY(0); opacity: 1; }
 }
 
-/* Print styles for PDF template */
-@media print {
-    body * { visibility: hidden; }
-    #pdfExportTemplate, #pdfExportTemplate * { visibility: visible; }
-    #pdfExportTemplate { position: absolute; left: 0; top: 0; }
+
+/* PWA Premium Glass Installation Guides */
+.modal-premium-glass {
+    background: rgba(10, 15, 25, 0.98) !important;
+    backdrop-filter: blur(30px) !important;
+    border: 1px solid rgba(16, 185, 129, 0.3) !important;
+    border-radius: 28px !important;
+    color: #fff !important;
+    box-shadow: 0 0 50px rgba(16, 185, 129, 0.2) !important;
+}
+
+.bg-slate-glass {
+    background: rgba(255, 255, 255, 0.04) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    transition: all 0.3s ease;
+}
+
+.bg-slate-glass:hover {
+    background: rgba(16, 185, 129, 0.06) !important;
+    border-color: rgba(16, 185, 129, 0.2) !important;
+    transform: translateY(-2px);
 }
