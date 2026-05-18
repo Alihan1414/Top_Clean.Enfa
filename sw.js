@@ -1,10 +1,11 @@
-// TopClean v6.0 Service Worker — Final Evolution (PWA optimized)
-const CACHE_NAME = 'topclean-cache-v6.0';
-const DYNAMIC_CACHE = 'topclean-dynamic-v6.0';
+// TopClean v6.1 Service Worker — Final Evolution (PWA optimized)
+const CACHE_NAME = 'topclean-cache-v6.1';
+const DYNAMIC_CACHE = 'topclean-dynamic-v6.1';
 const ASSETS = [
     './',
     './index.html',
     './style.css',
+    './login.css',
     './app.js',
     './icon-512.png',
     './manifest.json'
