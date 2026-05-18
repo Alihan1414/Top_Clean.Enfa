@@ -200,7 +200,6 @@
                             <li><button class="dropdown-item py-2 rounded-3 text-white d-flex align-items-center gap-2" onclick="changeLang('tr')"><span style="font-size:1.1rem;">🇹🇷</span> Türkçe</button></li>
                             <li><button class="dropdown-item py-2 rounded-3 text-white d-flex align-items-center gap-2" onclick="changeLang('en')"><span style="font-size:1.1rem;">🇺🇸</span> English</button></li>
                             <li><button class="dropdown-item py-2 rounded-3 text-white d-flex align-items-center gap-2" onclick="changeLang('fr')"><span style="font-size:1.1rem;">🇫🇷</span> Français</button></li>
-                            <li><button class="dropdown-item py-2 rounded-3 text-white d-flex align-items-center gap-2" onclick="changeLang('ar')"><span style="font-size:1.1rem;">🇸🇦</span> العربية</button></li>
                         </ul>
                     </div>
                     <button onclick="toggleTheme()" id="themeToggleButton" class="btn btn-premium-circle" title="Tema">
@@ -263,7 +262,6 @@
                             <button type="button" onclick="changeLang('tr')" class="lang-flag-btn active" id="flag-tr">🇹🇷 TR</button>
                             <button type="button" onclick="changeLang('en')" class="lang-flag-btn" id="flag-en">🇺🇸 EN</button>
                             <button type="button" onclick="changeLang('fr')" class="lang-flag-btn" id="flag-fr">🇫🇷 FR</button>
-                            <button type="button" onclick="changeLang('ar')" class="lang-flag-btn" id="flag-ar">🇸🇦 AR</button>
                         </div>
 
                         <!-- Form -->
@@ -316,57 +314,57 @@
             <!-- LİSTE SORUMLUSU PANELİ (AKILLI SİSTEM v2) -->
             <div id="listePanel" class="view-panel d-none flex-column w-100">
                 <div class="glass-card banner-card p-4 mb-4 text-center shadow-lg border-emerald">
-                    <h2 class="h3 fw-bold text-white mb-1">Akıllı Liste Merkezi</h2>
-                    <p class="text-emerald small mb-0 fw-bold">SAĞLIK BAZLI OTOMATİK DAĞITIM SİSTEMİ</p>
+                    <h2 class="h3 fw-bold text-white mb-1" data-i18n="smart_list_center">Akıllı Liste Merkezi</h2>
+                    <p class="text-emerald small mb-0 fw-bold" data-i18n="health_based_distribution">SAĞLIK BAZLI OTOMATİK DAĞITIM SİSTEMİ</p>
                 </div>
 
                 <!-- 1. ADIM: SAĞLIK LİSTESİ GİRİŞİ -->
                 <div id="listeStep1" class="d-flex flex-column gap-3">
                     <div class="d-flex justify-content-between align-items-center mb-1">
-                        <h6 class="text-white small fw-bold mb-0 text-uppercase">1. Adım: Talebe Listesi</h6>
+                        <h6 class="text-white small fw-bold mb-0 text-uppercase" data-i18n="step_1_title">1. Adım: Talebe Listesi</h6>
                         <button onclick="_routeUser()"
-                            class="btn btn-sm btn-glass-danger py-1 px-3 rounded-pill x-small">Paneli Kapat</button>
+                            class="btn btn-sm btn-glass-danger py-1 px-3 rounded-pill x-small" data-i18n="close_panel">Paneli Kapat</button>
                     </div>
                     <div class="row g-2">
                         <div class="col-6">
-                            <label class="x-small text-danger fw-bold mb-1 ms-2">🔴 ASTIM HASTALARI</label>
+                            <label class="x-small text-danger fw-bold mb-1 ms-2" data-i18n="asthma_patients">🔴 ASTIM HASTALARI</label>
                             <textarea id="listAstim"
                                 class="form-control bg-slate-glass text-white border-0 rounded-4 small p-3" rows="5"
-                                placeholder="İsimleri araya virgül koyarak yazın..."></textarea>
+                                data-i18n-placeholder="comma_separated_placeholder" placeholder="İsimleri araya virgül koyarak yazın..."></textarea>
                         </div>
                         <div class="col-6">
-                            <label class="x-small text-warning fw-bold mb-1 ms-2">🟠 ALERJİK RAHATSIZLAR</label>
+                            <label class="x-small text-warning fw-bold mb-1 ms-2" data-i18n="allergic_patients">🟠 ALERJİK RAHATSIZLAR</label>
                             <textarea id="listAlerjik"
                                 class="form-control bg-slate-glass text-white border-0 rounded-4 small p-3" rows="5"
-                                placeholder="İsimleri araya virgül koyarak yazın..."></textarea>
+                                data-i18n-placeholder="comma_separated_placeholder" placeholder="İsimleri araya virgül koyarak yazın..."></textarea>
                         </div>
                         <div class="col-6">
-                            <label class="x-small text-success fw-bold mb-1 ms-2">🟢 SAĞLIKLI</label>
+                            <label class="x-small text-success fw-bold mb-1 ms-2" data-i18n="healthy_students">🟢 SAĞLIKLI</label>
                             <textarea id="listSaglikli"
                                 class="form-control bg-slate-glass text-white border-0 rounded-4 small p-3" rows="5"
-                                placeholder="İsimleri araya virgül koyarak yazın..."></textarea>
+                                data-i18n-placeholder="comma_separated_placeholder" placeholder="İsimleri araya virgül koyarak yazın..."></textarea>
                         </div>
                         <div class="col-6">
-                            <label class="x-small text-info fw-bold mb-1 ms-2">🔵 DİĞER</label>
+                            <label class="x-small text-info fw-bold mb-1 ms-2" data-i18n="other_students">🔵 DİĞER</label>
                             <textarea id="listDiger"
                                 class="form-control bg-slate-glass text-white border-0 rounded-4 small p-3" rows="5"
-                                placeholder="İsimleri araya virgül koyarak yazın..."></textarea>
+                                data-i18n-placeholder="comma_separated_placeholder" placeholder="İsimleri araya virgül koyarak yazın..."></textarea>
                         </div>
                     </div>
                     <button onclick="ListeManager.akilliDagit()"
-                        class="btn btn-emerald w-100 py-3 fw-bold rounded-pill shadow-success mt-2">AKILLI HAFIZAYI
+                        class="btn btn-emerald w-100 py-3 fw-bold rounded-pill shadow-success mt-2" data-i18n="run_smart_distribution">AKILLI HAFIZAYI
                         ÇALIŞTIR VE DAĞIT →</button>
                 </div>
 
                 <!-- 2. ADIM: SONUÇ VE YÖNETİM -->
                 <div id="listeStep2" class="d-none flex-column gap-3">
                     <div class="d-flex justify-content-between align-items-center mb-1">
-                        <h6 class="text-white small fw-bold mb-0">DAĞITIM SONUÇLARI</h6>
+                        <h6 class="text-white small fw-bold mb-0" data-i18n="distribution_results">DAĞITIM SONUÇLARI</h6>
                         <div class="d-flex gap-2">
                             <button onclick="ListeManager.showStep(1)"
-                                class="btn btn-sm btn-glass-emerald py-1 px-3 rounded-pill x-small">← GERİ GİT</button>
+                                class="btn btn-sm btn-glass-emerald py-1 px-3 rounded-pill x-small" data-i18n="back">← GERİ GİT</button>
                             <button onclick="ListeManager.yeniTalebeEkleModali()"
-                                class="btn btn-sm btn-emerald py-1 px-3 rounded-pill x-small">+ Yeni Talebe</button>
+                                class="btn btn-sm btn-emerald py-1 px-3 rounded-pill x-small" data-i18n="add_new_student">+ Yeni Talebe</button>
                         </div>
                     </div>
 
@@ -377,14 +375,14 @@
 
                     <!-- KAT SORUMLULARI YÖNETİMİ -->
                     <div class="glass-card p-3 mb-3 bg-dark bg-opacity-50 border border-emerald border-opacity-20">
-                        <h6 class="x-small text-emerald fw-bold mb-3">KAT SORUMLULARINI BELİRLE</h6>
+                        <h6 class="x-small text-emerald fw-bold mb-3" data-i18n="set_floor_leaders">KAT SORUMLULARINI BELİRLE</h6>
                         <div id="floorLeadersContainer" class="d-flex flex-column gap-3">
                             <!-- Her kat için hoca/başkan seçimi buraya gelecek -->
                         </div>
                     </div>
 
                     <button onclick="ListeManager.pdfUret()"
-                        class="btn btn-danger w-100 py-3 fw-bold rounded-pill shadow-danger d-flex align-items-center justify-content-center gap-2">
+                        class="btn btn-danger w-100 py-3 fw-bold rounded-pill shadow-danger d-flex align-items-center justify-content-center gap-2" data-i18n="get_pdf_output">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -401,16 +399,15 @@
             <!-- YURT MESULÜ PANELİ (COCKPIT) -->
             <div id="idarecPanel" class="view-panel d-none flex-column w-100">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald px-3 rounded-pill" data-i18n="back">←
-                        Geri</button>
-                    <h6 class="text-emerald fw-bold mb-0 x-small">YURT MESULÜ KOKPİTİ</h6>
+                    <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald px-3 rounded-pill" data-i18n="back">← Geri</button>
+                    <h6 class="text-emerald fw-bold mb-0 x-small" data-i18n="cockpit_title">YURT MESULÜ KOKPİTİ</h6>
                     <div class="d-flex gap-2">
                         <button id="pwaInstallBtn" class="btn btn-sm btn-glass-emerald px-2 rounded-pill d-none"
                             onclick="PWAHelper.install()" style="font-size:0.65rem;">
                             <i data-lucide="download" style="width:12px; margin-right:2px;"></i>Yükle
                         </button>
                         <button onclick="KurumYonetimManager.acPanel()" class="btn btn-sm px-3 rounded-pill fw-bold"
-                            style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); color:#10b981; font-size:0.65rem;">
+                            style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); color:#10b981; font-size:0.65rem;" data-i18n="settings">
                             ⚙️ Ayarlar
                         </button>
                     </div>
@@ -427,31 +424,30 @@
                         </svg>
                         <div class="pulse-label">
                             <div id="pulseText" class="h1 fw-900 text-white mb-0" style="font-size:3rem;">0%</div>
-                            <div class="x-small text-emerald fw-bold" style="letter-spacing:2px;">BİNA NABZI</div>
+                            <div class="x-small text-emerald fw-bold" style="letter-spacing:2px;" data-i18n="building_pulse">BİNA NABZI</div>
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-center gap-4 mt-2 mb-3">
                         <div class="text-center">
                             <div class="h5 fw-bold text-white mb-0" id="cockpit-stat-active">-</div>
-                            <div class="x-small text-muted">Aktif Personel</div>
+                            <div class="x-small text-muted" data-i18n="active_personnel">Aktif Personel</div>
                         </div>
                         <div class="text-center border-start border-secondary border-opacity-25 ps-4">
                             <div class="h5 fw-bold text-white mb-0" id="cockpit-stat-alerts">0</div>
-                            <div class="x-small text-muted">Kritik Bölge</div>
+                            <div class="x-small text-muted" data-i18n="critical_zones">Kritik Bölge</div>
                         </div>
                     </div>
                     <button onclick="ReportManager.generateMonthly()"
                         class="btn btn-sm btn-glass-emerald w-100 rounded-pill py-2 fw-bold"
-                        style="font-size:0.7rem;">📊 AYLIK FAALİYET RAPORU AL</button>
+                        style="font-size:0.7rem;" data-i18n="monthly_report">📊 AYLIK FAALİYET RAPORU AL</button>
                 </div>
 
                 <!-- 2. BİNA RÖNTGENİ (MATRIX) -->
                 <div class="mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase" style="letter-spacing:1.5px;">Bina
-                            Sağlık Matrisi</h6>
-                        <span class="x-small text-muted">Canlı Veri</span>
+                        <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase" style="letter-spacing:1.5px;" data-i18n="building_health_matrix">Bina Sağlık Matrisi</h6>
+                        <span class="x-small text-muted" data-i18n="live_data">Canlı Veri</span>
                     </div>
                     <div id="cockpitMatrix" class="cockpit-grid">
                         <!-- Katlar ve Oda Pikselleri Buraya Gelecek -->
@@ -460,7 +456,7 @@
 
                 <!-- 3. CANLI AKIŞ (FEED) -->
                 <div class="glass-card p-3 mb-4 bg-slate-glass">
-                    <h6 class="x-small text-muted fw-bold mb-3 text-uppercase">Son Aktiviteler</h6>
+                    <h6 class="x-small text-muted fw-bold mb-3 text-uppercase" data-i18n="recent_activities">Son Aktiviteler</h6>
                     <div id="cockpitFeed" class="d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;">
                         <div class="text-center py-4 text-muted small">Veri senkronize ediliyor...</div>
                     </div>
@@ -469,23 +465,21 @@
                 <!-- ESKİ FONKSİYONLARA ERİŞİM (Gerekirse) -->
                 <div class="d-flex gap-2 overflow-auto pb-2">
                     <button onclick="IdarecManager.switchSubTab('grafik')"
-                        class="btn btn-glass-emerald btn-sm rounded-pill px-3">📊 Analitik</button>
+                        class="btn btn-glass-emerald btn-sm rounded-pill px-3" data-i18n="btn_analytics">📊 Analitik</button>
                     <button onclick="IdarecManager.switchSubTab('liderlik')"
-                        class="btn btn-glass-emerald btn-sm rounded-pill px-3">🏆 Liderlik</button>
+                        class="btn btn-glass-emerald btn-sm rounded-pill px-3" data-i18n="btn_leaderboard">🏆 Liderlik</button>
                     <button onclick="IdarecManager.switchSubTab('ariza')"
-                        class="btn btn-glass-emerald btn-sm rounded-pill px-3">📝 Arızalar</button>
+                        class="btn btn-glass-emerald btn-sm rounded-pill px-3" data-i18n="btn_faults">📝 Arızalar</button>
                     <button onclick="IdarecManager.switchSubTab('beytulmal')"
                         class="btn btn-glass-emerald btn-sm rounded-pill px-3"
-                        style="border: 1px solid #f59e0b; background: rgba(245,158,11,0.1); color: #f59e0b;">
+                        style="border: 1px solid #f59e0b; background: rgba(245,158,11,0.1); color: #f59e0b;" data-i18n="btn_beytulmal">
                         ✨ Beytülmal
                     </button>
-                    <button onclick="InventoryManager.ac()" class="btn btn-glass-emerald btn-sm rounded-pill px-3">📦
-                        Malzemeler</button>
+                    <button onclick="InventoryManager.ac()" class="btn btn-glass-emerald btn-sm rounded-pill px-3" data-i18n="btn_materials">📦 Malzemeler</button>
                     <button onclick="IdarecManager.switchSubTab('personel')"
-                        class="btn btn-glass-emerald btn-sm rounded-pill px-3">👥 Personel</button>
+                        class="btn btn-glass-emerald btn-sm rounded-pill px-3" data-i18n="btn_personnel">👥 Personel</button>
                     <button onclick="KurumYonetimManager.acPanel()" class="btn btn-sm rounded-pill px-3"
-                        style="background:rgba(16,185,129,0.2); border:1px solid rgba(16,185,129,0.5); color:#10b981; white-space:nowrap;">⚙️
-                        Kurum Kur</button>
+                        style="background:rgba(16,185,129,0.2); border:1px solid rgba(16,185,129,0.5); color:#10b981; white-space:nowrap;" data-i18n="btn_setup_inst">⚙️ Kurum Kur</button>
                 </div>
             </div>
 
@@ -493,8 +487,8 @@
             <div id="subTabGrafik" class="idarec-sub-tab d-none mt-4">
                 <div class="glass-card p-3 mb-3">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase">Rapor Aktivitesi</h6>
-                        <button onclick="showPanel('idarecPanel')" class="btn btn-sm text-muted">Kapat</button>
+                        <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase" data-i18n="report_activity">Rapor Aktivitesi</h6>
+                        <button onclick="showPanel('idarecPanel')" class="btn btn-sm text-muted" data-i18n="close_panel">Kapat</button>
                     </div>
                     <canvas id="grafikCanvas" height="180"></canvas>
                 </div>
@@ -502,8 +496,8 @@
             <div id="subTabLiderlik" class="idarec-sub-tab d-none mt-4">
                 <div class="glass-card p-3 mb-3">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase">Liderlik Tablosu</h6>
-                        <button onclick="showPanel('idarecPanel')" class="btn btn-sm text-muted">Kapat</button>
+                        <h6 class="x-small text-emerald fw-bold mb-0 text-uppercase" data-i18n="leaderboard_table">Liderlik Tablosu</h6>
+                        <button onclick="showPanel('idarecPanel')" class="btn btn-sm text-muted" data-i18n="close_panel">Kapat</button>
                     </div>
                     <div id="liderlikListesi" class="d-flex flex-column gap-2"></div>
                 </div>
@@ -583,13 +577,13 @@
                         <img src="assets/logo_enderun.png" class="avatar-glow"
                             style="width:50px; height:50px; border-width:2px; border-radius:50%; object-fit:cover;">
                         <div>
-                            <p class="x-small text-muted mb-0 text-uppercase fw-bold">Görevli Paneli</p>
+                            <p class="x-small text-muted mb-0 text-uppercase fw-bold" data-i18n="staff_panel">Görevli Paneli</p>
                             <h2 class="h5 fw-bold text-white mb-0" id="gorevliHocaIsim">-</h2>
                         </div>
                         <div class="ms-auto text-end">
                             <div class="d-flex align-items-center gap-2 justify-content-end">
                                 <div id="gorevliTamamSayi" class="h4 fw-bold text-white mb-0">0/0</div>
-                                <div class="x-small text-emerald fw-bold">BİTEN</div>
+                                <div class="x-small text-emerald fw-bold" data-i18n="completed_suffix">BİTEN</div>
                             </div>
                         </div>
                     </div>
@@ -600,17 +594,17 @@
                         <button id="emraHocaArizaBtn"
                             onclick="showPanel('arizaYonetimPanel'); ArizaManager.renderYonetim();"
                             class="btn btn-sm btn-glass-emerald rounded-pill px-3 py-2 fw-bold flex-shrink-0 d-none"
-                            style="font-size:0.7rem;">⚙️ ARIZA YÖNETİMİ</button>
+                            style="font-size:0.7rem;" data-i18n="btn_faults">⚙️ ARIZA YÖNETİMİ</button>
                         <!-- Burak hocaya özel buton -->
                         <button id="burakHocaDepoBtn" onclick="InventoryManager.ac()"
                             class="btn btn-sm btn-glass-emerald rounded-pill px-3 py-2 fw-bold flex-shrink-0 d-none"
-                            style="font-size:0.7rem;">📦 DEPO YÖNETİMİ</button>
+                            style="font-size:0.7rem;" data-i18n="btn_materials">📦 DEPO YÖNETİMİ</button>
                         <button onclick="ArizaManager.bildirimModaliAc()"
                             class="btn btn-sm btn-glass-danger rounded-pill px-3 py-2 fw-bold flex-shrink-0"
-                            style="font-size:0.7rem; letter-spacing:0.5px;">⚠️ ARIZA BİLDİR</button>
+                            style="font-size:0.7rem; letter-spacing:0.5px;" data-i18n="fault_report">⚠️ ARIZA BİLDİR</button>
                         <button onclick="InventoryManager.useModal()"
                             class="btn btn-sm btn-glass-emerald rounded-pill px-3 py-2 fw-bold flex-shrink-0"
-                            style="font-size:0.7rem; letter-spacing:0.5px;">🧼 MALZEME KULLAN</button>
+                            style="font-size:0.7rem; letter-spacing:0.5px;" data-i18n="use_material">🧼 MALZEME KULLAN</button>
                     </div>
 
                     <div style="height:6px; background:rgba(255,255,255,0.06); border-radius:10px; overflow:hidden;">
@@ -623,7 +617,7 @@
                 <!-- 2. KAT RÖNTGENİ (KÜÇÜK MATRİS) -->
                 <div class="mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 class="x-small text-muted fw-bold mb-0 text-uppercase" style="letter-spacing:1px;">Kat Durum
+                        <h6 class="x-small text-muted fw-bold mb-0 text-uppercase" style="letter-spacing:1px;" data-i18n="floor_status_map">Kat Durum
                             Haritası</h6>
                         <span id="gorevliKatAd" class="x-small text-emerald fw-bold">-</span>
                     </div>
@@ -640,7 +634,7 @@
 
                 <!-- TÜM GÖREVLER (Liste) -->
                 <div class="mt-4">
-                    <h6 class="x-small text-muted fw-bold mb-3 text-uppercase">Tüm Odalar</h6>
+                    <h6 class="x-small text-muted fw-bold mb-3 text-uppercase" data-i18n="all_rooms">Tüm Odalar</h6>
                     <div id="gorevliBolumListesi" class="w-100 d-flex flex-column gap-2"></div>
                 </div>
             </div>
@@ -662,10 +656,10 @@
 
                     <div class="d-flex gap-2 mb-3">
                         <button onclick="document.getElementById('gorevliFoto').click()"
-                            class="btn btn-glass-emerald flex-grow-1 py-3 rounded-4">
+                            class="btn btn-glass-emerald flex-grow-1 py-3 rounded-4" data-i18n="photo">
                             <i data-lucide="camera" class="me-2"></i> Fotoğraf
                         </button>
-                        <button onclick="VoiceManager.start()" class="btn btn-glass-emerald flex-grow-1 py-3 rounded-4">
+                        <button onclick="VoiceManager.start()" class="btn btn-glass-emerald flex-grow-1 py-3 rounded-4" data-i18n="voice_note">
                             <i data-lucide="mic" class="me-2"></i> Sesli Not
                         </button>
                     </div>
@@ -673,12 +667,12 @@
 
                     <textarea id="gorevliNot"
                         class="form-control bg-slate-glass text-white border-secondary mb-4 rounded-4 p-3 shadow-none"
-                        rows="3" placeholder="Vardiya notu veya sorun bildirin..."></textarea>
+                        rows="3" data-i18n-placeholder="shift_note_placeholder" placeholder="Vardiya notu veya sorun bildirin..."></textarea>
 
                     <button onclick="KriterManager.veriyiKaydet()"
-                        class="btn btn-emerald w-100 py-3 fw-bold rounded-pill mb-3 shadow-success">RAPORU
+                        class="btn btn-emerald w-100 py-3 fw-bold rounded-pill mb-3 shadow-success" data-i18n="send_report">RAPORU
                         GÖNDER</button>
-                    <button onclick="_routeUser()" class="btn btn-outline-light w-100 py-2 fw-bold rounded-pill">İPTAL
+                    <button onclick="_routeUser()" class="btn btn-outline-light w-100 py-2 fw-bold rounded-pill" data-i18n="cancel_and_back">İPTAL
                         ET VE
                         GERİ DÖN</button>
                 </div>
