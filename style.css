@@ -84,7 +84,7 @@ body.light-mode .aurora-container {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     color: var(--text-main);
-    overflow: hidden;
+    /* overflow: hidden intentionally removed - caused desktop click blocking on hover */
 }
 
 .modal-premium-glass {
@@ -145,6 +145,7 @@ body:not(.light-mode) .glass-card {
     z-index: -1; background-size: 300% 300%;
     animation: liquidBorder 4s infinite linear;
     opacity: 0; transition: opacity 0.5s ease;
+    pointer-events: none; /* CRITICAL: prevent ::after from blocking button clicks on desktop */
 }
 
 @keyframes liquidBorder {
@@ -154,7 +155,8 @@ body:not(.light-mode) .glass-card {
 }
 
 .glass-card:hover {
-    transform: translateY(-6px) scale(1.02);
+    /* Removed scale(1.02) - it combined with overflow:hidden to block desktop clicks */
+    transform: translateY(-4px);
     border-color: rgba(16, 185, 129, 0.1);
     box-shadow: 0 40px 80px -15px rgba(0, 0, 0, 0.8),
                 0 10px 40px -10px rgba(16, 185, 129, 0.2);
