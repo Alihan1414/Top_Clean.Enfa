@@ -281,6 +281,12 @@
                                 <div class="spinner"></div>
                             </button>
                         </form>
+                        <div class="text-center mt-3">
+                            <button type="button" id="loginPwaInstallBtn" class="btn btn-sm btn-glass-emerald w-100 py-3 rounded-pill fw-bold d-none"
+                                onclick="PWAHelper.install()" style="font-size:0.75rem; letter-spacing:1px; border: 1px dashed rgba(16,185,129,0.4);">
+                                📲 UYGULAMAYI TELEFONA/PC'YE İNDİR
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -1035,7 +1041,7 @@ Koku yok"></textarea>
 
     <!-- CHAT OVERLAY (SAHA SOHBETİ PANELİ) -->
     <div id="chatOverlay" class="d-flex flex-column position-fixed h-100 shadow-lg chat-overlay"
-        style="top:0; left:-100%; width: 100%; max-width: 380px; z-index: 3000; transition: left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-right: 1px solid rgba(16, 185, 129, 0.15); backdrop-filter: blur(50px) saturate(200%); background: linear-gradient(180deg, rgba(5,5,10,0.95) 0%, rgba(10,15,20,0.98) 100%);">
+        style="top:0; left:-100%; width: 100%; max-width: 380px; z-index: 3000; transition: left 0.22s cubic-bezier(0.4, 0, 0.2, 1); border-right: 1px solid rgba(16, 185, 129, 0.15); backdrop-filter: blur(12px) saturate(150%); background: linear-gradient(180deg, rgba(5,5,10,0.95) 0%, rgba(10,15,20,0.98) 100%);">
 
         <!-- BAŞLIK -->
         <div class="p-4 d-flex justify-content-between align-items-center"
