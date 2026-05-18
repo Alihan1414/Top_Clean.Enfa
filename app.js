@@ -1,3 +1,290 @@
+// --- MULTI-LANGUAGE (i18n) SYSTEM ---
+const TRANSLATIONS = {
+    tr: {
+        tagline: "sizinle",
+        inst_code: "Kurum Kodu",
+        username: "Kullanıcı Adı",
+        password: "Şifre",
+        remember_me: "Beni Hatırla",
+        login_btn: "Giriş Yap",
+        download_btn: "📲 UYGULAMAYI TELEFONA/PC'YE İNDİR",
+        logout: "Çıkış",
+        cloud_sync: "Bulut Senkronize",
+        offline: "Çevrimdışı (Yerel Kayıt)",
+        search_placeholder: "Oda/Kat Arama...",
+        building_xray: "Akıllı Bina Röntgeni",
+        total_rooms: "Toplam Oda",
+        clean: "Temiz",
+        dirty: "Kirli",
+        inspecting: "Denetimde",
+        cleaning_process: "Temizlik Süreci",
+        floors_rooms: "Katlar & Odalar",
+        new_floor: "+ Yeni Kat",
+        new_oda: "+ Yeni Oda",
+        personnel: "Personel & Görevliler",
+        add_user: "Yeni Kullanıcı Ekle",
+        chat: "Saha Sohbeti",
+        save: "💾 Kaydet",
+        setup_inst: "⚙️ Kurum Kur",
+        back: "← Geri",
+        beytulmal_title: "Beytülmal Hassasiyeti",
+        beytulmal_subtitle: "Optimize Kaynak Yönetimi",
+        energy: "ENERJİ",
+        material: "MALZEME",
+        water: "SU",
+        efficiency_index: "Verimlilik Endeksi",
+        inspection_panel: "Akıllı Denetim Merkezi",
+        room_status_select: "Oda Durumu Seçin",
+        room_clean: "Temiz (Onayla)",
+        room_inspecting: "Denetim Altında",
+        room_dirty: "Kirli (Görevlendir)",
+        assign_personnel: "Görevli Personel Seçin",
+        fault_report: "⚠️ Arıza Bildir",
+        faults_title: "Aktif Arıza Raporları",
+        success: "Başarılı",
+        error: "Hata",
+        are_you_sure: "Emin misiniz?",
+        delete_confirm: "Bu işlemi geri alamazsınız!",
+        yes_delete: "Evet, Sil!",
+        cancel: "İptal",
+        saved_success: "Bulutla Eşitlendi ⚡",
+        logged_out: "Çıkış yapıldı!"
+    },
+    en: {
+        tagline: "with you",
+        inst_code: "Institution Code",
+        username: "Username",
+        password: "Password",
+        remember_me: "Remember Me",
+        login_btn: "Log In",
+        download_btn: "📲 DOWNLOAD APP FOR MOBILE/PC",
+        logout: "Logout",
+        cloud_sync: "Cloud Sync Active",
+        offline: "Offline Mode (Local Storage)",
+        search_placeholder: "Search Room/Floor...",
+        building_xray: "Smart Building X-Ray",
+        total_rooms: "Total Rooms",
+        clean: "Clean",
+        dirty: "Dirty",
+        inspecting: "Inspecting",
+        cleaning_process: "Cleaning Process",
+        floors_rooms: "Floors & Rooms",
+        new_floor: "+ New Floor",
+        new_oda: "+ New Room",
+        personnel: "Personnel & Staff",
+        add_user: "Add New User",
+        chat: "Field Chat",
+        save: "💾 Save Config",
+        setup_inst: "⚙️ Setup Institution",
+        back: "← Back",
+        beytulmal_title: "Resource Sensitivity",
+        beytulmal_subtitle: "Optimized Resource Management",
+        energy: "ENERGY",
+        material: "MATERIAL",
+        water: "WATER",
+        efficiency_index: "Efficiency Index",
+        inspection_panel: "Smart Inspection Center",
+        room_status_select: "Select Room Status",
+        room_clean: "Clean (Approve)",
+        room_inspecting: "Under Inspection",
+        room_dirty: "Dirty (Assign Task)",
+        assign_personnel: "Select Duty Personnel",
+        fault_report: "⚠️ Report Fault",
+        faults_title: "Active Fault Reports",
+        success: "Success",
+        error: "Error",
+        are_you_sure: "Are you sure?",
+        delete_confirm: "You won't be able to revert this!",
+        yes_delete: "Yes, Delete!",
+        cancel: "Cancel",
+        saved_success: "Synced with Cloud ⚡",
+        logged_out: "Logged out successfully!"
+    },
+    fr: {
+        tagline: "avec vous",
+        inst_code: "Code de l'Établissement",
+        username: "Nom d'utilisateur",
+        password: "Mot de passe",
+        remember_me: "Se souvenir de moi",
+        login_btn: "Se connecter",
+        download_btn: "📲 TÉLÉCHARGER L'APP SMARTPHONE/PC",
+        logout: "Se déconnecter",
+        cloud_sync: "Cloud Synchronisé",
+        offline: "Hors ligne (Stockage local)",
+        search_placeholder: "Rechercher une pièce...",
+        building_xray: "Aperçu Intelligent du Bâtiment",
+        total_rooms: "Total des Chambres",
+        clean: "Propre",
+        dirty: "Sale",
+        inspecting: "En Inspection",
+        cleaning_process: "Processus de Nettoyage",
+        floors_rooms: "Étages et Chambres",
+        new_floor: "+ Nouvel Étage",
+        new_oda: "+ Nouvelle Chambre",
+        personnel: "Membres du Personnel",
+        add_user: "Ajouter un utilisateur",
+        chat: "Chat en Direct",
+        save: "💾 Enregistrer",
+        setup_inst: "⚙️ Configurer l'établissement",
+        back: "← Retour",
+        beytulmal_title: "Sensibilité des Ressources",
+        beytulmal_subtitle: "Gestion Optimisée des Ressources",
+        energy: "ÉNERGIE",
+        material: "MATÉRIEL",
+        water: "EAU",
+        efficiency_index: "Indice d'Efficacité",
+        inspection_panel: "Centre d'Inspection Intelligent",
+        room_status_select: "Sélectionner l'état",
+        room_clean: "Propre (Valider)",
+        room_inspecting: "Sous Inspection",
+        room_dirty: "Sale (Assigner Tâche)",
+        assign_personnel: "Sélectionner le personnel",
+        fault_report: "⚠️ Signaler un Problème",
+        faults_title: "Rapports de Problèmes Actifs",
+        success: "Succès",
+        error: "Erreur",
+        are_you_sure: "Êtes-vous sûr?",
+        delete_confirm: "Cette action est irréversible!",
+        yes_delete: "Oui, Supprimer!",
+        cancel: "Annuler",
+        saved_success: "Synchronisé avec le Cloud ⚡",
+        logged_out: "Déconnexion réussie!"
+    },
+    ar: {
+        tagline: "معكم دائماً",
+        inst_code: "رمز المؤسسة",
+        username: "اسم المستخدم",
+        password: "كلمة المرور",
+        remember_me: "تذكرني",
+        login_btn: "تسجيل الدخول",
+        download_btn: "📲 تحميل التطبيق للهاتف/الكمبيوتر",
+        logout: "تسجيل الخروج",
+        cloud_sync: "تمت المزامنة السحابية",
+        offline: "وضع غير متصل بالإنترنت",
+        search_placeholder: "بحث عن غرفة/طابق...",
+        building_xray: "مخطط البناء الذكي",
+        total_rooms: "إجمالي الغرف",
+        clean: "نظيف",
+        dirty: "متسخ",
+        inspecting: "قيد الفحص",
+        cleaning_process: "مراحل التنظيف",
+        floors_rooms: "الطوابق والغرف",
+        new_floor: "+ طابق جديد",
+        new_oda: "+ غرفة جديدة",
+        personnel: "الموظفين وطاقم العمل",
+        add_user: "إضافة مستخدم جديد",
+        chat: "الدردشة الميدانية",
+        save: "💾 حفظ الإعدادات",
+        setup_inst: "⚙️ إعداد المؤسسة",
+        back: "← رجوع",
+        beytulmal_title: "حساسية الموارد",
+        beytulmal_subtitle: "إدارة الموارد المحسنة",
+        energy: "طاقة",
+        material: "مواد",
+        water: "ماء",
+        efficiency_index: "مؤشر الكفاءة",
+        inspection_panel: "مركز التفتيش الذكي",
+        room_status_select: "اختر حالة الغرفة",
+        room_clean: "نظيف (تأكيد)",
+        room_inspecting: "تحت الفحص",
+        room_dirty: "متسخ (تكليف بمهمة)",
+        assign_personnel: "اختر الموظف المسؤول",
+        fault_report: "⚠️ الإبلاغ عن عطل",
+        faults_title: "تقارير الأعطال النشطة",
+        success: "نجاح",
+        error: "خطأ",
+        are_you_sure: "هل أنت متأكد؟",
+        delete_confirm: "لا يمكن التراجع عن هذا الإجراء!",
+        yes_delete: "نعم، احذف!",
+        cancel: "إلغاء",
+        saved_success: "تمت المزامنة السحابية ⚡",
+        logged_out: "تم تسجيل الخروج بنجاح!"
+    }
+};
+
+let currentLanguage = localStorage.getItem('topclean_lang') || 'tr';
+
+// Çeviri Yardımcı Fonksiyonu
+function t(key) {
+    return TRANSLATIONS[currentLanguage][key] || TRANSLATIONS['tr'][key] || key;
+}
+
+// Uygulamayı Çevir
+function translateApp() {
+    // 1. data-i18n etiketine sahip olan metinleri çevir
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (TRANSLATIONS[currentLanguage][key]) {
+            const icon = el.querySelector('i, svg, div.spinner, span.btn-arrow');
+            if (icon) {
+                const textNode = Array.from(el.childNodes).find(n => n.nodeType === Node.TEXT_NODE);
+                if (textNode) textNode.textContent = TRANSLATIONS[currentLanguage][key];
+                else el.innerHTML = TRANSLATIONS[currentLanguage][key] + ' ' + icon.outerHTML;
+            } else {
+                el.textContent = TRANSLATIONS[currentLanguage][key];
+            }
+        }
+    });
+
+    // 2. data-i18n-placeholder etiketine sahip inputların placeholderlarını çevir
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (TRANSLATIONS[currentLanguage][key]) {
+            el.setAttribute('placeholder', TRANSLATIONS[currentLanguage][key]);
+        }
+    });
+
+    // 3. Aktif Bayrak Butonunu Güncelle
+    document.querySelectorAll('.lang-flag-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    const activeFlag = document.getElementById(`flag-${currentLanguage}`);
+    if (activeFlag) activeFlag.classList.add('active');
+
+    // 4. Arapça için RTL / LTR yönlendirmesi
+    if (currentLanguage === 'ar') {
+        document.documentElement.dir = 'rtl';
+        document.body.classList.add('rtl-mode');
+    } else {
+        document.documentElement.dir = 'ltr';
+        document.body.classList.remove('rtl-mode');
+    }
+
+    // 5. Lucide ikonlarını yeniden oluştur
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+// Dil Değiştirme Fonksiyonu (Global)
+window.changeLang = function(lang) {
+    if (!TRANSLATIONS[lang]) return;
+    currentLanguage = lang;
+    localStorage.setItem('topclean_lang', lang);
+    translateApp();
+    
+    // Küçük bildirim
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        background: 'rgba(10, 15, 25, 0.98)',
+        color: '#fff'
+    });
+    Toast.fire({
+        icon: 'success',
+        title: lang === 'tr' ? 'Dil Türkçe olarak ayarlandı 🇹🇷' : 
+               lang === 'en' ? 'Language set to English 🇺🇸' : 
+               lang === 'fr' ? 'Langue configurée en Français 🇫🇷' : 
+               'تم تغيير اللغة إلى العربية 🇸🇦'
+    });
+};
+
+// Sayfa ilk yüklendiğinde çeviriyi çalıştır
+window.addEventListener('DOMContentLoaded', () => {
+    translateApp();
+});
+
 // ---------- TOPCLEAN v5.1 (PREMIUM CORE) ----------
 const firebaseConfig = {
     apiKey: "AIzaSyCO88ONQpL3vFRMSY-jyhRImbsNC1ngcmQ",
@@ -538,12 +825,12 @@ const ChatManager = {
 
     deleteMessage: function(id) {
         Swal.fire({
-            title: 'Mesaj Silinsin mi?',
-            text: 'Bu işlem geri alınamaz.',
+            title: t('are_you_sure'),
+            text: t('delete_confirm'),
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Evet, Sil',
-            cancelButtonText: 'İptal',
+            confirmButtonText: t('yes_delete'),
+            cancelButtonText: t('cancel'),
             confirmButtonColor: '#ef4444'
         }).then(res => {
             if (res.isConfirmed) {
@@ -2661,12 +2948,12 @@ const KurumYonetimManager = {
 
     katSil: function(katAd) {
         Swal.fire({
-            title: `"${katAd}" silinsin mi?`,
-            text: 'Bu kattaki tüm odalar da silinecek!',
+            title: `"${katAd}" - ${t('are_you_sure')}`,
+            text: t('delete_confirm'),
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Evet, Sil',
-            cancelButtonText: 'İptal',
+            confirmButtonText: t('yes_delete'),
+            cancelButtonText: t('cancel'),
             confirmButtonColor: '#ef4444'
         }).then(r => {
             if (r.isConfirmed) {
@@ -2756,11 +3043,12 @@ const KurumYonetimManager = {
     personelSil: function(idx) {
         const u = this.localUsers[idx];
         Swal.fire({
-            title: `"${u.name}" silinsin mi?`,
+            title: `"${u.name}" - ${t('are_you_sure')}`,
+            text: t('delete_confirm'),
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Evet, Sil',
-            cancelButtonText: 'İptal',
+            confirmButtonText: t('yes_delete'),
+            cancelButtonText: t('cancel'),
             confirmButtonColor: '#ef4444'
         }).then(r => {
             if (r.isConfirmed) {
