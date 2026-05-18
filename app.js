@@ -655,23 +655,138 @@ const MufettisFocus = {
 };
 // --- PWA HELPER ---
 let deferredPrompt;
+
+// Yükleme butonlarını gösteren helper
+function showPwaButtons() {
+    const installBtn = document.getElementById('pwaInstallBtn');
+    const loginBtn = document.getElementById('loginPwaInstallBtn');
+    if (installBtn) installBtn.classList.remove('d-none');
+    if (loginBtn) loginBtn.classList.remove('d-none');
+}
+
+// iOS tespiti
+function isIosSafari() {
+    const ua = navigator.userAgent;
+    const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    return isIOS;
+}
+
+// Native PWA yükleme tetikleyicisi (Android, Windows, Mac, Chrome)
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    const installBtn = document.getElementById('pwaInstallBtn');
-    if (installBtn) installBtn.classList.remove('d-none');
+    showPwaButtons();
+});
+
+// Eğer cihaz iOS ise beforeinstallprompt çalışmaz, butonu manuel gösterelim ki rehber açılabilsin!
+window.addEventListener('DOMContentLoaded', () => {
+    if (isIosSafari()) {
+        showPwaButtons();
+        // Buton etiketlerini iOS için daha açıklayıcı yapalım
+        const loginBtn = document.getElementById('loginPwaInstallBtn');
+        if (loginBtn) loginBtn.innerHTML = '📲 UYGULAMAYI iPHONE/iPAD\'E İNDİR';
+    }
 });
 
 const PWAHelper = {
+    detectPlatform: function() {
+        if (isIosSafari()) return 'ios';
+        const ua = navigator.userAgent;
+        if (/Android/.test(ua)) return 'android';
+        if (/Macintosh|MacIntel|MacPPC|Mac68K/.test(ua)) return 'mac';
+        if (/Windows|Win32|Win64|WOW64/.test(ua)) return 'windows';
+        return 'other';
+    },
+
     install: async function () {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-            const btn = document.getElementById('pwaInstallBtn');
-            if (btn) btn.classList.add('d-none');
+        const platform = this.detectPlatform();
+
+        if (platform === 'ios') {
+            // iOS Safari için son derece şık, antetli Premium Kurulum Rehberi
+            Swal.fire({
+                title: '<span style="font-size:1.15rem; color:#10b981; font-weight:800; letter-spacing:0.5px;">TopClean iOS Yükleme Kılavuzu</span>',
+                html: `
+                    <div class="text-start text-white p-1" style="font-size:0.8rem; line-height:1.6;">
+                        <p class="text-center mb-3 text-muted small">TopClean'i iPhone veya iPad'inize ek bir mağaza olmadan, yerel bir uygulama gibi yükleyin:</p>
+                        
+                        <div class="d-flex align-items-center gap-3 mb-2 p-3 rounded-4 bg-slate-glass border border-secondary border-opacity-10">
+                            <div class="fs-4">1️⃣</div>
+                            <div>
+                                <span class="fw-bold text-white d-block" style="font-size:0.85rem;">Safari Paylaş Butonuna Basın</span>
+                                <span class="text-muted small">Ekranın altındaki <strong class="text-emerald">Paylaş ( <i data-lucide="share" style="width:14px; height:14px; display:inline-block; vertical-align:middle; stroke:#10b981;"></i> )</strong> simgesine tıklayın.</span>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex align-items-center gap-3 mb-2 p-3 rounded-4 bg-slate-glass border border-secondary border-opacity-10">
+                            <div class="fs-4">2️⃣</div>
+                            <div>
+                                <span class="fw-bold text-white d-block" style="font-size:0.85rem;">Ana Ekrana Ekle'yi Seçin</span>
+                                <span class="text-muted small">Açılan menüyü aşağı kaydırıp <strong class="text-emerald">"Ana Ekrana Ekle" (Add to Home Screen)</strong> seçeneğine tıklayın.</span>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex align-items-center gap-3 p-3 rounded-4 bg-slate-glass border border-secondary border-opacity-10">
+                            <div class="fs-4">3️⃣</div>
+                            <div>
+                                <span class="fw-bold text-white d-block" style="font-size:0.85rem;">Yüklemeyi Tamamlayın</span>
+                                <span class="text-muted small">Sağ üst köşedeki yeşil <strong class="text-emerald">"Ekle"</strong> butonuna basın. TopClean ana ekranınıza yerleşecektir!</span>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                background: 'rgba(10, 15, 25, 0.98)',
+                color: '#fff',
+                confirmButtonText: 'Harika, Anladım 👍',
+                confirmButtonColor: '#10b981',
+                customClass: {
+                    popup: 'modal-premium-glass'
+                },
+                didOpen: () => {
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                }
+            });
+            return;
         }
-        deferredPrompt = null;
+
+        if (deferredPrompt) {
+            // Android, Windows ve Mac (Chromium tabanlı tarayıcılar) için Native Kurulum
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                const installBtn = document.getElementById('pwaInstallBtn');
+                const loginBtn = document.getElementById('loginPwaInstallBtn');
+                if (installBtn) installBtn.classList.add('d-none');
+                if (loginBtn) loginBtn.classList.add('d-none');
+            }
+            deferredPrompt = null;
+        } else {
+            // Native prompt aktif değilse (zaten kuruluysa veya tarayıcı kısıtlıysa) genel yükleme kılavuzunu göster
+            Swal.fire({
+                title: '<span style="font-size:1.1rem; color:#10b981; font-weight:800;">Uygulama Yükleme Kılavuzu</span>',
+                html: `
+                    <div class="text-start text-white p-1" style="font-size:0.8rem; line-height:1.6;">
+                        <p class="text-center mb-3 text-muted small">TopClean'i tüm cihazlarınızda yerel uygulama gibi kullanabilirsiniz:</p>
+                        
+                        <div class="p-3 rounded-4 bg-slate-glass border border-secondary border-opacity-10 mb-2">
+                            <strong class="text-emerald d-block mb-1" style="font-size:0.85rem;">🖥️ Bilgisayarlar (Windows & macOS):</strong>
+                            Tarayıcınızın adres çubuğundaki (sağ taraftaki) <strong class="text-white">"Yükle" ( <span class="fs-6">🖥️</span> / <span class="fs-6">⊕</span> )</strong> butonuna tıklayarak yerel masaüstü uygulaması yapabilirsiniz.
+                        </div>
+                        
+                        <div class="p-3 rounded-4 bg-slate-glass border border-secondary border-opacity-10">
+                            <strong class="text-emerald d-block mb-1" style="font-size:0.85rem;">📱 Android Cihazlar:</strong>
+                            Chrome veya Edge menüsündeki (sağ üstteki üç nokta) seçeneğinden <strong class="text-white">"Uygulamayı Yükle"</strong> veya <strong class="text-white">"Ana Ekrana Ekle"</strong> butonuna dokunun.
+                        </div>
+                    </div>
+                `,
+                background: 'rgba(10, 15, 25, 0.98)',
+                color: '#fff',
+                confirmButtonText: 'Kapat',
+                confirmButtonColor: '#10b981',
+                customClass: {
+                    popup: 'modal-premium-glass'
+                }
+            });
+        }
     }
 };
 
@@ -1657,6 +1772,7 @@ let panelHistory = [];
 
 function showPanel(id, pushToHistory = true) {
     document.querySelectorAll('.view-panel').forEach(p => p.classList.add('d-none'));
+    document.querySelectorAll('.idarec-sub-tab').forEach(p => p.classList.add('d-none')); // Alt panelleri temizle
     const target = document.getElementById(id);
     if (target) {
         target.classList.remove('d-none');
@@ -2368,6 +2484,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (typeof lucide !== 'undefined') lucide.createIcons();
     updateSyncStatus();
+
+    // Service Worker Kaydı (PWA Kurulumu ve Çevrimdışı Çalışma Desteği)
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('Service Worker başarıyla kaydedildi:', reg.scope))
+            .catch(err => console.error('Service Worker kayıt hatası:', err));
+    }
 });
 
 // --- SYNC & ONLINE STATUS ---
@@ -2533,6 +2656,7 @@ const KurumYonetimManager = {
         this.localFloors[ad] = {};
         bootstrap.Modal.getInstance(document.getElementById('katEkleModal'))?.hide();
         this.renderKatlar();
+        this.kaydet(true);
     },
 
     katSil: function(katAd) {
@@ -2570,7 +2694,7 @@ const KurumYonetimManager = {
         this.localFloors[katAd][odaAd] = kriterler;
         bootstrap.Modal.getInstance(document.getElementById('odaEkleModal'))?.hide();
         this.renderKatlar();
-        Swal.fire({ icon: 'success', title: 'Eklendi', text: `${odaAd} odası eklendi.`, timer: 1500, showConfirmButton: false });
+        this.kaydet(true);
     },
 
     odaSil: function(katAd, odaAd) {
@@ -2689,10 +2813,28 @@ const KurumYonetimManager = {
             users: this.localUsers
         };
 
+        // Göstergeyi güncelle (Senkronize ediliyor)
+        const syncIndicator = document.getElementById('syncStatusIndicator');
+        if (syncIndicator) {
+            syncIndicator.innerHTML = '<span class="pulse-dot bg-warning"></span> <span class="x-small text-warning">Buluta Yazılıyor...</span>';
+        }
+
         try {
-            await db.ref(`institutions/${currentInstitutionId}/config`).set(config);
+            if (sessiz) {
+                // Hızlı Kaydet (Silme, Ekleme vb): Yalnızca değişen küçük dataları göndererek base64 resimlerin ağı tıkamasını önlüyoruz!
+                await db.ref(`institutions/${currentInstitutionId}/config/floors`).set(this.localFloors);
+                await db.ref(`institutions/${currentInstitutionId}/config/users`).set(this.localUsers);
+            } else {
+                // Komple Kaydet (Markalama dahil): Tüm ayarları tek seferde gönderir
+                await db.ref(`institutions/${currentInstitutionId}/config`).set(config);
+            }
+
             // Global değişkenleri güncelle
-            currentConfig = config;
+            if (!currentConfig) currentConfig = {};
+            currentConfig.branding = this.localBranding;
+            currentConfig.floors = this.localFloors;
+            currentConfig.users = this.localUsers;
+            
             katlar = this.localFloors;
             usersData = this.localUsers;
 
@@ -2715,14 +2857,38 @@ const KurumYonetimManager = {
                 if (currentUser.rol === 'mufettis') MufettisFocus.renderStream();
             }
 
-            if (!sessiz) {
-                Swal.fire({ icon: 'success', title: 'Kaydedildi!', text: 'Kurum ayarları Firebase\'e kaydedildi.', timer: 2000, showConfirmButton: false });
+            // Durumu güncelle
+            updateSyncStatus();
+
+            // Kullanıcıya şık ve hızlı bir toast bildirimi göster
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true,
+                background: 'rgba(10, 15, 25, 0.95)',
+                color: '#fff'
+            });
+
+            if (sessiz) {
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Bulutla Eşitlendi ⚡'
+                });
+            } else {
+                Swal.fire({ 
+                    icon: 'success', 
+                    title: 'Kaydedildi!', 
+                    text: 'Kurum ayarları Firebase\'e başarıyla kaydedildi.', 
+                    timer: 2000, 
+                    showConfirmButton: false 
+                });
             }
         } catch(e) {
             console.error('Kayıt Hatası:', e);
-            if (!sessiz) {
-                Swal.fire('Hata', 'Kayıt sırasında bir sorun oluştu: ' + e.message, 'error');
-            }
+            updateSyncStatus();
+            Swal.fire('Hata', 'Kayıt sırasında bir sorun oluştu: ' + e.message, 'error');
         }
     }
 };
