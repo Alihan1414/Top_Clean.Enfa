@@ -2085,39 +2085,3 @@ select option {
     border-color: rgba(16, 185, 129, 0.5) !important;
     box-shadow: 0 0 15px rgba(16,185,129,0.3) !important;
 }
-
-/* RTL Mode Styles for Arabic */
-body.rtl-mode {
-    text-align: right !important;
-}
-body.rtl-mode .dropdown-menu {
-    text-align: right !important;
-}
-body.rtl-mode .premium-input-group i.input-icon {
-    left: auto !important;
-    right: 20px !important;
-}
-body.rtl-mode .premium-input-group .premium-input {
-    padding-left: 20px !important;
-    padding-right: 55px !important;
-    text-align: right !important;
-}
-body.rtl-mode .premium-input-group .eye-icon {
-    right: auto !important;
-    left: 20px !important;
-}
-body.rtl-mode .premium-checkbox {
-    padding-left: 0 !important;
-    padding-right: 35px !important;
-}
-body.rtl-mode .premium-checkbox input {
-    left: auto !important;
-    right: 0 !important;
-}
-body.rtl-mode .premium-checkbox .checkmark {
-    left: auto !important;
-    right: 0 !important;
-}
-body.rtl-mode .btn-arrow {
-    transform: scaleX(-1) !important;
-}
