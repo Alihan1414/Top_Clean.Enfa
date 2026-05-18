@@ -48,7 +48,88 @@ const TRANSLATIONS = {
         yes_delete: "Evet, Sil!",
         cancel: "İptal",
         saved_success: "Bulutla Eşitlendi ⚡",
-        logged_out: "Çıkış yapıldı!"
+        logged_out: "Çıkış yapıldı!",
+        cockpit_title: "YURT MESULÜ KOKPİTİ",
+        settings: "⚙️ Ayarlar",
+        building_pulse: "BİNA NABZI",
+        active_personnel: "Aktif Personel",
+        critical_zones: "Kritik Bölge",
+        monthly_report: "📊 AYLIK FAALİYET RAPORU AL",
+        building_health_matrix: "Bina Sağlık Matrisi",
+        live_data: "Canlı Veri",
+        recent_activities: "Son Aktiviteler",
+        btn_analytics: "📊 Analitik",
+        btn_leaderboard: "🏆 Liderlik",
+        btn_faults: "📝 Arızalar",
+        btn_beytulmal: "✨ Beytülmal",
+        btn_materials: "📦 Malzemeler",
+        btn_personnel: "👥 Personel",
+        btn_setup_inst: "⚙️ Kurum Kur",
+        smart_list_center: "Akıllı Liste Merkezi",
+        health_based_distribution: "SAĞLIK BAZLI OTOMATİK DAĞITIM SİSTEMİ",
+        step_1_title: "1. Adım: Talebe Listesi",
+        close_panel: "Paneli Kapat",
+        inspection_panel_sub: "Canlı olarak gelen temizlik raporlarını onaylayın",
+        report_activity: "Rapor Aktivitesi",
+        leaderboard_table: "Liderlik Tablosu",
+        rooms_suffix: "Oda",
+        no_activity_today: "Bugün henüz aktivite yok",
+        fault_solved: "Çözüldü",
+        fault_in_progress: "Süreçte",
+        fault_pending: "Bekliyor",
+        no_fault_records: "Henüz arıza kaydı yok.",
+        reports_pending: "rapor onay bekliyor",
+        all_reports_inspected: "✅ Tüm raporlar incelendi",
+        no_pending_work: "Harika! Bekleyen iş yok.",
+        new_reports_will_appear: "Yeni raporlar geldikçe burada görünecek.",
+        staff_note: "GÖREVLİ NOTU:",
+        approve: "✅ ONAYLA",
+        reject: "❌ REDDET",
+        reject_reason: "Red Nedeni?",
+        staff_panel: "Görevli Paneli",
+        completed_suffix: "BİTEN",
+        use_material: "🧼 Malzeme Kullan",
+        floor_status_map: "Kat Durum Haritası",
+        all_rooms: "Tüm Odalar",
+        photo: "Fotoğraf",
+        voice_note: "Sesli Not",
+        shift_note_placeholder: "Vardiya notu veya sorun bildirin...",
+        send_report: "RAPORU GÖNDER",
+        cancel_and_back: "İPTAL ET VE GERİ DÖN",
+        comma_separated_placeholder: "İsimleri araya virgül koyarak yazın...",
+        asthma_patients: "🔴 ASTIM HASTALARI",
+        allergic_patients: "🟠 ALERJİK RAHATSIZLAR",
+        healthy_students: "🟢 SAĞLIKLI",
+        other_students: "🔵 DİĞER",
+        run_smart_distribution: "AKILLI HAFIZAYI ÇALIŞTIR VE DAĞIT →",
+        distribution_results: "DAĞITIM SONUÇLARI",
+        add_new_student: "+ Yeni Talebe",
+        set_floor_leaders: "KAT SORUMLULARINI BELİRLE",
+        get_pdf_output: "PROFESYONEL PDF ÇIKTISI AL (AFİŞ)",
+        correction_needed: "⚠️ DÜZELTME GEREKİYOR",
+        next_task: "SIRADAKİ GÖREVİN",
+        clean_again: "TEKRAR TEMİZLE",
+        start_task: "GÖREVE BAŞLA →",
+        all_tasks_completed: "Tüm Görevler Tamam!",
+        all_rooms_cleaned_success: "Katındaki tüm odaları başarıyla temizledin.",
+        task_completed: "Tamamlandı",
+        task_rejected: "Reddedildi (Düzeltme Lazım)",
+        task_pending_approval: "Onay Bekliyor",
+        task_waiting: "Bekliyor",
+        view_note: "Notu Gör",
+        fix: "Düzelt",
+        start: "Başla",
+        inspector_note: "Müfettiş Notu",
+        no_explanation_left: "Bir açıklama bırakılmamış.",
+        fix_now: "HEMEN DÜZELT",
+        report_sent_pending_approval: "Rapor gönderildi, onay bekleniyor.",
+        select_teacher: "Hoca Seçin...",
+        floor_leader: "Kat Başkanı...",
+        please_enter_at_least_one_student: "Lütfen en az bir talebe ismi girin.",
+        smart_distribution_done: "Akıllı hafıza devreye girdi ve dağıtım yapıldı.",
+        empty: "BOŞ",
+        name_surname: "İsim Soyisim",
+        place_in_suitable_room: "UYGUN YERE YERLEŞTİR"
     },
     en: {
         tagline: "with you",
@@ -98,7 +179,88 @@ const TRANSLATIONS = {
         yes_delete: "Yes, Delete!",
         cancel: "Cancel",
         saved_success: "Synced with Cloud ⚡",
-        logged_out: "Logged out successfully!"
+        logged_out: "Logged out successfully!",
+        cockpit_title: "ADMIN COCKPIT",
+        settings: "⚙️ Settings",
+        building_pulse: "BUILDING PULSE",
+        active_personnel: "Active Staff",
+        critical_zones: "Critical Zones",
+        monthly_report: "📊 GET MONTHLY REPORT",
+        building_health_matrix: "Building Health Matrix",
+        live_data: "Live Data",
+        recent_activities: "Recent Activities",
+        btn_analytics: "📊 Analytics",
+        btn_leaderboard: "🏆 Leaderboard",
+        btn_faults: "📝 Faults",
+        btn_beytulmal: "✨ Resource Sensitivity",
+        btn_materials: "📦 Materials",
+        btn_personnel: "👥 Personnel",
+        btn_setup_inst: "⚙️ Setup Inst.",
+        smart_list_center: "Smart List Center",
+        health_based_distribution: "HEALTH-BASED AUTOMATIC DISTRIBUTION",
+        step_1_title: "Step 1: Student List",
+        close_panel: "Close Panel",
+        inspection_panel_sub: "Approve live cleaning reports",
+        report_activity: "Report Activity",
+        leaderboard_table: "Leaderboard Table",
+        rooms_suffix: "Rooms",
+        no_activity_today: "No activity today yet",
+        fault_solved: "Solved",
+        fault_in_progress: "In Progress",
+        fault_pending: "Pending",
+        no_fault_records: "No fault reports yet.",
+        reports_pending: "reports pending approval",
+        all_reports_inspected: "✅ All reports inspected",
+        no_pending_work: "Great! No pending work.",
+        new_reports_will_appear: "New reports will appear here as they arrive.",
+        staff_note: "STAFF NOTE:",
+        approve: "✅ APPROVE",
+        reject: "❌ REJECT",
+        reject_reason: "Reason for Rejection?",
+        staff_panel: "Staff Panel",
+        completed_suffix: "DONE",
+        use_material: "🧼 Use Material",
+        floor_status_map: "Floor Status Map",
+        all_rooms: "All Rooms",
+        photo: "Photo",
+        voice_note: "Voice Note",
+        shift_note_placeholder: "Write shift note or report an issue...",
+        send_report: "SEND REPORT",
+        cancel_and_back: "CANCEL AND GO BACK",
+        comma_separated_placeholder: "Write names separated by commas...",
+        asthma_patients: "🔴 ASTHMATIC INDIVIDUALS",
+        allergic_patients: "🟠 ALLERGIC INDIVIDUALS",
+        healthy_students: "🟢 HEALTHY",
+        other_students: "🔵 OTHER",
+        run_smart_distribution: "RUN SMART DISTRIBUTION →",
+        distribution_results: "DISTRIBUTION RESULTS",
+        add_new_student: "+ New Student",
+        set_floor_leaders: "SET FLOOR LEADERS",
+        get_pdf_output: "GET PROFESSIONAL PDF OUTPUT (POSTER)",
+        correction_needed: "⚠️ CORRECTION NEEDED",
+        next_task: "YOUR NEXT TASK",
+        clean_again: "CLEAN AGAIN",
+        start_task: "START TASK →",
+        all_tasks_completed: "All Tasks Completed!",
+        all_rooms_cleaned_success: "You have successfully cleaned all rooms on your floor.",
+        task_completed: "Completed",
+        task_rejected: "Rejected (Correction Needed)",
+        task_pending_approval: "Pending Approval",
+        task_waiting: "Waiting",
+        view_note: "View Note",
+        fix: "Fix",
+        start: "Start",
+        inspector_note: "Inspector Note",
+        no_explanation_left: "No explanation was left.",
+        fix_now: "FIX NOW",
+        report_sent_pending_approval: "Report sent, pending approval.",
+        select_teacher: "Select Teacher...",
+        floor_leader: "Floor Leader...",
+        please_enter_at_least_one_student: "Please enter at least one student name.",
+        smart_distribution_done: "Smart memory activated and distribution completed.",
+        empty: "EMPTY",
+        name_surname: "Firstname Surname",
+        place_in_suitable_room: "PLACE IN SUITABLE ROOM"
     },
     fr: {
         tagline: "avec vous",
@@ -148,61 +310,96 @@ const TRANSLATIONS = {
         yes_delete: "Oui, Supprimer!",
         cancel: "Annuler",
         saved_success: "Synchronisé avec le Cloud ⚡",
-        logged_out: "Déconnexion réussie!"
-    },
-    ar: {
-        tagline: "معكم دائماً",
-        inst_code: "رمز المؤسسة",
-        username: "اسم المستخدم",
-        password: "كلمة المرور",
-        remember_me: "تذكرني",
-        login_btn: "تسجيل الدخول",
-        download_btn: "📲 تحميل التطبيق للهاتف/الكمبيوتر",
-        logout: "تسجيل الخروج",
-        cloud_sync: "تمت المزامنة السحابية",
-        offline: "وضع غير متصل بالإنترنت",
-        search_placeholder: "بحث عن غرفة/طابق...",
-        building_xray: "مخطط البناء الذكي",
-        total_rooms: "إجمالي الغرف",
-        clean: "نظيف",
-        dirty: "متسخ",
-        inspecting: "قيد الفحص",
-        cleaning_process: "مراحل التنظيف",
-        floors_rooms: "الطوابق والغرف",
-        new_floor: "+ طابق جديد",
-        new_oda: "+ غرفة جديدة",
-        personnel: "الموظفين وطاقم العمل",
-        add_user: "إضافة مستخدم جديد",
-        chat: "الدردشة الميدانية",
-        save: "💾 حفظ الإعدادات",
-        setup_inst: "⚙️ إعداد المؤسسة",
-        back: "← رجوع",
-        beytulmal_title: "حساسية الموارد",
-        beytulmal_subtitle: "إدارة الموارد المحسنة",
-        energy: "طاقة",
-        material: "مواد",
-        water: "ماء",
-        efficiency_index: "مؤشر الكفاءة",
-        inspection_panel: "مركز التفتيش الذكي",
-        room_status_select: "اختر حالة الغرفة",
-        room_clean: "نظيف (تأكيد)",
-        room_inspecting: "تحت الفحص",
-        room_dirty: "متسخ (تكليف بمهمة)",
-        assign_personnel: "اختر الموظف المسؤول",
-        fault_report: "⚠️ الإبلاغ عن عطل",
-        faults_title: "تقارير الأعطال النشطة",
-        success: "نجاح",
-        error: "خطأ",
-        are_you_sure: "هل أنت متأكد؟",
-        delete_confirm: "لا يمكن التراجع عن هذا الإجراء!",
-        yes_delete: "نعم، احذف!",
-        cancel: "إلغاء",
-        saved_success: "تمت المزامنة السحابية ⚡",
-        logged_out: "تم تسجيل الخروج بنجاح!"
+        logged_out: "Déconnexion réussie!",
+        cockpit_title: "COCKPIT DE L'ADMIN",
+        settings: "⚙️ Paramètres",
+        building_pulse: "POULS DU BÂTIMENT",
+        active_personnel: "Personnel Actif",
+        critical_zones: "Zones Critiques",
+        monthly_report: "📊 RAPPORT MENSUEL",
+        building_health_matrix: "Matrice de Santé",
+        live_data: "Données Live",
+        recent_activities: "Activités Récentes",
+        btn_analytics: "📊 Analytique",
+        btn_leaderboard: "🏆 Classement",
+        btn_faults: "📝 Pannes",
+        btn_beytulmal: "✨ Sensibilité",
+        btn_materials: "📦 Matériaux",
+        btn_personnel: "👥 Personnel",
+        btn_setup_inst: "⚙️ Config. Établ.",
+        smart_list_center: "Centre de Liste Intelligent",
+        health_based_distribution: "DISTRIBUTION AUTOMATIQUE BASÉE SUR LA SANTÉ",
+        step_1_title: "Étape 1: Liste des Étudiants",
+        close_panel: "Fermer le Panel",
+        inspection_panel_sub: "Approuver les rapports de nettoyage en direct",
+        report_activity: "Activité des Rapports",
+        leaderboard_table: "Tableau de Classement",
+        rooms_suffix: "Chambres",
+        no_activity_today: "Pas encore d'activité aujourd'hui",
+        fault_solved: "Résolu",
+        fault_in_progress: "En Cours",
+        fault_pending: "En Attente",
+        no_fault_records: "Aucun rapport de problème.",
+        reports_pending: "rapports en attente d'approbation",
+        all_reports_inspected: "✅ Tous les rapports inspectés",
+        no_pending_work: "Super! Pas de travail en attente.",
+        new_reports_will_appear: "Les nouveaux rapports apparaîtront ici.",
+        staff_note: "NOTE DU PERSONNEL:",
+        approve: "✅ VALIDER",
+        reject: "❌ REJETER",
+        reject_reason: "Motif du rejet?",
+        staff_panel: "Panneau du Personnel",
+        completed_suffix: "COMPLÉTÉ",
+        use_material: "🧼 Utiliser du Matériel",
+        floor_status_map: "Carte de l'État de l'Étage",
+        all_rooms: "Toutes les Chambres",
+        photo: "Photo",
+        voice_note: "Note Vocale",
+        shift_note_placeholder: "Rédiger une note de quart...",
+        send_report: "ENVOYER LE RAPPORT",
+        cancel_and_back: "ANNULER ET RETOURNER",
+        comma_separated_placeholder: "Écrivez les noms séparés par des virgules...",
+        asthma_patients: "🔴 PATIENTS SOUFFRANT D'ASTHME",
+        allergic_patients: "🟠 ALLERGIQUES",
+        healthy_students: "🟢 EN BONNE SANTÉ",
+        other_students: "🔵 AUTRE",
+        run_smart_distribution: "DISTRIBUTION INTELLIGENTE →",
+        distribution_results: "RÉSULTATS DE LA DISTRIBUTION",
+        add_new_student: "+ Nouvel Étudiant",
+        set_floor_leaders: "DÉSIGNER LES RESPONSABLES D'ÉTAGE",
+        get_pdf_output: "OBTENIR L'IMPRESSION PDF (AFFICHE)",
+        correction_needed: "⚠️ CORRECTION NÉCESSAIRE",
+        next_task: "VOTRE TÂCHE SUIVANTE",
+        clean_again: "NETTOYER À NOUVEAU",
+        start_task: "COMMENCER LA TÂCHE →",
+        all_tasks_completed: "Toutes les tâches sont terminées!",
+        all_rooms_cleaned_success: "Vous avez nettoyé toutes les chambres de votre étage.",
+        task_completed: "Terminé",
+        task_rejected: "Rejeté (Correction requise)",
+        task_pending_approval: "En attente d'approbation",
+        task_waiting: "En attente",
+        view_note: "Voir la note",
+        fix: "Corriger",
+        start: "Commencer",
+        inspector_note: "Note de l'Inspecteur",
+        no_explanation_left: "Aucune explication n'a été fournie.",
+        fix_now: "CORRIGER MAINTENANT",
+        report_sent_pending_approval: "Rapport envoyé, en attente d'approbation.",
+        select_teacher: "Choisir un Enseignant...",
+        floor_leader: "Chef d'Étage...",
+        please_enter_at_least_one_student: "Veuillez entrer au moins un nom d'étudiant.",
+        smart_distribution_done: "La mémoire intelligente a été activée et la distribution est terminée.",
+        empty: "VIDE",
+        name_surname: "Prénom Nom",
+        place_in_suitable_room: "PLACER DANS LA CHAMBRE APPROPRIÉE"
     }
 };
 
 let currentLanguage = localStorage.getItem('topclean_lang') || 'tr';
+if (!TRANSLATIONS[currentLanguage]) {
+    currentLanguage = 'tr';
+    localStorage.setItem('topclean_lang', 'tr');
+}
 
 // Çeviri Yardımcı Fonksiyonu
 function t(key) {
@@ -241,14 +438,9 @@ function translateApp() {
     const activeFlag = document.getElementById(`flag-${currentLanguage}`);
     if (activeFlag) activeFlag.classList.add('active');
 
-    // 4. Arapça için RTL / LTR yönlendirmesi
-    if (currentLanguage === 'ar') {
-        document.documentElement.dir = 'rtl';
-        document.body.classList.add('rtl-mode');
-    } else {
-        document.documentElement.dir = 'ltr';
-        document.body.classList.remove('rtl-mode');
-    }
+    // 4. LTR Yönlendirmesini garantiye al (Arapça kaldırıldığı için)
+    document.documentElement.dir = 'ltr';
+    document.body.classList.remove('rtl-mode');
 
     // 5. Lucide ikonlarını yeniden oluştur
     if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -260,6 +452,27 @@ window.changeLang = function(lang) {
     currentLanguage = lang;
     localStorage.setItem('topclean_lang', lang);
     translateApp();
+    
+    // Aktif paneli yeniden çizerek dinamik verilerin anında çevrilmesini sağla
+    if (typeof currentUser !== 'undefined' && currentUser) {
+        const activePanel = document.querySelector('.view-panel:not(.d-none)');
+        if (activePanel) {
+            const id = activePanel.id;
+            if (id === 'idarecPanel' && typeof IdarecManager !== 'undefined') {
+                IdarecManager.renderCockpit();
+            } else if (id === 'adminPanel' && typeof MufettisFocus !== 'undefined') {
+                MufettisFocus.renderStream();
+            } else if (id === 'gorevliPanel') {
+                loadGorevliPanel(currentUser.kat);
+            } else if (id === 'listePanel' && typeof ListeManager !== 'undefined') {
+                ListeManager.load();
+            } else if (id === 'inventoryPanel' && typeof InventoryManager !== 'undefined') {
+                InventoryManager.render();
+            } else if (id === 'arizaYonetimPanel' && typeof ArizaManager !== 'undefined') {
+                ArizaManager.renderYonetim();
+            }
+        }
+    }
     
     // Küçük bildirim
     const Toast = Swal.mixin({
@@ -275,8 +488,7 @@ window.changeLang = function(lang) {
         icon: 'success',
         title: lang === 'tr' ? 'Dil Türkçe olarak ayarlandı 🇹🇷' : 
                lang === 'en' ? 'Language set to English 🇺🇸' : 
-               lang === 'fr' ? 'Langue configurée en Français 🇫🇷' : 
-               'تم تغيير اللغة إلى العربية 🇸🇦'
+               'Langue configurée en Français 🇫🇷'
     });
 };
 
@@ -861,7 +1073,7 @@ const MufettisFocus = {
         // Badge güncelle
         const badge = document.getElementById('mufettisBekleyenBadge');
         if (badge) {
-            badge.innerText = pending.length > 0 ? `⏳ ${pending.length} rapor onay bekliyor` : "✅ Tüm raporlar incelendi";
+            badge.innerText = pending.length > 0 ? `⏳ ${pending.length} ` + t('reports_pending') : t('all_reports_inspected');
             badge.className = pending.length > 0 ? "badge bg-warning text-dark rounded-pill px-3 py-2" : "badge bg-success rounded-pill px-3 py-2";
         }
 
@@ -869,12 +1081,14 @@ const MufettisFocus = {
             container.innerHTML = `
                 <div class="text-center py-5">
                     <div style="font-size:3rem;">✨</div>
-                    <div class="text-white fw-bold mt-2">Harika! Bekleyen iş yok.</div>
-                    <p class="text-muted small">Yeni raporlar geldikçe burada görünecek.</p>
+                    <div class="text-white fw-bold mt-2">${t('no_pending_work')}</div>
+                    <p class="text-muted small">${t('new_reports_will_appear')}</p>
                 </div>
             `;
             return;
         }
+
+        const timeLocale = currentLanguage === 'ar' ? 'ar-EG' : currentLanguage === 'fr' ? 'fr-FR' : currentLanguage === 'en' ? 'en-US' : 'tr-TR';
 
         container.innerHTML = pending.map(r => `
             <div class="glass-card p-4 shadow-lg border-emerald border-opacity-10">
@@ -885,20 +1099,20 @@ const MufettisFocus = {
                     </div>
                     <div class="text-end">
                         <div class="x-small text-white fw-bold">${r.gorevli}</div>
-                        <div class="x-small text-muted">${new Date(r.tarih).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}</div>
+                        <div class="x-small text-muted">${new Date(r.tarih).toLocaleTimeString(timeLocale,{hour:'2-digit',minute:'2-digit'})}</div>
                     </div>
                 </div>
 
                 ${r.foto ? `<img src="${r.foto}" class="w-100 rounded-4 mb-3 shadow-sm" style="max-height:250px; object-fit:cover; border:1px solid rgba(255,255,255,0.05);">` : ''}
                 
                 ${r.not ? `<div class="p-3 rounded-4 bg-dark bg-opacity-50 border border-warning border-opacity-25 mb-3">
-                    <div class="x-small text-warning fw-bold mb-1">GÖREVLİ NOTU:</div>
+                    <div class="x-small text-warning fw-bold mb-1">${t('staff_note')}</div>
                     <div class="text-white small italic">"${r.not}"</div>
                 </div>` : ''}
 
                 <div class="d-flex gap-2">
-                    <button onclick="MufettisFocus.kararHizli('${r.id}', 'onaylandi')" class="btn btn-success flex-grow-1 py-3 rounded-pill fw-bold shadow-success">✅ ONAYLA</button>
-                    <button onclick="MufettisFocus.kararHizli('${r.id}', 'reddedildi')" class="btn btn-outline-danger flex-grow-1 py-3 rounded-pill fw-bold">❌ REDDET</button>
+                    <button onclick="MufettisFocus.kararHizli('${r.id}', 'onaylandi')" class="btn btn-success flex-grow-1 py-3 rounded-pill fw-bold shadow-success">${t('approve')}</button>
+                    <button onclick="MufettisFocus.kararHizli('${r.id}', 'reddedildi')" class="btn btn-outline-danger flex-grow-1 py-3 rounded-pill fw-bold">${t('reject')}</button>
                 </div>
             </div>
         `).join('');
@@ -909,7 +1123,16 @@ const MufettisFocus = {
         if (!r) return;
 
         if (durum === 'reddedildi') {
-            Swal.fire({ title: 'Red Nedeni?', input: 'textarea', confirmButtonText: 'REDDET' }).then(res => {
+            Swal.fire({
+                title: t('reject_reason'),
+                input: 'textarea',
+                background: '#0a0f14',
+                color: '#fff',
+                confirmButtonText: t('reject'),
+                cancelButtonText: t('cancel'),
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444'
+            }).then(res => {
                 if (res.isConfirmed) this.kaydetHizli(id, durum, res.value);
             });
         } else {
@@ -1256,7 +1479,7 @@ const IdarecManager = {
                 <div class="floor-card">
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <span class="x-small fw-bold text-white">${katAd.split(' ')[0]}</span>
-                        <span class="x-small text-muted" style="font-size:0.6rem;">${bolumler.length} Oda</span>
+                        <span class="x-small text-muted" style="font-size:0.6rem;">${bolumler.length} ${t('rooms_suffix')}</span>
                     </div>
                     <div class="room-matrix">${roomsHTML}</div>
                 </div>
@@ -1284,16 +1507,23 @@ const IdarecManager = {
         // 4. CANLI AKIŞ (FEED)
         if (feedContainer) {
             const lastActs = [...data].reverse().slice(0, 10);
+            const durumTranslates = {
+                onaylandi: t('clean'),
+                bekliyor: t('inspecting'),
+                reddedildi: t('dirty')
+            };
+            const timeLocale = currentLanguage === 'ar' ? 'ar-EG' : currentLanguage === 'fr' ? 'fr-FR' : currentLanguage === 'en' ? 'en-US' : 'tr-TR';
+            
             feedContainer.innerHTML = lastActs.map(a => `
                 <div class="d-flex align-items-start gap-2 p-2 rounded-3" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05);">
                     <div style="width:8px; height:8px; border-radius:50%; background:${a.durum==='onaylandi'?'#10b981':a.durum==='reddedildi'?'#ef4444':'#f59e0b'}; margin-top:5px;"></div>
                     <div class="flex-grow-1">
                         <div class="x-small text-white fw-bold">${a.gorevli}</div>
-                        <div class="x-small text-muted">${a.bolum} • ${a.durum.toUpperCase()}</div>
+                        <div class="x-small text-muted">${a.bolum} • ${(durumTranslates[a.durum] || a.durum).toUpperCase()}</div>
                     </div>
-                    <div class="x-small text-muted" style="font-size:0.6rem;">${new Date(a.tarih).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}</div>
+                    <div class="x-small text-muted" style="font-size:0.6rem;">${new Date(a.tarih).toLocaleTimeString(timeLocale,{hour:'2-digit',minute:'2-digit'})}</div>
                 </div>
-            `).join('') || '<div class="text-center py-3 text-muted small">Bugün henüz aktivite yok</div>';
+            `).join('') || `<div class="text-center py-3 text-muted small">${t('no_activity_today')}</div>`;
         }
     },
 
@@ -1310,10 +1540,10 @@ const IdarecManager = {
                     <div class="x-small text-muted">${a.detay}</div>
                 </div>
                 <div class="badge rounded-pill ${a.durum==='cozuldu'?'bg-success':a.durum==='surec'?'bg-warning text-dark':'bg-danger'}" style="font-size:0.6rem;">
-                    ${a.durum==='cozuldu'?'Çözüldü':a.durum==='surec'?'Süreçte':'Bekliyor'}
+                    ${a.durum==='cozuldu'?t('fault_solved'):a.durum==='surec'?t('fault_in_progress'):t('fault_pending')}
                 </div>
             </div>
-        `).join('') || '<div class="text-center py-4 text-muted small">Henüz arıza kaydı yok.</div>';
+        `).join('') || `<div class="text-center py-4 text-muted small">${t('no_fault_records')}</div>`;
     },
 
     // 1. DENETİM - Isı haritası
@@ -1607,13 +1837,13 @@ const ListeManager = {
                     <div class="row g-2">
                         <div class="col-6">
                             <select onchange="ListeManager.saveLeader('${floor}', 'hoca', this.value)" class="form-select bg-slate-glass text-white border-0 x-small py-2">
-                                <option value="">Hoca Seçin...</option>
+                                <option value="">${t('select_teacher')}</option>
                                 ${hocalar.map(h => `<option value="${h.name}" ${leader.hoca === h.name ? 'selected' : ''}>${h.name}</option>`).join('')}
                             </select>
                         </div>
                         <div class="col-6">
                             <input type="text" value="${leader.baskan}" onchange="ListeManager.saveLeader('${floor}', 'baskan', this.value)" 
-                                   placeholder="Kat Başkanı..." class="form-control bg-slate-glass text-white border-0 x-small py-2">
+                                   placeholder="${t('floor_leader')}" class="form-control bg-slate-glass text-white border-0 x-small py-2">
                         </div>
                     </div>
                 </div>
@@ -1639,7 +1869,14 @@ const ListeManager = {
         const digerList = this.parseList(document.getElementById('listDiger').value);
 
         const totalTalebeCount = astimList.length + alerjikList.length + saglikliList.length + digerList.length;
-        if (totalTalebeCount === 0) return Swal.fire("Hata", "Lütfen en az bir talebe ismi girin.", "error");
+        if (totalTalebeCount === 0) return Swal.fire({
+            title: t('error'),
+            text: t('please_enter_at_least_one_student'),
+            icon: "error",
+            background: '#0a0f14',
+            color: '#fff',
+            confirmButtonColor: '#ef4444'
+        });
 
         let allRooms = [];
         Object.keys(katlar).forEach(k => {
@@ -1681,7 +1918,14 @@ const ListeManager = {
         this.renderFinalList();
         this.renderLeadersUI();
         this.showStep(2);
-        Swal.fire("Başarılı", "Akıllı hafıza devreye girdi ve dağıtım yapıldı.", "success");
+        Swal.fire({
+            title: t('success'),
+            text: t('smart_distribution_done'),
+            icon: "success",
+            background: '#0a0f14',
+            color: '#fff',
+            confirmButtonColor: '#10b981'
+        });
     },
 
     getRoomPriority: function(name) {
@@ -1703,7 +1947,7 @@ const ListeManager = {
                 <div class="text-end">
                     ${a.students.length > 0 ? 
                         `<span class="badge badge-premium small">${a.students.join(", ")}</span>` : 
-                        `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 small">BOŞ</span>`}
+                        `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 small">${t('empty')}</span>`}
                 </div>
             </div>
         `).join('');
@@ -1711,17 +1955,21 @@ const ListeManager = {
 
     yeniTalebeEkleModali: function() {
         Swal.fire({
-            title: 'Yeni Talebe Ekle',
+            title: t('add_new_student'),
             html: `
-                <input type="text" id="newTName" class="swal2-input" placeholder="İsim Soyisim">
+                <input type="text" id="newTName" class="swal2-input" placeholder="${t('name_surname')}">
                 <select id="newTSaglik" class="swal2-select w-100">
-                    <option value="saglikli">Sağlıklı</option>
-                    <option value="astim">Astım Hastası</option>
-                    <option value="alerjik">Alerjik</option>
+                    <option value="saglikli">${t('healthy_students')}</option>
+                    <option value="astim">${t('asthma_patients')}</option>
+                    <option value="alerjik">${t('allergic_patients')}</option>
                 </select>
             `,
-            confirmButtonText: 'UYGUN YERE YERLEŞTİR',
-            showCancelButton: true
+            background: '#0a0f14',
+            color: '#fff',
+            confirmButtonText: t('place_in_suitable_room'),
+            showCancelButton: true,
+            cancelButtonText: t('cancel'),
+            confirmButtonColor: '#10b981'
         }).then(r => {
             if (r.isConfirmed) {
                 const name = document.getElementById('newTName').value;
@@ -1928,18 +2176,18 @@ function loadGorevliPanel(katAd) {
 
         nextTaskContainer.innerHTML = `
             <div class="glass-card p-4 border-${isRed?'danger':'emerald'} shadow-${isRed?'danger':'success'}" style="background:linear-gradient(135deg, ${isRed?'rgba(239,68,68,0.1)':'rgba(16,185,129,0.1)'}, rgba(0,0,0,0.4));">
-                <div class="x-small text-${isRed?'danger':'emerald'} fw-bold mb-1 text-uppercase">${isRed ? '⚠️ DÜZELTME GEREKİYOR' : 'SIRADAKİ GÖREVİN'}</div>
+                <div class="x-small text-${isRed?'danger':'emerald'} fw-bold mb-1 text-uppercase">${isRed ? t('correction_needed') : t('next_task')}</div>
                 <h3 class="h2 fw-bold text-white mb-4">${nextRoom}</h3>
                 ${isRed ? `<div class="p-2 bg-dark bg-opacity-50 rounded-3 mb-3 x-small text-white italic">"${rNext.redNotu}"</div>` : ''}
-                <button onclick="KriterManager.ac('${katAd}','${nextRoom}')" class="btn btn-${isRed?'danger':'emerald'} w-100 py-3 rounded-pill fw-bold" style="font-size:1.1rem;">${isRed?'TEKRAR TEMİZLE':'GÖREVE BAŞLA →'}</button>
+                <button onclick="KriterManager.ac('${katAd}','${nextRoom}')" class="btn btn-${isRed?'danger':'emerald'} w-100 py-3 rounded-pill fw-bold" style="font-size:1.1rem;">${isRed ? t('clean_again') : t('start_task')}</button>
             </div>
         `;
     } else if (nextTaskContainer) {
         nextTaskContainer.innerHTML = `
             <div class="glass-card p-4 text-center border-emerald opacity-75">
                 <div style="font-size:2.5rem;">🎉</div>
-                <div class="h5 fw-bold text-white mt-2">Tüm Görevler Tamam!</div>
-                <p class="x-small text-muted mb-0">Katındaki tüm odaları başarıyla temizledin.</p>
+                <div class="h5 fw-bold text-white mt-2">${t('all_tasks_completed')}</div>
+                <p class="x-small text-muted mb-0">${t('all_rooms_cleaned_success')}</p>
             </div>
         `;
     }
@@ -1956,10 +2204,10 @@ function loadGorevliPanel(katAd) {
                 <div style="width:10px; height:10px; border-radius:50%; background:${isDone ? '#10b981' : isRed ? '#ef4444' : isPending ? '#f59e0b' : '#333'};"></div>
                 <div class="flex-grow-1">
                     <div class="small fw-bold text-white">${bolum}</div>
-                    <div class="x-small text-muted">${isDone ? 'Tamamlandı' : isRed ? 'Reddedildi (Düzeltme Lazım)' : isPending ? 'Onay Bekliyor' : 'Bekliyor'}</div>
+                    <div class="x-small text-muted">${isDone ? t('task_completed') : isRed ? t('task_rejected') : isPending ? t('task_pending_approval') : t('task_waiting')}</div>
                 </div>
-                ${isRed ? `<button onclick="GorevliManager.showRedNotu('${katAd}','${bolum}','${r.redNotu}')" class="btn btn-sm btn-outline-danger rounded-pill px-3">Notu Gör</button>` : ''}
-                ${!isDone && !isPending ? `<button onclick="KriterManager.ac('${katAd}','${bolum}')" class="btn btn-sm btn-glass-emerald rounded-pill px-3">${isRed?'Düzelt':'Başla'}</button>` : isDone ? '✅' : '⏳'}
+                ${isRed ? `<button onclick="GorevliManager.showRedNotu('${katAd}','${bolum}','${r.redNotu}')" class="btn btn-sm btn-outline-danger rounded-pill px-3">${t('view_note')}</button>` : ''}
+                ${!isDone && !isPending ? `<button onclick="KriterManager.ac('${katAd}','${bolum}')" class="btn btn-sm btn-glass-emerald rounded-pill px-3">${isRed ? t('fix') : t('start')}</button>` : isDone ? '✅' : '⏳'}
             </div>
         `;
     }).join('');
@@ -1969,14 +2217,14 @@ function loadGorevliPanel(katAd) {
 const GorevliManager = {
     showRedNotu: function(kat, bolum, not) {
         Swal.fire({
-            title: 'Müfettiş Notu',
-            text: not || "Bir açıklama bırakılmamış.",
+            title: t('inspector_note'),
+            text: not || t('no_explanation_left'),
             icon: 'warning',
             background: '#0a0f14',
             color: '#fff',
-            confirmButtonText: 'HEMEN DÜZELT',
+            confirmButtonText: t('fix_now'),
             showCancelButton: true,
-            cancelButtonText: 'KAPAT',
+            cancelButtonText: t('cancel'),
             confirmButtonColor: '#ef4444'
         }).then(res => {
             if (res.isConfirmed) KriterManager.ac(kat, bolum);
@@ -2039,7 +2287,14 @@ const KriterManager = {
                 not,
                 foto: fotoBase64 || null
             });
-            Swal.fire("Başarılı", "Rapor gönderildi, onay bekleniyor.", "success");
+            Swal.fire({
+                title: t('success'),
+                text: t('report_sent_pending_approval'),
+                icon: "success",
+                background: '#0a0f14',
+                color: '#fff',
+                confirmButtonColor: '#10b981'
+            });
             _routeUser();
         };
 
