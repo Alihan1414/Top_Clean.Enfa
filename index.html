@@ -191,10 +191,22 @@
                     </div>
                 </div>
                 <div class="d-flex align-items-center gap-2">
+                    <!-- Dil Seçimi (Language Dropdown) -->
+                    <div class="dropdown">
+                        <button class="btn btn-premium-circle" type="button" id="langDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Dil / Language" style="width:38px; height:38px; display:flex; align-items:center; justify-content:center;">
+                            <i data-lucide="languages" style="width:16px; height:16px;"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark p-2 border-emerald" aria-labelledby="langDropdown" style="background: rgba(10,15,25,0.98); backdrop-filter: blur(20px); border-radius: 16px; border: 1px solid rgba(16,185,129,0.3); z-index: 10000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                            <li><button class="dropdown-item py-2 rounded-3 text-white d-flex align-items-center gap-2" onclick="changeLang('tr')"><span style="font-size:1.1rem;">🇹🇷</span> Türkçe</button></li>
+                            <li><button class="dropdown-item py-2 rounded-3 text-white d-flex align-items-center gap-2" onclick="changeLang('en')"><span style="font-size:1.1rem;">🇺🇸</span> English</button></li>
+                            <li><button class="dropdown-item py-2 rounded-3 text-white d-flex align-items-center gap-2" onclick="changeLang('fr')"><span style="font-size:1.1rem;">🇫🇷</span> Français</button></li>
+                            <li><button class="dropdown-item py-2 rounded-3 text-white d-flex align-items-center gap-2" onclick="changeLang('ar')"><span style="font-size:1.1rem;">🇸🇦</span> العربية</button></li>
+                        </ul>
+                    </div>
                     <button onclick="toggleTheme()" id="themeToggleButton" class="btn btn-premium-circle" title="Tema">
                         <i id="themeIcon" data-lucide="sun"></i>
                     </button>
-                    <button onclick="handleLogout()" class="btn btn-premium-circle-danger" title="Çıkış">
+                    <button onclick="handleLogout()" id="logoutBtn" class="btn btn-premium-circle-danger" title="Çıkış">
                         <i data-lucide="log-out"></i>
                     </button>
                 </div>
@@ -243,27 +255,35 @@
                                 <img src="icon-512.png" alt="TopClean Logo">
                             </div>
                             <h2 class="brand-name mt-3">TOPCLEAN</h2>
-                            <div class="brand-tagline"><span></span> sizinle <span></span></div>
+                            <div class="brand-tagline"><span></span> <span data-i18n="tagline">sizinle</span> <span></span></div>
+                        </div>
+
+                        <!-- Dil Seçimi (Language Flags) -->
+                        <div class="d-flex justify-content-center gap-2 mb-4">
+                            <button type="button" onclick="changeLang('tr')" class="lang-flag-btn active" id="flag-tr">🇹🇷 TR</button>
+                            <button type="button" onclick="changeLang('en')" class="lang-flag-btn" id="flag-en">🇺🇸 EN</button>
+                            <button type="button" onclick="changeLang('fr')" class="lang-flag-btn" id="flag-fr">🇫🇷 FR</button>
+                            <button type="button" onclick="changeLang('ar')" class="lang-flag-btn" id="flag-ar">🇸🇦 AR</button>
                         </div>
 
                         <!-- Form -->
-                        <form id="loginForm" class="mt-4">
+                        <form id="loginForm" class="mt-2">
                             <div class="premium-input-group mb-3">
                                 <i data-lucide="building" class="input-icon"></i>
-                                <input type="text" id="instCode" class="premium-input" placeholder="Kurum Kodu"
+                                <input type="text" id="instCode" class="premium-input" placeholder="Kurum Kodu" data-i18n-placeholder="inst_code"
                                     required>
                             </div>
 
                             <div class="premium-input-group">
                                 <i data-lucide="user" class="input-icon"></i>
                                 <select id="userSelect" class="premium-input" required>
-                                    <option value="" disabled selected>Kullanıcı Adı</option>
+                                    <option value="" disabled selected data-i18n="username">Kullanıcı Adı</option>
                                 </select>
                             </div>
 
                             <div class="premium-input-group mt-3">
                                 <i data-lucide="lock" class="input-icon"></i>
-                                <input type="password" id="userPass" class="premium-input" placeholder="Şifre" required>
+                                <input type="password" id="userPass" class="premium-input" placeholder="Şifre" data-i18n-placeholder="password" required>
                                 <i data-lucide="eye" id="togglePassword" class="eye-icon"></i>
                             </div>
 
@@ -271,19 +291,19 @@
                                 <label class="premium-checkbox">
                                     <input type="checkbox">
                                     <span class="checkmark"></span>
-                                    <span class="label-text">Beni Hatırla</span>
+                                    <span class="label-text" data-i18n="remember_me">Beni Hatırla</span>
                                 </label>
                             </div>
 
                             <button type="submit" id="loginBtn" class="premium-login-btn mt-4">
-                                <span class="btn-text">Giriş Yap</span>
+                                <span class="btn-text" data-i18n="login_btn">Giriş Yap</span>
                                 <i data-lucide="arrow-right" class="btn-arrow" size="18"></i>
                                 <div class="spinner"></div>
                             </button>
                         </form>
                         <div class="text-center mt-3">
                             <button type="button" id="loginPwaInstallBtn" class="btn btn-sm btn-glass-emerald w-100 py-3 rounded-pill fw-bold d-none"
-                                onclick="PWAHelper.install()" style="font-size:0.75rem; letter-spacing:1px; border: 1px dashed rgba(16,185,129,0.4);">
+                                onclick="PWAHelper.install()" style="font-size:0.75rem; letter-spacing:1px; border: 1px dashed rgba(16,185,129,0.4);" data-i18n="download_btn">
                                 📲 UYGULAMAYI TELEFONA/PC'YE İNDİR
                             </button>
                         </div>
@@ -381,7 +401,7 @@
             <!-- YURT MESULÜ PANELİ (COCKPIT) -->
             <div id="idarecPanel" class="view-panel d-none flex-column w-100">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald px-3 rounded-pill">←
+                    <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald px-3 rounded-pill" data-i18n="back">←
                         Geri</button>
                     <h6 class="text-emerald fw-bold mb-0 x-small">YURT MESULÜ KOKPİTİ</h6>
                     <div class="d-flex gap-2">
@@ -497,8 +517,8 @@
                                 <i data-lucide="leaf" style="width:16px;"></i>
                             </div>
                             <div>
-                                <h6 class="small text-warning fw-bold mb-0">Beytülmal Hassasiyeti</h6>
-                                <p style="font-size:0.6rem;" class="text-muted mb-0">Optimize Kaynak Yönetimi</p>
+                                <h6 class="small text-warning fw-bold mb-0" data-i18n="beytulmal_title">Beytülmal Hassasiyeti</h6>
+                                <p class="x-small text-muted mb-0" data-i18n="beytulmal_subtitle">Örnek Tasarruflu Kaynak Yönetimi</p>
                             </div>
                         </div>
                         <button onclick="showPanel('idarecPanel')" class="btn btn-sm btn-glass-emerald px-3 rounded-pill" style="font-size:0.65rem;">← Geri</button>
@@ -667,7 +687,7 @@
             <!-- MÜFETTİŞ PANELİ (CANLI DENETİM AKIŞI) -->
             <div id="adminPanel" class="view-panel d-none flex-column w-100">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald px-3 rounded-pill">←
+                    <button onclick="_routeUser()" class="btn btn-sm btn-glass-emerald px-3 rounded-pill" data-i18n="back">←
                         Geri</button>
                     <button onclick="KurumYonetimManager.acPanel()" class="btn btn-sm px-3 rounded-pill fw-bold"
                         style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); color:#10b981; font-size:0.65rem;">
@@ -676,7 +696,7 @@
                 </div>
                 <!-- BINA ONAY ÖZETİ -->
                 <div class="glass-card banner-card p-4 mb-4 text-center shadow-lg">
-                    <h2 class="h4 fw-bold text-white mb-1">Denetim Akışı</h2>
+                    <h2 class="h4 fw-bold text-white mb-1" data-i18n="inspection_panel">Denetim Akışı</h2>
                     <p class="x-small text-muted mb-2">Canlı olarak gelen temizlik raporlarını onaylayın</p>
                     <div id="mufettisBekleyenBadge" class="badge bg-warning text-dark rounded-pill px-3 py-2"
                         style="font-size:0.85rem;">Bekleyen Raporlar Yükleniyor...</div>
